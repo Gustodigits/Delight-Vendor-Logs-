@@ -479,33 +479,116 @@ textarea{
     display:block;
 }
 
-.empty{
-    background:#fff;
-    border:1px solid #e5e5e5;
-    border-radius:15px;
-    padding:30px;
-    text-align:center;
-    color:#777;
-}
-
 /* =========================================================
-   KYC SEARCH / SAMPLE FIELDS
+   KYC SEARCHABLE SELECT
 ========================================================= */
 
-.kyc-search-row{
-    display:flex;
-    gap:8px;
-    margin-bottom:8px;
+.kyc-search-select{
+    position:relative;
+    width:100%;
+    margin-bottom:16px;
 }
 
-.kyc-search-row input{
-    margin-bottom:0;
+.kyc-search-input{
+    width:100%;
+    padding:13px 42px 13px 13px;
+    border:1px solid #d7d7d7;
+    border-radius:11px;
+    outline:none;
+    font-size:14px;
+    margin:0;
+    background:#fff;
+    cursor:text;
+}
+
+.kyc-search-input:focus{
+    border-color:#0d6efd;
+    box-shadow:0 0 0 3px rgba(13,110,253,.08);
+}
+
+.kyc-search-input:disabled{
+    background:#f1f1f1;
+    color:#999;
+    cursor:not-allowed;
+}
+
+.kyc-dropdown-arrow{
+    position:absolute;
+    right:14px;
+    top:14px;
+    font-size:16px;
+    color:#777;
+    pointer-events:none;
+    transition:.15s;
+}
+
+.kyc-search-select.open .kyc-dropdown-arrow{
+    transform:rotate(180deg);
+}
+
+.kyc-dropdown-menu{
+    display:none;
+    position:absolute;
+    left:0;
+    right:0;
+    top:calc(100% + 5px);
+    max-height:280px;
+    overflow-y:auto;
+    background:#fff;
+    border:1px solid #d7d7d7;
+    border-radius:11px;
+    box-shadow:0 10px 28px rgba(0,0,0,.14);
+    z-index:9999;
+}
+
+.kyc-search-select.open .kyc-dropdown-menu{
+    display:block;
+}
+
+.kyc-dropdown-option{
+    padding:12px 13px;
+    font-size:14px;
+    cursor:pointer;
+    border-bottom:1px solid #f0f0f0;
+    background:#fff;
+}
+
+.kyc-dropdown-option:last-child{
+    border-bottom:none;
+}
+
+.kyc-dropdown-option:hover,
+.kyc-dropdown-option.active{
+    background:#f1f5f9;
+}
+
+.kyc-dropdown-empty{
+    padding:13px;
+    font-size:13px;
+    color:#777;
+    text-align:center;
+}
+
+.kyc-selected-value{
+    background:#fff;
+}
+
+.kyc-custom-box{
+    margin-top:2px;
+    padding:12px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:11px;
+}
+
+.kyc-custom-box input{
+    margin-bottom:10px;
 }
 
 .kyc-search-btn{
     width:auto;
     min-width:78px;
-    padding:0 14px;
+    padding:10px 14px;
     border:1px solid #d7d7d7;
     border-radius:11px;
     background:#f5f5f5;
@@ -521,14 +604,6 @@ textarea{
     color:#777;
     font-size:11px;
     margin:-2px 0 12px;
-}
-
-.kyc-custom-box{
-    margin-top:2px;
-    padding:12px;
-    background:#f8fafc;
-    border:1px solid #e5e7eb;
-    border-radius:11px;
 }
 
 .kyc-generated-number{
@@ -599,16 +674,6 @@ textarea{
     }
 
     .tool-description{
-        font-size:12px;
-    }
-
-    .kyc-search-row{
-        gap:6px;
-    }
-
-    .kyc-search-btn{
-        min-width:70px;
-        padding:0 10px;
         font-size:12px;
     }
 }
@@ -798,6 +863,7 @@ let selectedService = null;
 /* KYC state */
 let kycCountries = [];
 let kycDocuments = [];
+let selectedKycCountry = null;
 let selectedKycDocument = null;
 
 
@@ -963,10 +1029,7 @@ function getVisualForService(serviceName){
 
     const cleanName =
         String(serviceName)
-            .replace(
-                /^[^\p{L}\p{N}]+/u,
-                ""
-            )
+            .replace(/^[^\p{L}\p{N}]+/u,"")
             .trim();
 
     return serviceVisuals[cleanName] || null;
@@ -1195,9 +1258,6 @@ function renderServices(){
                     service.name
                 );
 
-            /*
-             * KYC summary is intentionally SAMPLE-only.
-             */
             let description =
                 service.description || "";
 
@@ -1435,6 +1495,7 @@ function showServices(){
 
     selectedService = null;
     selectedKycDocument = null;
+    selectedKycCountry = null;
     kycCountries = [];
     kycDocuments = [];
 
@@ -1661,73 +1722,76 @@ function renderToolForm(serviceName){
 
             </div>
 
+
             <label>Country</label>
 
-            <div class="kyc-search-row">
+            <div
+                class="kyc-search-select"
+                id="kycCountrySelect"
+            >
 
                 <input
                     id="kycCountrySearch"
-                    type="search"
-                    placeholder="Search country..."
+                    class="kyc-search-input"
+                    type="text"
+                    placeholder="Search or select country..."
+                    autocomplete="off"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
                 >
 
-                <button
-                    type="button"
-                    class="kyc-search-btn"
-                    onclick="filterKycCountries()"
-                >
-                    Search
-                </button>
+                <span class="kyc-dropdown-arrow">
+                    ▼
+                </span>
+
+                <div
+                    id="kycCountryMenu"
+                    class="kyc-dropdown-menu"
+                    role="listbox"
+                ></div>
 
             </div>
 
-            <div class="kyc-search-hint">
-                Search through all active countries in your database.
-            </div>
-
-            <select id="kycCountry">
-
-                <option value="">
-                    Select country
-                </option>
-
-            </select>
+            <input
+                id="kycCountry"
+                type="hidden"
+            >
 
 
             <label>Document Type</label>
 
-            <div class="kyc-search-row">
+            <div
+                class="kyc-search-select"
+                id="kycDocumentSelect"
+            >
 
                 <input
                     id="kycDocumentSearch"
-                    type="search"
-                    placeholder="Search document type..."
+                    class="kyc-search-input"
+                    type="text"
+                    placeholder="Select country first..."
+                    autocomplete="off"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    disabled
                 >
 
-                <button
-                    type="button"
-                    class="kyc-search-btn"
-                    onclick="filterKycDocuments()"
-                >
-                    Search
-                </button>
+                <span class="kyc-dropdown-arrow">
+                    ▼
+                </span>
+
+                <div
+                    id="kycDocumentMenu"
+                    class="kyc-dropdown-menu"
+                    role="listbox"
+                ></div>
 
             </div>
 
-            <div class="kyc-search-hint">
-                Search the document types available for the selected country.
-            </div>
-
-            <select
+            <input
                 id="kycDocument"
-                disabled
+                type="hidden"
             >
-
-                <option value="">
-                    Select country first
-                </option>
-
-            </select>
 
 
             <div class="kyc-custom-box">
@@ -1749,6 +1813,10 @@ function renderToolForm(serviceName){
                 >
                     Use Custom Type
                 </button>
+
+                <div class="kyc-search-hint">
+                    Custom types are for fictional SAMPLE documents only.
+                </div>
 
             </div>
 
@@ -2152,18 +2220,34 @@ function renderToolForm(serviceName){
 
 /* =========================================================
    KYC COUNTRIES
+   SEARCH + SELECT IN THE SAME BOX
 ========================================================= */
 
 async function loadKycCountries(){
 
-    const select =
+    const searchInput =
         document.getElementById(
-            "kycCountry"
+            "kycCountrySearch"
         );
 
-    if(!select){
+    const menu =
+        document.getElementById(
+            "kycCountryMenu"
+        );
+
+    if(!searchInput || !menu){
         return;
     }
+
+    searchInput.disabled = true;
+    searchInput.placeholder =
+        "Loading all countries...";
+
+    menu.innerHTML = `
+        <div class="kyc-dropdown-empty">
+            Loading countries...
+        </div>
+    `;
 
     const {
         data,
@@ -2172,14 +2256,17 @@ async function loadKycCountries(){
         await supabaseClient
             .from("kyc_countries")
             .select(
-                "id,country_name"
+                "id,country_code,country_name"
             )
             .eq(
                 "is_active",
                 true
             )
             .order(
-                "country_name"
+                "country_name",
+                {
+                    ascending:true
+                }
             );
 
     if(error){
@@ -2189,10 +2276,14 @@ async function loadKycCountries(){
             error
         );
 
-        select.innerHTML = `
-            <option value="">
-                Could not load countries
-            </option>
+        searchInput.disabled = false;
+        searchInput.placeholder =
+            "Could not load countries";
+
+        menu.innerHTML = `
+            <div class="kyc-dropdown-empty">
+                Could not load countries.
+            </div>
         `;
 
         return;
@@ -2201,49 +2292,41 @@ async function loadKycCountries(){
     kycCountries =
         data || [];
 
+    searchInput.disabled = false;
+    searchInput.placeholder =
+        "Search or select country...";
+
     renderKycCountryOptions("");
 
-    select.onchange = function(){
+    setupKycSearchSelect(
+        "kycCountrySelect",
+        "kycCountrySearch",
+        "kycCountryMenu",
+        function(searchTerm){
 
-        loadKycDocuments(
-            this.value
-        );
+            renderKycCountryOptions(
+                searchTerm
+            );
 
-    };
-
-    const searchInput =
-        document.getElementById(
-            "kycCountrySearch"
-        );
-
-    if(searchInput){
-
-        searchInput.onkeydown =
-            function(event){
-
-                if(event.key === "Enter"){
-
-                    event.preventDefault();
-
-                    filterKycCountries();
-                }
-            };
-    }
+        }
+    );
 }
 
 
 /* =========================================================
-   RENDER COUNTRY OPTIONS
+   RENDER ALL COUNTRY OPTIONS
 ========================================================= */
 
-function renderKycCountryOptions(searchTerm=""){
+function renderKycCountryOptions(
+    searchTerm=""
+){
 
-    const select =
+    const menu =
         document.getElementById(
-            "kycCountry"
+            "kycCountryMenu"
         );
 
-    if(!select){
+    if(!menu){
         return;
     }
 
@@ -2252,94 +2335,139 @@ function renderKycCountryOptions(searchTerm=""){
             .trim()
             .toLowerCase();
 
-    const currentValue =
-        select.value;
-
     const filtered =
         kycCountries.filter(country => {
 
-            return String(
-                country.country_name || ""
-            )
-            .toLowerCase()
-            .includes(search);
+            const countryName =
+                String(
+                    country.country_name || ""
+                ).toLowerCase();
+
+            const countryCode =
+                String(
+                    country.country_code || ""
+                ).toLowerCase();
+
+            return (
+                !search ||
+                countryName.includes(search) ||
+                countryCode.includes(search)
+            );
 
         });
 
-    select.innerHTML = `
-        <option value="">
-            ${
-                search
-                ? "Select matching country"
-                : "Select country"
-            }
-        </option>
-    `;
+    if(!filtered.length){
 
-    filtered.forEach(country => {
+        menu.innerHTML = `
+            <div class="kyc-dropdown-empty">
+                No matching country found.
+            </div>
+        `;
 
-        const option =
-            document.createElement(
-                "option"
+        return;
+    }
+
+    menu.innerHTML =
+        filtered.map(country => `
+
+            <div
+                class="kyc-dropdown-option"
+                role="option"
+                data-id="${escapeHtml(country.id)}"
+                data-name="${escapeHtml(country.country_name)}"
+            >
+                ${escapeHtml(country.country_name)}
+            </div>
+
+        `).join("");
+
+    menu
+        .querySelectorAll(
+            ".kyc-dropdown-option"
+        )
+        .forEach(option => {
+
+            option.addEventListener(
+                "click",
+                function(){
+
+                    selectKycCountry(
+                        this.dataset.id,
+                        this.dataset.name
+                    );
+
+                }
             );
 
-        option.value =
-            country.id;
-
-        option.textContent =
-            country.country_name;
-
-        select.appendChild(option);
-
-    });
-
-    if(
-        currentValue &&
-        filtered.some(
-            country =>
-                country.id === currentValue
-        )
-    ){
-
-        select.value =
-            currentValue;
-    }
-
-    if(search && !filtered.length){
-
-        select.innerHTML = `
-            <option value="">
-                No matching country found
-            </option>
-        `;
-    }
+        });
 }
 
 
 /* =========================================================
-   FILTER COUNTRIES
+   SELECT COUNTRY
 ========================================================= */
 
-function filterKycCountries(){
+function selectKycCountry(
+    id,
+    name
+){
 
-    const input =
+    selectedKycCountry = {
+        id:id,
+        name:name
+    };
+
+    const searchInput =
         document.getElementById(
             "kycCountrySearch"
         );
 
-    renderKycCountryOptions(
-        input?.value || ""
-    );
+    const hiddenInput =
+        document.getElementById(
+            "kycCountry"
+        );
+
+    if(searchInput){
+
+        searchInput.value =
+            name;
+
+        searchInput.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+    if(hiddenInput){
+        hiddenInput.value = id;
+    }
+
+    closeAllKycDropdowns();
+
+    loadKycDocuments(id);
 }
 
 
 /* =========================================================
    KYC DOCUMENTS
+   SEARCH + SELECT IN THE SAME BOX
 ========================================================= */
 
-async function loadKycDocuments(countryId){
+async function loadKycDocuments(
+    countryId
+){
 
-    const select =
+    const searchInput =
+        document.getElementById(
+            "kycDocumentSearch"
+        );
+
+    const menu =
+        document.getElementById(
+            "kycDocumentMenu"
+        );
+
+    const hiddenInput =
         document.getElementById(
             "kycDocument"
         );
@@ -2349,17 +2477,17 @@ async function loadKycDocuments(countryId){
             "kycFields"
         );
 
-    const searchInput =
-        document.getElementById(
-            "kycDocumentSearch"
-        );
-
     const customInput =
         document.getElementById(
             "kycCustomDocument"
         );
 
-    if(!select){
+    if(
+        !searchInput ||
+        !menu ||
+        !hiddenInput
+    ){
+
         return;
     }
 
@@ -2370,29 +2498,32 @@ async function loadKycDocuments(countryId){
         fieldsBox.innerHTML = "";
     }
 
-    if(searchInput){
-        searchInput.value = "";
-    }
-
     if(customInput){
         customInput.value = "";
     }
 
-    select.disabled = true;
+    hiddenInput.value = "";
 
-    select.innerHTML = `
-        <option value="">
+    searchInput.value = "";
+    searchInput.disabled = true;
+    searchInput.placeholder =
+        "Loading document types...";
+
+    menu.innerHTML = `
+        <div class="kyc-dropdown-empty">
             Loading document types...
-        </option>
+        </div>
     `;
+
+    closeAllKycDropdowns();
 
     if(!countryId){
 
-        select.innerHTML = `
-            <option value="">
-                Select country first
-            </option>
-        `;
+        searchInput.disabled = true;
+        searchInput.placeholder =
+            "Select country first...";
+
+        menu.innerHTML = "";
 
         return;
     }
@@ -2404,7 +2535,7 @@ async function loadKycDocuments(countryId){
         await supabaseClient
             .from("kyc_document_types")
             .select(
-                "id,document_name"
+                "id,country_id,document_name,is_custom"
             )
             .eq(
                 "country_id",
@@ -2415,7 +2546,10 @@ async function loadKycDocuments(countryId){
                 true
             )
             .order(
-                "document_name"
+                "document_name",
+                {
+                    ascending:true
+                }
             );
 
     if(error){
@@ -2425,10 +2559,14 @@ async function loadKycDocuments(countryId){
             error
         );
 
-        select.innerHTML = `
-            <option value="">
-                Could not load documents
-            </option>
+        searchInput.disabled = false;
+        searchInput.placeholder =
+            "Could not load documents";
+
+        menu.innerHTML = `
+            <div class="kyc-dropdown-empty">
+                Could not load document types.
+            </div>
         `;
 
         return;
@@ -2437,81 +2575,41 @@ async function loadKycDocuments(countryId){
     kycDocuments =
         data || [];
 
+    searchInput.disabled = false;
+    searchInput.placeholder =
+        "Search or select document...";
+
     renderKycDocumentOptions("");
 
-    select.disabled = false;
+    setupKycSearchSelect(
+        "kycDocumentSelect",
+        "kycDocumentSearch",
+        "kycDocumentMenu",
+        function(searchTerm){
 
-    select.onchange = function(){
-
-        const value =
-            this.value;
-
-        if(!value){
-
-            selectedKycDocument = null;
-
-            if(fieldsBox){
-                fieldsBox.innerHTML = "";
-            }
-
-            return;
-        }
-
-        const selected =
-            kycDocuments.find(
-                item =>
-                    String(item.id) ===
-                    String(value)
+            renderKycDocumentOptions(
+                searchTerm
             );
 
-        if(!selected){
-            return;
         }
-
-        selectedKycDocument = {
-            id:selected.id,
-            name:selected.document_name,
-            is_custom:false
-        };
-
-        if(customInput){
-            customInput.value = "";
-        }
-
-        renderKycFields(
-            selected.document_name
-        );
-
-    };
-
-    if(searchInput){
-
-        searchInput.onkeydown =
-            function(event){
-
-                if(event.key === "Enter"){
-
-                    event.preventDefault();
-
-                    filterKycDocuments();
-                }
-            };
-    }
+    );
 }
 
 
 /* =========================================================
-   RENDER DOCUMENT OPTIONS
+   RENDER ALL DOCUMENT OPTIONS
 ========================================================= */
 
-function renderKycDocumentOptions(searchTerm=""){
+function renderKycDocumentOptions(
+    searchTerm=""
+){
 
-    const select =
+    const menu =
         document.getElementById(
-            "kycDocument"
+            "kycDocumentMenu"
         );
 
-    if(!select){
+    if(!menu){
         return;
     }
 
@@ -2520,74 +2618,395 @@ function renderKycDocumentOptions(searchTerm=""){
             .trim()
             .toLowerCase();
 
-    const currentValue =
-        select.value;
-
     const filtered =
-        kycDocuments.filter(documentType => {
+        kycDocuments.filter(
+            documentType => {
 
-            return String(
-                documentType.document_name || ""
-            )
-            .toLowerCase()
-            .includes(search);
+                const name =
+                    String(
+                        documentType.document_name ||
+                        ""
+                    ).toLowerCase();
 
-        });
+                return (
+                    !search ||
+                    name.includes(search)
+                );
 
-    select.innerHTML = `
-        <option value="">
-            ${
-                search
-                ? "Select matching document"
-                : "Select document"
             }
-        </option>
-    `;
+        );
 
-    filtered.forEach(documentType => {
+    if(!filtered.length){
 
-        const option =
-            document.createElement(
-                "option"
+        menu.innerHTML = `
+            <div class="kyc-dropdown-empty">
+                No matching document type found.
+            </div>
+        `;
+
+        return;
+    }
+
+    menu.innerHTML =
+        filtered.map(documentType => `
+
+            <div
+                class="kyc-dropdown-option"
+                role="option"
+                data-id="${escapeHtml(documentType.id)}"
+                data-name="${escapeHtml(documentType.document_name)}"
+            >
+                ${escapeHtml(documentType.document_name)}
+            </div>
+
+        `).join("");
+
+    menu
+        .querySelectorAll(
+            ".kyc-dropdown-option"
+        )
+        .forEach(option => {
+
+            option.addEventListener(
+                "click",
+                function(){
+
+                    selectKycDocument(
+                        this.dataset.id,
+                        this.dataset.name
+                    );
+
+                }
             );
 
-        option.value =
-            documentType.id;
-
-        option.textContent =
-            documentType.document_name;
-
-        select.appendChild(option);
-
-    });
-
-    if(
-        currentValue &&
-        filtered.some(
-            item =>
-                String(item.id) ===
-                String(currentValue)
-        )
-    ){
-
-        select.value =
-            currentValue;
-    }
-
-    if(search && !filtered.length){
-
-        select.innerHTML = `
-            <option value="">
-                No matching document found
-            </option>
-        `;
-    }
+        });
 }
 
 
 /* =========================================================
-   FILTER DOCUMENTS
+   SELECT DOCUMENT
 ========================================================= */
+
+function selectKycDocument(
+    id,
+    name
+){
+
+    selectedKycDocument = {
+
+        id:id,
+
+        name:name,
+
+        is_custom:false
+
+    };
+
+    const searchInput =
+        document.getElementById(
+            "kycDocumentSearch"
+        );
+
+    const hiddenInput =
+        document.getElementById(
+            "kycDocument"
+        );
+
+    const customInput =
+        document.getElementById(
+            "kycCustomDocument"
+        );
+
+    if(searchInput){
+
+        searchInput.value =
+            name;
+
+        searchInput.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+    if(hiddenInput){
+        hiddenInput.value = id;
+    }
+
+    if(customInput){
+        customInput.value = "";
+    }
+
+    closeAllKycDropdowns();
+
+    renderKycFields(name);
+}
+
+
+/* =========================================================
+   SEARCHABLE DROPDOWN SETUP
+========================================================= */
+
+function setupKycSearchSelect(
+    wrapperId,
+    inputId,
+    menuId,
+    onSearch
+){
+
+    const wrapper =
+        document.getElementById(
+            wrapperId
+        );
+
+    const input =
+        document.getElementById(
+            inputId
+        );
+
+    const menu =
+        document.getElementById(
+            menuId
+        );
+
+    if(
+        !wrapper ||
+        !input ||
+        !menu
+    ){
+
+        return;
+    }
+
+    /*
+     * Remove old listeners by cloning the input.
+     * This prevents duplicate events when the
+     * document list is loaded again.
+     */
+    const freshInput =
+        input.cloneNode(true);
+
+    input.parentNode.replaceChild(
+        freshInput,
+        input
+    );
+
+    freshInput.addEventListener(
+        "focus",
+        function(){
+
+            if(freshInput.disabled){
+                return;
+            }
+
+            closeAllKycDropdowns(
+                wrapper
+            );
+
+            wrapper.classList.add("open");
+
+            freshInput.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            onSearch(
+                freshInput.value
+            );
+
+        }
+    );
+
+    freshInput.addEventListener(
+        "click",
+        function(event){
+
+            event.stopPropagation();
+
+            if(freshInput.disabled){
+                return;
+            }
+
+            closeAllKycDropdowns(
+                wrapper
+            );
+
+            wrapper.classList.add("open");
+
+            freshInput.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            onSearch(
+                freshInput.value
+            );
+
+        }
+    );
+
+    freshInput.addEventListener(
+        "input",
+        function(){
+
+            if(freshInput.disabled){
+                return;
+            }
+
+            wrapper.classList.add("open");
+
+            freshInput.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+
+            onSearch(
+                freshInput.value
+            );
+
+        }
+    );
+
+    freshInput.addEventListener(
+        "keydown",
+        function(event){
+
+            if(event.key === "Escape"){
+
+                wrapper.classList.remove(
+                    "open"
+                );
+
+                freshInput.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                return;
+            }
+
+            if(event.key === "Enter"){
+
+                event.preventDefault();
+
+                const first =
+                    menu.querySelector(
+                        ".kyc-dropdown-option"
+                    );
+
+                if(first){
+
+                    first.click();
+
+                }
+
+            }
+
+        }
+    );
+}
+
+
+/* =========================================================
+   CLOSE KYC DROPDOWNS
+========================================================= */
+
+function closeAllKycDropdowns(
+    exceptWrapper=null
+){
+
+    document
+        .querySelectorAll(
+            ".kyc-search-select"
+        )
+        .forEach(wrapper => {
+
+            if(
+                exceptWrapper &&
+                wrapper === exceptWrapper
+            ){
+
+                return;
+            }
+
+            wrapper.classList.remove(
+                "open"
+            );
+
+            const input =
+                wrapper.querySelector(
+                    ".kyc-search-input"
+                );
+
+            if(input){
+
+                input.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+            }
+
+        });
+}
+
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            !event.target.closest(
+                ".kyc-search-select"
+            )
+        ){
+
+            closeAllKycDropdowns();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   FILTER COMPATIBILITY FUNCTIONS
+   Kept so existing buttons/code won't break.
+========================================================= */
+
+function filterKycCountries(){
+
+    const input =
+        document.getElementById(
+            "kycCountrySearch"
+        );
+
+    if(!input){
+        return;
+    }
+
+    renderKycCountryOptions(
+        input.value || ""
+    );
+
+    const wrapper =
+        document.getElementById(
+            "kycCountrySelect"
+        );
+
+    if(wrapper){
+
+        wrapper.classList.add(
+            "open"
+        );
+
+        input.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+}
+
 
 function filterKycDocuments(){
 
@@ -2596,9 +3015,31 @@ function filterKycDocuments(){
             "kycDocumentSearch"
         );
 
+    if(!input){
+        return;
+    }
+
     renderKycDocumentOptions(
-        input?.value || ""
+        input.value || ""
     );
+
+    const wrapper =
+        document.getElementById(
+            "kycDocumentSelect"
+        );
+
+    if(wrapper){
+
+        wrapper.classList.add(
+            "open"
+        );
+
+        input.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
 }
 
 
@@ -2630,19 +3071,35 @@ function useCustomKycDocument(){
     selectedKycDocument = {
 
         id:"",
+
         name:customName,
+
         is_custom:true
 
     };
 
-    const select =
+    const hiddenDocument =
         document.getElementById(
             "kycDocument"
         );
 
-    if(select){
-        select.value = "";
+    const documentSearch =
+        document.getElementById(
+            "kycDocumentSearch"
+        );
+
+    if(hiddenDocument){
+        hiddenDocument.value = "";
     }
+
+    if(documentSearch){
+
+        documentSearch.value =
+            customName;
+
+    }
+
+    closeAllKycDropdowns();
 
     renderKycFields(
         customName
@@ -2654,7 +3111,9 @@ function useCustomKycDocument(){
    SAMPLE IDENTIFIER
 ========================================================= */
 
-function generateSampleIdentifier(prefix){
+function generateSampleIdentifier(
+    prefix
+){
 
     const chars =
         "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -2770,7 +3229,9 @@ function getKycIdentifierConfig(
    KYC DYNAMIC FIELDS
 ========================================================= */
 
-function renderKycFields(documentName){
+function renderKycFields(
+    documentName
+){
 
     const box =
         document.getElementById(
@@ -3202,15 +3663,25 @@ function validateTool(){
         const country =
             document.getElementById(
                 "kycCountry"
-            )?.value;
+            )?.value || "";
 
-        const documentSelect =
+        const countrySearch =
+            document.getElementById(
+                "kycCountrySearch"
+            )?.value.trim() || "";
+
+        const documentHidden =
             document.getElementById(
                 "kycDocument"
             );
 
         let documentType =
-            documentSelect?.value || "";
+            documentHidden?.value || "";
+
+        const documentSearch =
+            document.getElementById(
+                "kycDocumentSearch"
+            )?.value.trim() || "";
 
         const customInput =
             document.getElementById(
@@ -3231,10 +3702,24 @@ function validateTool(){
         }
 
 
+        if(
+            !selectedKycCountry ||
+            String(selectedKycCountry.id) !==
+            String(country)
+        ){
+
+            alert(
+                "Please select a country from the list."
+            );
+
+            return false;
+        }
+
+
         /*
-         * If the customer typed a custom document
-         * but did not press the custom button,
-         * automatically use the typed custom type.
+         * If customer typed a custom document
+         * without pressing the custom button,
+         * automatically use it.
          */
 
         if(
@@ -3249,6 +3734,23 @@ function validateTool(){
                 is_custom:true
 
             };
+
+            if(documentHidden){
+                documentHidden.value = "";
+            }
+
+            if(
+                document.getElementById(
+                    "kycDocumentSearch"
+                )
+            ){
+
+                document.getElementById(
+                    "kycDocumentSearch"
+                ).value =
+                    customName;
+
+            }
 
             renderKycFields(
                 customName
@@ -3790,15 +4292,29 @@ async function generateAI(){
             }
 
 
-            const countrySelect =
+            const countryId =
                 document.getElementById(
                     "kycCountry"
-                );
+                )?.value ||
+                "";
 
-            const docSelect =
+            const countryName =
+                document.getElementById(
+                    "kycCountrySearch"
+                )?.value.trim() ||
+                "";
+
+            const docId =
                 document.getElementById(
                     "kycDocument"
-                );
+                )?.value ||
+                "";
+
+            const docSearchName =
+                document.getElementById(
+                    "kycDocumentSearch"
+                )?.value.trim() ||
+                "";
 
             const customDocInput =
                 document.getElementById(
@@ -3813,28 +4329,15 @@ async function generateAI(){
 
 
             const isCustom =
-                !docSelect?.value &&
+                !docId &&
                 !!customDocumentName;
-
-
-            const regularDocumentName =
-                docSelect?.value
-                ? (
-                    docSelect
-                        ?.options[
-                            docSelect.selectedIndex
-                        ]
-                        ?.textContent ||
-                    ""
-                )
-                : "";
 
 
             const finalDocumentName =
                 isCustom
                 ? customDocumentName
                 : (
-                    regularDocumentName ||
+                    docSearchName ||
                     selectedKycDocument?.name ||
                     ""
                 );
@@ -3842,30 +4345,19 @@ async function generateAI(){
 
             payload = {
 
-                /*
-                 * Clearly identifies this request as
-                 * a fictional/sample document design.
-                 */
                 sample_only:true,
 
                 sample_status:
                     "SAMPLE / NOT VALID",
 
                 country_id:
-                    countrySelect?.value ||
-                    "",
+                    countryId,
 
                 country_name:
-                    countrySelect
-                        ?.options[
-                            countrySelect.selectedIndex
-                        ]
-                        ?.textContent ||
-                    "",
+                    countryName,
 
                 document_type_id:
-                    docSelect?.value ||
-                    "",
+                    docId,
 
                 document_name:
                     finalDocumentName,
@@ -3896,10 +4388,6 @@ async function generateAI(){
                     )?.value ||
                     "",
 
-                /*
-                 * Always use the automatically generated
-                 * fictional SAMPLE identifier.
-                 */
                 document_number:
                     document.getElementById(
                         "kycDocumentNumber"
