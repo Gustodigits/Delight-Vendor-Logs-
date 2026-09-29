@@ -6,6 +6,8 @@
 
 <title>AI Studio — Delight Vendor Logs</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
     box-sizing:border-box;
@@ -14,7 +16,7 @@
 }
 
 body{
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#f5f6f8;
     color:#111;
     min-height:100vh;
@@ -68,6 +70,13 @@ body{
     box-shadow:0 6px 18px rgba(13,110,253,.2);
 }
 
+.wallet-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
 .wallet-label{
     font-size:13px;
     opacity:.85;
@@ -77,6 +86,16 @@ body{
     font-size:28px;
     font-weight:900;
     margin-top:5px;
+}
+
+.refresh-wallet{
+    border:1px solid rgba(255,255,255,.4);
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    padding:8px 11px;
+    border-radius:9px;
+    cursor:pointer;
+    font-weight:700;
 }
 
 .container{
@@ -95,6 +114,34 @@ body{
     color:#666;
     font-size:14px;
     margin-bottom:20px;
+}
+
+.status{
+    display:none;
+    padding:12px 14px;
+    border-radius:11px;
+    margin-bottom:16px;
+    font-size:13px;
+    font-weight:700;
+}
+
+.status.show{
+    display:block;
+}
+
+.status.error{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.status.success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.status.info{
+    background:#e0f2fe;
+    color:#075985;
 }
 
 .services{
@@ -176,6 +223,13 @@ body{
     font-size:14px;
 }
 
+.tool-price{
+    margin-top:14px;
+    font-size:17px;
+    font-weight:900;
+    color:#0d6efd;
+}
+
 .tool-box{
     background:#fff;
     border:1px solid #e5e5e5;
@@ -227,6 +281,11 @@ textarea{
 
 .continue-btn:hover{
     opacity:.88;
+}
+
+.continue-btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
 }
 
 .back-tools{
@@ -281,8 +340,23 @@ textarea{
     color:#555;
 }
 
-.coming{
-    padding:30px 10px;
+.insufficient{
+    background:#fff1f2;
+    border:1px solid #fecdd3;
+    color:#9f1239;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    font-size:13px;
+    line-height:1.5;
+    display:none;
+}
+
+.empty{
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:15px;
+    padding:30px;
     text-align:center;
     color:#777;
 }
@@ -329,15 +403,31 @@ textarea{
 
     <div class="wallet">
 
-        <div class="wallet-label">
-            Wallet Balance
-        </div>
+        <div class="wallet-top">
 
-        <div class="wallet-balance" id="walletBalance">
-            ₦0
+            <div>
+                <div class="wallet-label">
+                    Wallet Balance
+                </div>
+
+                <div class="wallet-balance" id="walletBalance">
+                    ₦0
+                </div>
+            </div>
+
+            <button
+                class="refresh-wallet"
+                onclick="loadWallet()"
+            >
+                ↻ Refresh
+            </button>
+
         </div>
 
     </div>
+
+
+    <div id="statusBox" class="status"></div>
 
 
     <section id="servicePage">
@@ -350,273 +440,10 @@ textarea{
             Choose an AI service to continue.
         </p>
 
-
-        <div class="services">
-
-            <!-- 1 -->
-
-            <div class="service-card"
-                 onclick="openTool('picsVideo')">
-
-                <div class="icon">🎬</div>
-
-                <div class="service-name">
-                    Pics → Video
-                </div>
-
-                <div class="service-description">
-                    Turn an image into a video with instructions and voice.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 2 -->
-
-            <div class="service-card"
-                 onclick="openTool('faceSwap')">
-
-                <div class="icon">🎭</div>
-
-                <div class="service-name">
-                    Video Face Swap
-                </div>
-
-                <div class="service-description">
-                    Replace a face in a video with an authorized face.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 3 -->
-
-            <div class="service-card"
-                 onclick="openTool('voice')">
-
-                <div class="icon">🎙️</div>
-
-                <div class="service-name">
-                    AI Voice
-                </div>
-
-                <div class="service-description">
-                    Generate speech from your text using an AI voice.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 4 -->
-
-            <div class="service-card"
-                 onclick="openTool('kyc')">
-
-                <div class="icon">🪪</div>
-
-                <div class="service-name">
-                    KYC / Document Designer
-                </div>
-
-                <div class="service-description">
-                    Passport • ID • Licence • Tax ID • Residence Permit • More
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 5 -->
-
-            <div class="service-card"
-                 onclick="openTool('watermark')">
-
-                <div class="icon">🧹</div>
-
-                <div class="service-name">
-                    Watermark Removal
-                </div>
-
-                <div class="service-description">
-                    AI cleanup using automatic detection, brush or text targeting.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 6 -->
-
-            <div class="service-card"
-                 onclick="openTool('voiceCloner')">
-
-                <div class="icon">🗣️</div>
-
-                <div class="service-name">
-                    Voice Cloner
-                </div>
-
-                <div class="service-description">
-                    Clone an authorized voice sample and generate new speech from your text.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 7 -->
-
-            <div class="service-card"
-                 onclick="openTool('videoVoiceClone')">
-
-                <div class="icon">🎥</div>
-
-                <div class="service-name">
-                    Video Voice Clone
-                </div>
-
-                <div class="service-description">
-                    Use an authorized voice with a video or picture and generate a voiced video.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 8 -->
-
-            <div class="service-card"
-                 onclick="openTool('enhancer')">
-
-                <div class="icon">✨</div>
-
-                <div class="service-name">
-                    AI Image Enhancer
-                </div>
-
-                <div class="service-description">
-                    Improve image quality, sharpness and resolution.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 9 -->
-
-            <div class="service-card"
-                 onclick="openTool('objectRemoval')">
-
-                <div class="icon">🖼️</div>
-
-                <div class="service-name">
-                    Background / Object Removal
-                </div>
-
-                <div class="service-description">
-                    Remove unwanted backgrounds or objects from an image.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 10 -->
-
-            <div class="service-card"
-                 onclick="openTool('outfit')">
-
-                <div class="icon">👕</div>
-
-                <div class="service-name">
-                    AI Outfit Editor
-                </div>
-
-                <div class="service-description">
-                    Change clothing style, colors and outfit appearance.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 11 -->
-
-            <div class="service-card"
-                 onclick="openTool('style')">
-
-                <div class="icon">🎨</div>
-
-                <div class="service-name">
-                    AI Image Style
-                </div>
-
-                <div class="service-description">
-                    Transform your image into different artistic styles.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-
-            <!-- 12 -->
-
-            <div class="service-card"
-                 onclick="openTool('talkingPhoto')">
-
-                <div class="icon">🗣️</div>
-
-                <div class="service-name">
-                    Talking Photo
-                </div>
-
-                <div class="service-description">
-                    Create a talking-photo video from an authorized image and script.
-                </div>
-
-                <div class="service-price">
-                    Price: ₦—
-                </div>
-
-            </div>
-
-        </div>
+        <div
+            id="services"
+            class="services"
+        ></div>
 
     </section>
 
@@ -625,26 +452,47 @@ textarea{
 
         <div class="tool-header">
 
-            <div class="tool-icon" id="toolIcon">
+            <div
+                class="tool-icon"
+                id="toolIcon"
+            >
                 🤖
             </div>
 
-            <div class="tool-title" id="toolTitle">
+            <div
+                class="tool-title"
+                id="toolTitle"
+            >
                 AI Tool
             </div>
 
-            <div class="tool-description" id="toolDescription">
+            <div
+                class="tool-description"
+                id="toolDescription"
+            >
                 Choose an AI service.
+            </div>
+
+            <div
+                class="tool-price"
+                id="toolPrice"
+            >
+                Price: ₦0
             </div>
 
         </div>
 
 
-        <div class="tool-box" id="toolContent"></div>
+        <div
+            class="tool-box"
+            id="toolContent"
+        ></div>
 
 
-        <button class="back-tools"
-                onclick="showServices()">
+        <button
+            class="back-tools"
+            onclick="showServices()"
+        >
             ← Back to AI Studio
         </button>
 
@@ -655,152 +503,691 @@ textarea{
 
 <script>
 
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let currentUser = null;
+
+let walletBalance = 0;
+
+let aiServices = [];
+
+let selectedService = null;
+
+
+/* =========================================================
+   SERVICE INFORMATION
+========================================================= */
+
 const tools = {
 
     picsVideo:{
         icon:"🎬",
         title:"Pics → Video",
-        description:"Turn a picture into a video using your instructions."
+        description:
+            "Turn a picture into a video using your instructions."
     },
 
     faceSwap:{
         icon:"🎭",
         title:"Video Face Swap",
-        description:"Upload a video and an authorized replacement face."
+        description:
+            "Upload a video and an authorized replacement face."
     },
 
     voice:{
         icon:"🎙️",
         title:"AI Voice",
-        description:"Generate speech from your text."
+        description:
+            "Generate speech from your text."
     },
 
     kyc:{
         icon:"🪪",
         title:"KYC / Document Designer",
-        description:"Choose a country and document type, then provide the required information."
+        description:
+            "Choose a country and document type, then provide the required information."
     },
 
     watermark:{
         icon:"🧹",
         title:"Watermark Removal",
-        description:"Clean up images you own or have permission to edit."
+        description:
+            "Clean up images you own or have permission to edit."
     },
 
     voiceCloner:{
         icon:"🗣️",
         title:"Voice Cloner",
-        description:"Clone an authorized voice sample and generate new speech from your text."
+        description:
+            "Clone an authorized voice sample and generate new speech from your text."
     },
 
     videoVoiceClone:{
         icon:"🎥",
         title:"Video Voice Clone",
-        description:"Use an authorized voice with a picture or video to create a voiced video."
+        description:
+            "Use an authorized voice with a picture or video to create a voiced video."
     },
 
     enhancer:{
         icon:"✨",
         title:"AI Image Enhancer",
-        description:"Improve image quality and resolution."
+        description:
+            "Improve image quality and resolution."
     },
 
     objectRemoval:{
         icon:"🖼️",
         title:"Background / Object Removal",
-        description:"Remove unwanted objects or backgrounds."
+        description:
+            "Remove unwanted objects or backgrounds."
     },
 
     outfit:{
         icon:"👕",
         title:"AI Outfit Editor",
-        description:"Edit clothing and outfit appearance."
+        description:
+            "Edit clothing and outfit appearance."
     },
 
     style:{
         icon:"🎨",
         title:"AI Image Style",
-        description:"Transform an image into a selected artistic style."
+        description:
+            "Transform an image into a selected artistic style."
     },
 
     talkingPhoto:{
         icon:"🗣️",
         title:"Talking Photo",
-        description:"Create a talking-photo video using an authorized image."
+        description:
+            "Create a talking-photo video using an authorized image."
     }
 
 };
 
 
+/* =========================================================
+   SERVICE NAME → TOOL ID
+========================================================= */
+
+const serviceToTool = {
+
+    "Pics → Video":
+        "picsVideo",
+
+    "Video Face Swap":
+        "faceSwap",
+
+    "AI Voice":
+        "voice",
+
+    "KYC / Document Designer":
+        "kyc",
+
+    "Watermark Removal":
+        "watermark",
+
+    "Voice Cloner":
+        "voiceCloner",
+
+    "Video Voice Clone":
+        "videoVoiceClone",
+
+    "AI Image Enhancer":
+        "enhancer",
+
+    "Background / Object Removal":
+        "objectRemoval",
+
+    "AI Outfit Editor":
+        "outfit",
+
+    "AI Image Style":
+        "style",
+
+    "Talking Photo":
+        "talkingPhoto"
+
+};
+
+
+/* =========================================================
+   FORMAT MONEY
+========================================================= */
+
+function formatMoney(amount){
+
+    return "₦" +
+        Number(amount || 0).toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits:0,
+                maximumFractionDigits:2
+            }
+        );
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function showStatus(message,type="info"){
+
+    const box =
+        document.getElementById("statusBox");
+
+    box.textContent = message;
+
+    box.className =
+        "status show " + type;
+
+}
+
+
+function hideStatus(){
+
+    const box =
+        document.getElementById("statusBox");
+
+    box.className =
+        "status";
+
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+async function checkLogin(){
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
+
+
+    if(error){
+
+        console.error(error);
+
+        window.location.href =
+            "login.html";
+
+        return false;
+    }
+
+
+    if(!data?.session){
+
+        window.location.href =
+            "login.html";
+
+        return false;
+    }
+
+
+    currentUser =
+        data.session.user;
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   LOAD WALLET
+========================================================= */
+
+async function loadWallet(){
+
+    if(!currentUser){
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select('"balance"')
+        .eq('"user-id"', currentUser.id)
+        .maybeSingle();
+
+
+    if(error){
+
+        console.error(
+            "Wallet error:",
+            error
+        );
+
+        showStatus(
+            "Could not load your wallet balance.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!data){
+
+        walletBalance = 0;
+
+        document.getElementById(
+            "walletBalance"
+        ).textContent =
+            formatMoney(0);
+
+        return;
+    }
+
+
+    walletBalance =
+        Number(data.balance || 0);
+
+
+    document.getElementById(
+        "walletBalance"
+    ).textContent =
+        formatMoney(walletBalance);
+
+}
+
+
+/* =========================================================
+   LOAD AI SERVICES
+========================================================= */
+
+async function loadServices(){
+
+    showStatus(
+        "Loading AI services...",
+        "info"
+    );
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("ai_services")
+        .select(
+            "id,name,description,price,is_active,sort_order"
+        )
+        .eq(
+            "is_active",
+            true
+        )
+        .order(
+            "sort_order",
+            {
+                ascending:true
+            }
+        );
+
+
+    if(error){
+
+        console.error(
+            "AI services error:",
+            error
+        );
+
+        showStatus(
+            "Could not load AI services.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    aiServices =
+        data || [];
+
+
+    renderServices();
+
+}
+
+
+/* =========================================================
+   RENDER SERVICES
+========================================================= */
+
+function renderServices(){
+
+    const container =
+        document.getElementById("services");
+
+
+    if(!aiServices.length){
+
+        container.innerHTML = `
+            <div class="empty">
+                No AI services are currently available.
+            </div>
+        `;
+
+        hideStatus();
+
+        return;
+    }
+
+
+    container.innerHTML =
+        aiServices.map(service => {
+
+            const toolId =
+                serviceToTool[service.name];
+
+
+            if(!toolId){
+                return "";
+            }
+
+
+            const tool =
+                tools[toolId];
+
+
+            return `
+
+                <div
+                    class="service-card"
+                    onclick="openTool('${toolId}')"
+                >
+
+                    <div class="icon">
+                        ${tool.icon}
+                    </div>
+
+                    <div class="service-name">
+                        ${escapeHtml(service.name)}
+                    </div>
+
+                    <div class="service-description">
+                        ${escapeHtml(
+                            service.description ||
+                            tool.description
+                        )}
+                    </div>
+
+                    <div class="service-price">
+                        Price:
+                        ${formatMoney(service.price)}
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+
+    hideStatus();
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   FIND SERVICE
+========================================================= */
+
+function getServiceByTool(toolId){
+
+    return aiServices.find(service =>
+        serviceToTool[service.name] === toolId
+    );
+
+}
+
+
+/* =========================================================
+   OPEN TOOL
+========================================================= */
+
 function openTool(tool){
 
-    const data = tools[tool];
+    const data =
+        tools[tool];
 
-    if(!data) return;
+    if(!data){
+        return;
+    }
 
-    document.getElementById("servicePage").style.display = "none";
 
-    const page =
-        document.getElementById("toolPage");
+    const service =
+        getServiceByTool(tool);
 
-    page.style.display = "block";
 
-    document.getElementById("toolIcon").textContent =
+    if(!service){
+
+        alert(
+            "This AI service is currently unavailable."
+        );
+
+        return;
+    }
+
+
+    selectedService =
+        service;
+
+
+    document.getElementById(
+        "servicePage"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "toolPage"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "toolIcon"
+    ).textContent =
         data.icon;
 
-    document.getElementById("toolTitle").textContent =
-        data.title;
 
-    document.getElementById("toolDescription").textContent =
+    document.getElementById(
+        "toolTitle"
+    ).textContent =
+        service.name;
+
+
+    document.getElementById(
+        "toolDescription"
+    ).textContent =
+        service.description ||
         data.description;
+
+
+    document.getElementById(
+        "toolPrice"
+    ).textContent =
+        "Price: " +
+        formatMoney(service.price);
+
 
     renderTool(tool);
 
+
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
+
 }
 
+
+/* =========================================================
+   SHOW SERVICES
+========================================================= */
 
 function showServices(){
 
-    document.getElementById("toolPage").style.display =
+    document.getElementById(
+        "toolPage"
+    ).style.display =
         "none";
 
-    document.getElementById("servicePage").style.display =
+
+    document.getElementById(
+        "servicePage"
+    ).style.display =
         "block";
+
+
+    selectedService =
+        null;
+
 
     window.scrollTo({
         top:0,
         behavior:"smooth"
     });
 
+
+    loadWallet();
+
 }
 
+
+/* =========================================================
+   BACK
+========================================================= */
 
 function goBack(){
 
-    showServices();
+    window.location.href =
+        "dashboard.html";
 
 }
 
+
+/* =========================================================
+   CHECK WALLET BEFORE FUTURE PURCHASE
+========================================================= */
+
+function checkWalletForService(){
+
+    if(!selectedService){
+
+        alert(
+            "Please select an AI service."
+        );
+
+        return false;
+    }
+
+
+    const price =
+        Number(
+            selectedService.price || 0
+        );
+
+
+    if(walletBalance < price){
+
+        const needed =
+            price - walletBalance;
+
+
+        alert(
+            "Insufficient wallet balance.\n\n" +
+            "Service price: " +
+            formatMoney(price) +
+            "\n" +
+            "Your balance: " +
+            formatMoney(walletBalance) +
+            "\n" +
+            "You need: " +
+            formatMoney(needed) +
+            " more."
+        );
+
+
+        return false;
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   RENDER TOOL
+========================================================= */
 
 function renderTool(tool){
 
     const box =
-        document.getElementById("toolContent");
+        document.getElementById(
+            "toolContent"
+        );
 
 
-    /* PICS TO VIDEO */
+    /* =====================================================
+       PICS TO VIDEO
+    ===================================================== */
 
     if(tool === "picsVideo"){
 
         box.innerHTML = `
 
-            <label>Upload Picture</label>
+            <label>
+                Upload Picture
+            </label>
 
             <input
+                id="picsVideoImage"
                 class="file-input"
                 type="file"
                 accept="image/*"
@@ -811,19 +1198,25 @@ function renderTool(tool){
             </label>
 
             <textarea
+                id="picsVideoPrompt"
                 placeholder="Describe what you want the video to say or do..."
             ></textarea>
 
-            <label>Voice</label>
+            <label>
+                Voice
+            </label>
 
-            <select>
+            <select id="picsVideoVoice">
 
                 <option>Female Voice</option>
                 <option>Male Voice</option>
 
             </select>
 
-            <button class="continue-btn">
+            <button
+                class="continue-btn"
+                onclick="preparePurchase()"
+            >
                 Continue
             </button>
 
@@ -833,29 +1226,40 @@ function renderTool(tool){
     }
 
 
-    /* FACE SWAP */
+    /* =====================================================
+       FACE SWAP
+    ===================================================== */
 
     if(tool === "faceSwap"){
 
         box.innerHTML = `
 
-            <label>Upload Video</label>
+            <label>
+                Upload Video
+            </label>
 
             <input
+                id="faceSwapVideo"
                 class="file-input"
                 type="file"
                 accept="video/*"
             >
 
-            <label>Upload Replacement Face</label>
+            <label>
+                Upload Replacement Face
+            </label>
 
             <input
+                id="faceSwapFace"
                 class="file-input"
                 type="file"
                 accept="image/*"
             >
 
-            <button class="continue-btn">
+            <button
+                class="continue-btn"
+                onclick="preparePurchase()"
+            >
                 Continue
             </button>
 
@@ -865,38 +1269,118 @@ function renderTool(tool){
     }
 
 
-    /* AI VOICE */
+    /* =====================================================
+       AI VOICE
+    ===================================================== */
 
     if(tool === "voice"){
 
         box.innerHTML = `
 
-            <label>Text</label>
+            <label>
+                Text
+            </label>
 
             <textarea
+                id="aiVoiceText"
                 placeholder="Type what you want the AI voice to say..."
             ></textarea>
 
-            <label>Voice</label>
 
-            <select>
+            <label>
+                Voice
+            </label>
 
-                <option>Female Voice</option>
-                <option>Male Voice</option>
+            <select id="aiVoiceGender">
 
-            </select>
+                <option value="female">
+                    Female Voice
+                </option>
 
-            <label>Language</label>
-
-            <select>
-
-                <option>English</option>
-                <option>French</option>
-                <option>Spanish</option>
+                <option value="male">
+                    Male Voice
+                </option>
 
             </select>
 
-            <button class="continue-btn">
+
+            <label>
+                Language
+            </label>
+
+            <select id="aiVoiceLanguage">
+
+                <option value="en">
+                    English
+                </option>
+
+                <option value="fr">
+                    French
+                </option>
+
+                <option value="es">
+                    Spanish
+                </option>
+
+                <option value="de">
+                    German
+                </option>
+
+                <option value="it">
+                    Italian
+                </option>
+
+                <option value="pt">
+                    Portuguese
+                </option>
+
+                <option value="nl">
+                    Dutch
+                </option>
+
+                <option value="ar">
+                    Arabic
+                </option>
+
+                <option value="tr">
+                    Turkish
+                </option>
+
+                <option value="hi">
+                    Hindi
+                </option>
+
+                <option value="zh">
+                    Chinese
+                </option>
+
+                <option value="ja">
+                    Japanese
+                </option>
+
+                <option value="ko">
+                    Korean
+                </option>
+
+                <option value="ru">
+                    Russian
+                </option>
+
+                <option value="yo">
+                    Yoruba
+                </option>
+
+                <option value="ig">
+                    Igbo
+                </option>
+
+            </select>
+
+
+            <button
+                class="continue-btn"
+                onclick="preparePurchase()"
+            >
                 Generate Voice
             </button>
 
@@ -906,7 +1390,9 @@ function renderTool(tool){
     }
 
 
-    /* KYC */
+    /* =====================================================
+       KYC
+    ===================================================== */
 
     if(tool === "kyc"){
 
@@ -921,7 +1407,10 @@ function renderTool(tool){
 
             </div>
 
-            <label>Choose Country</label>
+
+            <label>
+                Choose Country
+            </label>
 
             <select id="kycCountry">
 
@@ -941,7 +1430,9 @@ function renderTool(tool){
             </select>
 
 
-            <label>Document Type</label>
+            <label>
+                Document Type
+            </label>
 
             <select id="kycDocument">
 
@@ -949,27 +1440,48 @@ function renderTool(tool){
                     Select document type
                 </option>
 
-                <option>Passport</option>
-                <option>National ID</option>
-                <option>Driver's Licence</option>
-                <option>Tax ID</option>
-                <option>Residence Permit</option>
-                <option>Voter's Card</option>
+                <option>
+                    Fictional Passport Design
+                </option>
+
+                <option>
+                    Fictional National ID Design
+                </option>
+
+                <option>
+                    Fictional Driver Licence Design
+                </option>
+
+                <option>
+                    Fictional Tax ID Design
+                </option>
+
+                <option>
+                    Fictional Residence Permit Design
+                </option>
+
+                <option>
+                    Fictional Voter Card Design
+                </option>
 
             </select>
 
 
             <label>
-                Or enter another document type
+                Custom Document Type
             </label>
 
             <input
+                id="kycCustomDocument"
                 type="text"
-                placeholder="Example: Residence Card"
+                placeholder="Enter a fictional document type..."
             >
 
 
-            <button class="continue-btn">
+            <button
+                class="continue-btn"
+                onclick="preparePurchase()"
+            >
                 Continue
             </button>
 
@@ -979,40 +1491,62 @@ function renderTool(tool){
     }
 
 
-    /* WATERMARK */
+    /* =====================================================
+       WATERMARK
+    ===================================================== */
 
     if(tool === "watermark"){
 
         box.innerHTML = `
 
-            <label>Upload Image</label>
+            <label>
+                Upload Image
+            </label>
 
             <input
+                id="watermarkImage"
                 class="file-input"
                 type="file"
                 accept="image/*"
             >
 
-            <label>Removal Method</label>
 
-            <select>
+            <label>
+                Removal Method
+            </label>
 
-                <option>AI Auto Detect</option>
-                <option>Brush / Paint Area</option>
-                <option>Type Target Text</option>
+            <select id="watermarkMethod">
+
+                <option>
+                    AI Auto Detect
+                </option>
+
+                <option>
+                    Brush / Paint Area
+                </option>
+
+                <option>
+                    Type Target Text
+                </option>
 
             </select>
+
 
             <label>
                 Target Text (optional)
             </label>
 
             <input
+                id="watermarkText"
                 type="text"
                 placeholder="Type the text to target..."
             >
 
-            <button class="continue-btn">
+
+            <button
+                class="continue-btn"
+                onclick="preparePurchase()"
+            >
                 Continue
             </button>
 
@@ -1022,7 +1556,9 @@ function renderTool(tool){
     }
 
 
-    /* VOICE CLONER */
+    /* =====================================================
+       VOICE CLONER
+    ===================================================== */
 
     if(tool === "voiceCloner"){
 
@@ -1032,11 +1568,14 @@ function renderTool(tool){
 
                 Upload a voice sample you own or have
                 permission to use. The sample can be
-                a video containing the voice.
+                audio or a video containing the voice.
 
             </div>
 
-                   <label>Upload Voice Sample</label>
+
+            <label>
+                Upload Voice Sample
+            </label>
 
             <input
                 id="voiceCloneSample"
@@ -1045,14 +1584,16 @@ function renderTool(tool){
                 accept="audio/*,video/*"
             >
 
+
             <label>
-                What should the cloned voice say?
+                Text to Speak
             </label>
 
             <textarea
                 id="voiceCloneText"
                 placeholder="Type exactly what you want the cloned voice to say..."
             ></textarea>
+
 
             <div class="consent-box">
 
@@ -1070,11 +1611,12 @@ function renderTool(tool){
 
             </div>
 
+
             <button
                 class="continue-btn"
                 onclick="startVoiceClone()"
             >
-                Continue
+                Generate Cloned Voice
             </button>
 
         `;
@@ -1083,7 +1625,9 @@ function renderTool(tool){
     }
 
 
-    /* VIDEO VOICE CLONE */
+    /* =====================================================
+       VIDEO VOICE CLONE
+    ===================================================== */
 
     if(tool === "videoVoiceClone"){
 
@@ -1091,15 +1635,20 @@ function renderTool(tool){
 
             <div class="voice-note">
 
-                Upload a voice sample you own or have
-                permission to use. Then upload either a
-                picture or video that you are authorized
-                to edit.
+                Use only a voice and visual that you own
+                or have permission to use.
+
+                If you upload a picture, the final result
+                can be generated as a talking video.
+                If you upload a video, the generated voice
+                can be applied to the selected visual.
 
             </div>
 
 
-            <label>1. Upload Voice Sample</label>
+            <label>
+                1. Upload Voice Source
+            </label>
 
             <input
                 id="videoVoiceSource"
@@ -1109,7 +1658,9 @@ function renderTool(tool){
             >
 
 
-            <label>2. Upload Picture or Video</label>
+            <label>
+                2. Upload Picture or Video
+            </label>
 
             <input
                 id="videoVoiceVisual"
@@ -1125,7 +1676,7 @@ function renderTool(tool){
 
             <textarea
                 id="videoVoiceText"
-                placeholder="Type exactly what you want the cloned voice to say..."
+                placeholder="Type the words you want the generated video to say..."
             ></textarea>
 
 
@@ -1138,9 +1689,9 @@ function renderTool(tool){
 
                 <span>
                     I confirm that I own or have permission
-                    to use the voice and visual uploaded.
-                    I will not use the result for impersonation,
-                    fraud or unlawful activity.
+                    to use the uploaded voice and visual.
+                    I will not use the result for
+                    impersonation, fraud or unlawful activity.
                 </span>
 
             </div>
@@ -1150,7 +1701,7 @@ function renderTool(tool){
                 class="continue-btn"
                 onclick="startVideoVoiceClone()"
             >
-                Continue
+                Generate Video
             </button>
 
         `;
@@ -1159,37 +1710,91 @@ function renderTool(tool){
     }
 
 
-    /* OTHER TOOLS */
+    /* =====================================================
+       OTHER TOOLS
+    ===================================================== */
+
+    const names = {
+
+        enhancer:
+            "Upload an image to enhance.",
+
+        objectRemoval:
+            "Upload an image and describe what should be removed.",
+
+        outfit:
+            "Upload an image and describe the outfit change.",
+
+        style:
+            "Upload an image and choose the style.",
+
+        talkingPhoto:
+            "Upload an authorized photo and enter the script."
+
+    };
+
 
     box.innerHTML = `
 
-        <div class="coming">
+        <label>
+            Upload Image
+        </label>
 
-            This AI tool is ready for setup.
-            Provider processing will be connected next.
+        <input
+            class="file-input"
+            type="file"
+            accept="image/*"
+        >
 
-        </div>
+
+        <label>
+            Instructions
+        </label>
+
+        <textarea
+            placeholder="${names[tool] || "Enter your instructions..."}"
+        ></textarea>
+
+
+        <button
+            class="continue-btn"
+            onclick="preparePurchase()"
+        >
+            Continue
+        </button>
 
     `;
 
 }
 
 
+/* =========================================================
+   VOICE CLONER
+========================================================= */
+
 function startVoiceClone(){
 
     const sample =
-        document.getElementById("voiceCloneSample");
+        document.getElementById(
+            "voiceCloneSample"
+        );
 
     const text =
-        document.getElementById("voiceCloneText");
+        document.getElementById(
+            "voiceCloneText"
+        );
 
     const consent =
-        document.getElementById("voiceCloneConsent");
+        document.getElementById(
+            "voiceCloneConsent"
+        );
 
 
     if(!sample || !sample.files.length){
 
-        alert("Please upload a voice sample.");
+        alert(
+            "Please upload a voice sample first."
+        );
 
         return;
     }
@@ -1197,61 +1802,9 @@ function startVoiceClone(){
 
     if(!text || !text.value.trim()){
 
-        alert("Please type what you want the cloned voice to say.");
-
-        return;
-    }
-
-
-    if(!consent || !consent.checked){
-
-        alert("Please confirm that you have permission to use this voice.");
-
-        return;
-    }
-
-
-    alert(
-        "Voice Clone request is ready. AI processing will be connected next."
-    );
-
-}
-
-
-function startVideoVoiceClone(){
-
-    const source =
-        document.getElementById("videoVoiceSource");
-
-    const visual =
-        document.getElementById("videoVoiceVisual");
-
-    const text =
-        document.getElementById("videoVoiceText");
-
-    const consent =
-        document.getElementById("videoVoiceConsent");
-
-
-    if(!source || !source.files.length){
-
-        alert("Please upload the voice sample.");
-
-        return;
-    }
-
-
-    if(!visual || !visual.files.length){
-
-        alert("Please upload a picture or video.");
-
-        return;
-    }
-
-
-    if(!text || !text.value.trim()){
-
-        alert("Please type what you want the cloned voice to say.");
+        alert(
+            "Please type what you want the voice to say."
+        );
 
         return;
     }
@@ -1260,18 +1813,202 @@ function startVideoVoiceClone(){
     if(!consent || !consent.checked){
 
         alert(
-            "Please confirm that you have permission to use the voice and visual."
+            "Please confirm that you have permission to use this voice."
         );
 
         return;
     }
 
 
+    preparePurchase();
+
+}
+
+
+/* =========================================================
+   VIDEO VOICE CLONE
+========================================================= */
+
+function startVideoVoiceClone(){
+
+    const source =
+        document.getElementById(
+            "videoVoiceSource"
+        );
+
+    const visual =
+        document.getElementById(
+            "videoVoiceVisual"
+        );
+
+    const text =
+        document.getElementById(
+            "videoVoiceText"
+        );
+
+    const consent =
+        document.getElementById(
+            "videoVoiceConsent"
+        );
+
+
+    if(!source || !source.files.length){
+
+        alert(
+            "Please upload the voice source."
+        );
+
+        return;
+    }
+
+
+    if(!visual || !visual.files.length){
+
+        alert(
+            "Please upload a picture or video."
+        );
+
+        return;
+    }
+
+
+    if(!text || !text.value.trim()){
+
+        alert(
+            "Please type what you want the generated video to say."
+        );
+
+        return;
+    }
+
+
+    if(!consent || !consent.checked){
+
+        alert(
+            "Please confirm that you have permission to use the uploaded voice and visual."
+        );
+
+        return;
+    }
+
+
+    preparePurchase();
+
+}
+
+
+/* =========================================================
+   PURCHASE PRE-CHECK
+========================================================= */
+
+async function preparePurchase(){
+
+    /*
+       Refresh wallet immediately before a purchase.
+
+       This prevents the page from relying on an old
+       balance displayed several minutes earlier.
+    */
+
+    await loadWallet();
+
+
+    if(!checkWalletForService()){
+
+        return;
+    }
+
+
+    const price =
+        Number(
+            selectedService?.price || 0
+        );
+
+
+    /*
+       ACTUAL WALLET DEDUCTION IS NOT DONE HERE YET.
+
+       The next backend step will perform this
+       atomically so two requests cannot spend the
+       same balance twice.
+
+       It will also create:
+       - AI job
+       - transaction
+       - purchase/history record
+       - provider request
+    */
+
     alert(
-        "Video Voice Clone request is ready. AI processing will be connected next."
+        "Your wallet has enough balance.\n\n" +
+        "Service: " +
+        selectedService.name +
+        "\n" +
+        "Price: " +
+        formatMoney(price) +
+        "\n\n" +
+        "Payment connection is ready for the secure backend step."
     );
 
 }
+
+
+/* =========================================================
+   START
+========================================================= */
+
+async function start(){
+
+    const loggedIn =
+        await checkLogin();
+
+
+    if(!loggedIn){
+        return;
+    }
+
+
+    await loadWallet();
+
+    await loadServices();
+
+}
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    async (event,session) => {
+
+        if(event === "SIGNED_OUT"){
+
+            window.location.href =
+                "login.html";
+
+            return;
+        }
+
+
+        if(session){
+
+            currentUser =
+                session.user;
+
+            await loadWallet();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   RUN
+========================================================= */
+
+start();
 
 </script>
 
