@@ -1839,6 +1839,11 @@ function renderToolForm(serviceName){
     }
 
 
+    /* =====================================================
+       WATERMARK REMOVAL
+       ONLY THIS SECTION WAS CHANGED
+    ===================================================== */
+
     if(serviceName === "🧹 Watermark Removal" ||
        serviceName === "Watermark Removal"){
 
@@ -1853,13 +1858,27 @@ function renderToolForm(serviceName){
                 accept="image/*"
             >
 
-            <label>What should be removed?</label>
+            <label>Removal Method</label>
 
-            <input
-                id="watermarkText"
-                type="text"
-                placeholder="Describe the watermark or object..."
-            >
+            <select id="watermarkMethod">
+
+                <option value="ai_auto_detect">
+                    🤖 AI Auto Detect
+                </option>
+
+                <option value="brush_watermark">
+                    🖌️ Brush Watermark
+                </option>
+
+                <option value="type_watermark">
+                    ⌨️ Type Watermark
+                </option>
+
+            </select>
+
+            <div
+                id="watermarkMethodFields"
+            ></div>
 
             <button
                 class="continue-btn"
@@ -1867,7 +1886,20 @@ function renderToolForm(serviceName){
             >
                 Remove Watermark
             </button>
+
         `;
+
+        const methodSelect =
+            document.getElementById(
+                "watermarkMethod"
+            );
+
+        methodSelect.addEventListener(
+            "change",
+            renderWatermarkMethod
+        );
+
+        renderWatermarkMethod();
 
         return;
     }
@@ -2215,6 +2247,106 @@ function renderToolForm(serviceName){
             This service does not have a workspace configured.
         </div>
     `;
+}
+
+
+/* =========================================================
+   WATERMARK REMOVAL METHODS
+========================================================= */
+
+function renderWatermarkMethod(){
+
+    const method =
+        document.getElementById(
+            "watermarkMethod"
+        )?.value;
+
+    const fields =
+        document.getElementById(
+            "watermarkMethodFields"
+        );
+
+    if(!fields){
+        return;
+    }
+
+
+    if(method === "ai_auto_detect"){
+
+        fields.innerHTML = `
+
+            <div class="voice-note">
+
+                🤖 AI will automatically detect the
+                watermark area from the uploaded image.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    if(method === "brush_watermark"){
+
+        fields.innerHTML = `
+
+            <label>
+                Brush Watermark Area
+            </label>
+
+            <div class="voice-note">
+
+                🖌️ Select or describe the area containing
+                the watermark for removal.
+
+            </div>
+
+            <label>
+                Watermark Area Description
+            </label>
+
+            <input
+                id="watermarkBrushArea"
+                type="text"
+                placeholder="Example: top-right corner"
+            >
+
+        `;
+
+        return;
+    }
+
+
+    if(method === "type_watermark"){
+
+        fields.innerHTML = `
+
+            <label>
+                Type Watermark
+            </label>
+
+            <input
+                id="watermarkText"
+                type="text"
+                placeholder="Type the watermark text..."
+            >
+
+            <div class="kyc-search-hint">
+
+                Enter the visible watermark text you want
+                the AI to identify.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    fields.innerHTML = "";
 }
 
 
@@ -2777,11 +2909,6 @@ function setupKycSearchSelect(
         return;
     }
 
-    /*
-     * Remove old listeners by cloning the input.
-     * This prevents duplicate events when the
-     * document list is loaded again.
-     */
     const freshInput =
         input.cloneNode(true);
 
@@ -2970,7 +3097,6 @@ document.addEventListener(
 
 /* =========================================================
    FILTER COMPATIBILITY FUNCTIONS
-   Kept so existing buttons/code won't break.
 ========================================================= */
 
 function filterKycCountries(){
@@ -3716,12 +3842,6 @@ function validateTool(){
         }
 
 
-        /*
-         * If customer typed a custom document
-         * without pressing the custom button,
-         * automatically use it.
-         */
-
         if(
             !documentType &&
             customName
@@ -3956,6 +4076,11 @@ function validateTool(){
     }
 
 
+    /* =====================================================
+       WATERMARK REMOVAL VALIDATION
+       ONLY THIS SECTION WAS CHANGED
+    ===================================================== */
+
     if(
         name === "🧹 Watermark Removal" ||
         name === "Watermark Removal"
@@ -3974,17 +4099,60 @@ function validateTool(){
             return false;
         }
 
-        if(
-            !document.getElementById(
-                "watermarkText"
-            )?.value.trim()
-        ){
+
+        const watermarkMethod =
+            document.getElementById(
+                "watermarkMethod"
+            )?.value;
+
+
+        if(!watermarkMethod){
 
             alert(
-                "Please describe what should be removed."
+                "Please select a removal method."
             );
 
             return false;
+        }
+
+
+        if(
+            watermarkMethod ===
+            "brush_watermark"
+        ){
+
+            if(
+                !document.getElementById(
+                    "watermarkBrushArea"
+                )?.value.trim()
+            ){
+
+                alert(
+                    "Please describe the watermark area."
+                );
+
+                return false;
+            }
+        }
+
+
+        if(
+            watermarkMethod ===
+            "type_watermark"
+        ){
+
+            if(
+                !document.getElementById(
+                    "watermarkText"
+                )?.value.trim()
+            ){
+
+                alert(
+                    "Please type the watermark text."
+                );
+
+                return false;
+            }
         }
     }
 
@@ -4414,6 +4582,58 @@ async function generateAI(){
 
                 photo_url:
                     uploadedPhotoUrl
+
+            };
+        }
+
+
+        /* =====================================================
+           WATERMARK REMOVAL PAYLOAD
+           ONLY THIS SECTION WAS ADDED
+        ===================================================== */
+
+        if(
+            name === "🧹 Watermark Removal" ||
+            name === "Watermark Removal"
+        ){
+
+            const watermarkMethod =
+                document.getElementById(
+                    "watermarkMethod"
+                )?.value || "";
+
+
+            const watermarkMethodName = {
+
+                ai_auto_detect:
+                    "AI Auto Detect",
+
+                brush_watermark:
+                    "Brush Watermark",
+
+                type_watermark:
+                    "Type Watermark"
+
+            }[watermarkMethod] || "";
+
+
+            payload = {
+
+                removal_method:
+                    watermarkMethod,
+
+                removal_method_name:
+                    watermarkMethodName,
+
+                watermark_text:
+                    document.getElementById(
+                        "watermarkText"
+                    )?.value.trim() || "",
+
+                watermark_area:
+                    document.getElementById(
+                        "watermarkBrushArea"
+                    )?.value.trim() || ""
 
             };
         }
