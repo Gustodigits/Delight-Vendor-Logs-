@@ -3897,6 +3897,12 @@ startDashboard();
     loadCategories();
 }, 5000);
 
+    document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        loadCategories();
+    }
+});
+
 </script>
 
 </body>
