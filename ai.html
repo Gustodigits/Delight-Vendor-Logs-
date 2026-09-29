@@ -1122,13 +1122,6 @@ function renderServices(){
                     service.name
                 );
 
-            /*
-             * All 12 configured services have
-             * a visual. This fallback prevents
-             * a database naming mismatch from
-             * making the service disappear.
-             */
-
             if(!visual){
 
                 return `
@@ -1529,6 +1522,10 @@ function renderToolForm(serviceName){
     }
 
 
+    /* =====================================================
+       KYC / DOCUMENT DESIGNER
+    ===================================================== */
+
     if(serviceName === "🪪 KYC / Document Designer" ||
        serviceName === "KYC / Document Designer"){
 
@@ -1536,49 +1533,33 @@ function renderToolForm(serviceName){
 
             <div class="kyc-note">
 
-                This workspace is for fictional/sample document
-                design only. Generated designs must remain clearly
-                marked SAMPLE / NOT VALID and must not imitate or
-                function as real government identification.
+                Sample document designer.
+                Generated documents must remain clearly
+                marked SAMPLE / NOT VALID and must not
+                function as government identification.
 
             </div>
 
             <label>Country</label>
 
             <select id="kycCountry">
-                <option value="">Select country</option>
+                <option value="">
+                    Select country
+                </option>
             </select>
 
             <label>Document Type</label>
 
-            <select id="kycDocument">
-                <option value="">Select document</option>
+            <select
+                id="kycDocument"
+                disabled
+            >
+                <option value="">
+                    Select country first
+                </option>
             </select>
 
-            <label>Custom Document Type</label>
-
-            <input
-                id="kycCustomDocument"
-                type="text"
-                placeholder="Example: Fictional Student Card"
-            >
-
-            <label>Fictional Name</label>
-
-            <input
-                id="kycName"
-                type="text"
-                placeholder="Enter fictional name"
-            >
-
-            <label>Photo</label>
-
-            <input
-                id="kycPhoto"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
+            <div id="kycFields"></div>
 
             <button
                 class="continue-btn"
@@ -1586,6 +1567,7 @@ function renderToolForm(serviceName){
             >
                 Generate Sample
             </button>
+
         `;
 
         loadKycCountries();
@@ -2012,6 +1994,12 @@ async function loadKycCountries(){
             error
         );
 
+        select.innerHTML = `
+            <option value="">
+                Could not load countries
+            </option>
+        `;
+
         return;
     }
 
@@ -2037,15 +2025,13 @@ async function loadKycCountries(){
         select.appendChild(option);
     });
 
-    select.addEventListener(
-        "change",
-        function(){
+    select.onchange = function(){
 
-            loadKycDocuments(
-                this.value
-            );
-        }
-    );
+        loadKycDocuments(
+            this.value
+        );
+
+    };
 }
 
 
@@ -2060,13 +2046,24 @@ async function loadKycDocuments(countryId){
             "kycDocument"
         );
 
+    const fieldsBox =
+        document.getElementById(
+            "kycFields"
+        );
+
     if(!select){
         return;
     }
 
+    if(fieldsBox){
+        fieldsBox.innerHTML = "";
+    }
+
+    select.disabled = true;
+
     select.innerHTML = `
         <option value="">
-            Loading...
+            Loading document types...
         </option>
     `;
 
@@ -2074,7 +2071,7 @@ async function loadKycDocuments(countryId){
 
         select.innerHTML = `
             <option value="">
-                Select document
+                Select country first
             </option>
         `;
 
@@ -2139,6 +2136,315 @@ async function loadKycDocuments(countryId){
 
         select.appendChild(option);
     });
+
+    select.disabled =
+        !(data && data.length);
+
+    select.onchange = function(){
+
+        if(!this.value){
+
+            if(fieldsBox){
+                fieldsBox.innerHTML = "";
+            }
+
+            return;
+        }
+
+        const selectedOption =
+            this.options[
+                this.selectedIndex
+            ];
+
+        renderKycFields(
+            selectedOption.textContent
+        );
+
+    };
+}
+
+
+/* =========================================================
+   KYC DYNAMIC FIELDS
+========================================================= */
+
+function renderKycFields(documentName){
+
+    const box =
+        document.getElementById(
+            "kycFields"
+        );
+
+    if(!box){
+        return;
+    }
+
+    const name =
+        String(documentName || "")
+            .toLowerCase();
+
+    let fields = [];
+
+
+    /*
+     * Generic sample-document fields.
+     *
+     * The backend generation function will be
+     * responsible for enforcing SAMPLE / NOT VALID.
+     *
+     * This frontend does not reproduce actual
+     * government templates or security features.
+     */
+
+
+    if(name.includes("passport")){
+
+        fields = [
+
+            {
+                id:"kycFullName",
+                label:"Full Name",
+                type:"text",
+                placeholder:"Enter full name"
+            },
+
+            {
+                id:"kycDateOfBirth",
+                label:"Date of Birth",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycNationality",
+                label:"Nationality",
+                type:"text",
+                placeholder:"Enter nationality"
+            },
+
+            {
+                id:"kycDocumentNumber",
+                label:"Document Number",
+                type:"text",
+                placeholder:"Enter sample document number"
+            },
+
+            {
+                id:"kycIssueDate",
+                label:"Issue Date",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycExpiryDate",
+                label:"Expiry Date",
+                type:"date",
+                placeholder:""
+            }
+
+        ];
+
+    }
+    else if(
+        name.includes("driver") ||
+        name.includes("licence") ||
+        name.includes("license")
+    ){
+
+        fields = [
+
+            {
+                id:"kycFullName",
+                label:"Full Name",
+                type:"text",
+                placeholder:"Enter full name"
+            },
+
+            {
+                id:"kycDateOfBirth",
+                label:"Date of Birth",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycDocumentNumber",
+                label:"Licence Number",
+                type:"text",
+                placeholder:"Enter sample licence number"
+            },
+
+            {
+                id:"kycIssueDate",
+                label:"Issue Date",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycExpiryDate",
+                label:"Expiry Date",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycAddress",
+                label:"Address",
+                type:"text",
+                placeholder:"Enter sample address"
+            }
+
+        ];
+
+    }
+    else if(
+        name.includes("national") ||
+        name.includes("identity") ||
+        name === "id" ||
+        name.includes(" id")
+    ){
+
+        fields = [
+
+            {
+                id:"kycFullName",
+                label:"Full Name",
+                type:"text",
+                placeholder:"Enter full name"
+            },
+
+            {
+                id:"kycDateOfBirth",
+                label:"Date of Birth",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycNationality",
+                label:"Nationality",
+                type:"text",
+                placeholder:"Enter nationality"
+            },
+
+            {
+                id:"kycDocumentNumber",
+                label:"ID Number",
+                type:"text",
+                placeholder:"Enter sample ID number"
+            },
+
+            {
+                id:"kycIssueDate",
+                label:"Issue Date",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycExpiryDate",
+                label:"Expiry Date",
+                type:"date",
+                placeholder:""
+            }
+
+        ];
+
+    }
+    else{
+
+        fields = [
+
+            {
+                id:"kycFullName",
+                label:"Full Name",
+                type:"text",
+                placeholder:"Enter full name"
+            },
+
+            {
+                id:"kycDateOfBirth",
+                label:"Date of Birth",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycDocumentNumber",
+                label:"Document Number",
+                type:"text",
+                placeholder:"Enter sample document number"
+            },
+
+            {
+                id:"kycIssueDate",
+                label:"Issue Date",
+                type:"date",
+                placeholder:""
+            },
+
+            {
+                id:"kycExpiryDate",
+                label:"Expiry Date",
+                type:"date",
+                placeholder:""
+            }
+
+        ];
+
+    }
+
+
+    let html = "";
+
+
+    fields.forEach(field => {
+
+        html += `
+
+            <label>
+                ${escapeHtml(
+                    field.label
+                )}
+            </label>
+
+            <input
+                id="${escapeHtml(
+                    field.id
+                )}"
+                type="${escapeHtml(
+                    field.type
+                )}"
+                placeholder="${escapeHtml(
+                    field.placeholder
+                )}"
+            >
+
+        `;
+
+    });
+
+
+    html += `
+
+        <label>
+            Photo
+        </label>
+
+        <input
+            id="kycPhoto"
+            class="file-input"
+            type="file"
+            accept="image/*"
+        >
+
+    `;
+
+
+    box.innerHTML =
+        html;
 }
 
 
@@ -2255,6 +2561,100 @@ function validateTool(){
     }
 
 
+    /* =====================================================
+       KYC VALIDATION
+    ===================================================== */
+
+    if(
+        name === "🪪 KYC / Document Designer" ||
+        name === "KYC / Document Designer"
+    ){
+
+        const country =
+            document.getElementById(
+                "kycCountry"
+            )?.value;
+
+        const documentType =
+            document.getElementById(
+                "kycDocument"
+            )?.value;
+
+        if(!country){
+
+            alert(
+                "Please select a country."
+            );
+
+            return false;
+        }
+
+        if(!documentType){
+
+            alert(
+                "Please select a document type."
+            );
+
+            return false;
+        }
+
+        const fields =
+            document.querySelectorAll(
+                "#kycFields input"
+            );
+
+        for(
+            const field of fields
+        ){
+
+            if(
+                field.id === "kycPhoto"
+            ){
+                continue;
+            }
+
+            if(
+                !field.value.trim()
+            ){
+
+                const label =
+                    field
+                        .previousElementSibling
+                        ?.textContent
+                        ?.trim() ||
+                    "this field";
+
+                alert(
+                    "Please enter " +
+                    label.toLowerCase() +
+                    "."
+                );
+
+                field.focus();
+
+                return false;
+            }
+        }
+
+        const photo =
+            document.getElementById(
+                "kycPhoto"
+            );
+
+        if(
+            !photo ||
+            !photo.files.length
+        ){
+
+            alert(
+                "Please upload a photo."
+            );
+
+            return false;
+        }
+    }
+
+
     if(
         name === "🗣️ Voice Cloner" ||
         name === "Voice Cloner"
@@ -2353,42 +2753,6 @@ function validateTool(){
 
             alert(
                 "Please confirm permission to use the voice and visual."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🪪 KYC / Document Designer" ||
-        name === "KYC / Document Designer"
-    ){
-
-        if(
-            !document.getElementById(
-                "kycCountry"
-            )?.value
-        ){
-
-            alert(
-                "Please select a country."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "kycDocument"
-            )?.value &&
-            !document.getElementById(
-                "kycCustomDocument"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please select or enter a document type."
             );
 
             return false;
@@ -2649,6 +3013,60 @@ async function generateAI(){
 
     try{
 
+        let payload = {};
+
+        const name = selectedService.name;
+
+        /* Upload user photo & gather form fields if service is KYC */
+        if(
+            name === "🪪 KYC / Document Designer" ||
+            name === "KYC / Document Designer"
+        ){
+            const photoInput = document.getElementById("kycPhoto");
+            let uploadedPhotoUrl = "";
+
+            if(photoInput && photoInput.files.length > 0){
+                const file = photoInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`;
+
+                const { data: storageData, error: storageError } =
+                    await supabaseClient.storage
+                        .from("kyc-uploads")
+                        .upload(fileName, file);
+
+                if(storageError){
+                    console.error("Storage Upload Error:", storageError);
+                    alert("Could not upload photo file. Please try again.");
+                    return;
+                }
+
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from("kyc-uploads")
+                    .getPublicUrl(fileName);
+
+                uploadedPhotoUrl = publicUrlData?.publicUrl || "";
+            }
+
+            const countrySelect = document.getElementById("kycCountry");
+            const docSelect = document.getElementById("kycDocument");
+
+            payload = {
+                country_id: countrySelect?.value || "",
+                country_name: countrySelect?.options[countrySelect.selectedIndex]?.textContent || "",
+                document_type_id: docSelect?.value || "",
+                document_name: docSelect?.options[docSelect.selectedIndex]?.textContent || "",
+                full_name: document.getElementById("kycFullName")?.value || "",
+                dob: document.getElementById("kycDateOfBirth")?.value || "",
+                nationality: document.getElementById("kycNationality")?.value || "",
+                document_number: document.getElementById("kycDocumentNumber")?.value || "",
+                issue_date: document.getElementById("kycIssueDate")?.value || "",
+                expiry_date: document.getElementById("kycExpiryDate")?.value || "",
+                address: document.getElementById("kycAddress")?.value || "",
+                photo_url: uploadedPhotoUrl
+            };
+        }
+
         const {
             data,
             error
@@ -2656,8 +3074,8 @@ async function generateAI(){
             await supabaseClient.rpc(
                 "create_ai_purchase",
                 {
-                    p_service_id:
-                        selectedService.id
+                    p_service_id: selectedService.id,
+                    p_payload: payload
                 }
             );
 
