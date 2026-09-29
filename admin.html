@@ -860,11 +860,6 @@ function buildCategoryUI(){
 
     }
 
-    /*
-     * Home is the dashboard itself.
-     * Do not display it as a service category.
-     */
-
     productCategories.forEach(category => {
 
         const wrapper =
@@ -1323,6 +1318,7 @@ async function checkAdmin(){
 
 /* =========================
    LOAD PRODUCTS
+   OPTIMIZED
 ========================= */
 
 async function loadProducts(){
@@ -1376,35 +1372,32 @@ async function loadProducts(){
         return;
     }
 
+    /*
+     * One Product query is enough here.
+     *
+     * The previous version queried Product a second
+     * time just to build allProducts. That duplicate
+     * request has been removed to make the admin load
+     * faster.
+     */
+
     products =
         data || [];
 
-    const {
-        data:allProductData,
-        error:allProductError
-    } = await supabaseClient
-        .from("Product")
-        .select("id,name,category,price,is_active");
+    allProducts =
+        products;
 
-    if(allProductError){
-
-        console.error(
-            "Load all products error:",
-            allProductError
-        );
-
-        allProducts =
-            products;
-
-    }else{
-
-        allProducts =
-            allProductData ||
-            products;
-
-    }
+    /*
+     * Render immediately so the product list does not
+     * wait for the inventory dropdown request.
+     */
 
     renderProducts();
+
+    /*
+     * This only fills the Add Inventory dropdown.
+     * It no longer blocks the product list from appearing.
+     */
 
     await loadInventoryProductDropdown();
 
@@ -2762,29 +2755,29 @@ async function completePendingOrder(id){
     const {
         error:purchaseError
     } =
-        await supabaseClient
-            .from("purchases")
-            .insert([{
+    await supabaseClient
+        .from("purchases")
+        .insert([{
 
-                user_id:
-                    order.user_id,
+            user_id:
+                order.user_id,
 
-                product_id:
-                    order.product_id,
+            product_id:
+                order.product_id,
 
-                product_name:
-                    order.product_name,
+            product_name:
+                order.product_name,
 
-                amount:
-                    order.amount,
+            amount:
+                order.amount,
 
-                content:
-                    selectedInventory.content,
+            content:
+                selectedInventory.content,
 
-                status:
-                    "completed"
+            status:
+                "completed"
 
-            }]);
+        }]);
 
     if(purchaseError){
 
@@ -2799,13 +2792,13 @@ async function completePendingOrder(id){
     const {
         error:deleteError
     } =
-        await supabaseClient
-            .from("product_inventory")
-            .delete()
-            .eq(
-                "id",
-                selectedInventory.id
-            );
+    await supabaseClient
+        .from("product_inventory")
+        .delete()
+        .eq(
+            "id",
+            selectedInventory.id
+        );
 
     if(deleteError){
 
@@ -2820,15 +2813,15 @@ async function completePendingOrder(id){
     const {
         error:orderError
     } =
-        await supabaseClient
-            .from("pending_orders")
-            .update({
-                status:"completed"
-            })
-            .eq(
-                "id",
-                id
-            );
+    await supabaseClient
+        .from("pending_orders")
+        .update({
+            status:"completed"
+        })
+        .eq(
+            "id",
+            id
+        );
 
     if(orderError){
 
@@ -3786,12 +3779,12 @@ function renderUsers(){
                                     new Date(
                                         p.created_at
                                     ).toLocaleString(
-                                        "en-NG"
+                                            "en-NG"
+                                        )
                                     )
-                                )
-                                :
-                                "Unknown"
-                            }
+                                    :
+                                    "Unknown"
+                                }
 
                         </div>
 
