@@ -860,7 +860,12 @@ function buildCategoryUI(){
 
     }
 
-    categories.forEach(category => {
+    /*
+     * Home is the dashboard itself.
+     * Do not display it as a service category.
+     */
+
+    productCategories.forEach(category => {
 
         const wrapper =
             document.createElement("span");
@@ -881,38 +886,29 @@ function buildCategoryUI(){
 
         wrapper.appendChild(name);
 
-        /* Home should not be deleted */
+        const deleteButton =
+            document.createElement("button");
 
-        if(
-            String(category.name)
-                .toLowerCase() !== "home"
-        ){
+        deleteButton.type = "button";
 
-            const deleteButton =
-                document.createElement("button");
+        deleteButton.className =
+            "category-delete";
 
-            deleteButton.type = "button";
+        deleteButton.textContent = "×";
 
-            deleteButton.className =
-                "category-delete";
+        deleteButton.title =
+            "Remove category";
 
-            deleteButton.textContent = "×";
+        deleteButton.onclick =
+            () =>
+                deleteCategory(
+                    category.id,
+                    category.name
+                );
 
-            deleteButton.title =
-                "Remove category";
-
-            deleteButton.onclick =
-                () =>
-                    deleteCategory(
-                        category.id,
-                        category.name
-                    );
-
-            wrapper.appendChild(
-                deleteButton
-            );
-
-        }
+        wrapper.appendChild(
+            deleteButton
+        );
 
         list.appendChild(wrapper);
 
@@ -998,10 +994,6 @@ async function addCategory(){
 
     try{
 
-        /*
-         * Check whether the category already exists.
-         */
-
         const {
             data:existing,
             error:existingError
@@ -1022,11 +1014,6 @@ async function addCategory(){
 
             return;
         }
-
-        /*
-         * If it exists but is inactive,
-         * restore it.
-         */
 
         if(existing){
 
@@ -1074,10 +1061,6 @@ async function addCategory(){
             }
 
         }else{
-
-            /*
-             * Get the next display order.
-             */
 
             const {
                 data:maxRows,
@@ -1354,10 +1337,6 @@ async function loadProducts(){
             '<div class="loading">Loading products...</div>';
     }
 
-    /*
-     * Active products for normal management.
-     */
-
     const {
         data,
         error
@@ -1400,21 +1379,30 @@ async function loadProducts(){
     products =
         data || [];
 
-    /*
-     * Also load all product records so old inventory
-     * can still display its Product/Service name
-     * even if that product is no longer active.
-     */
-
     const {
-        data:allProductData
+        data:allProductData,
+        error:allProductError
     } = await supabaseClient
         .from("Product")
         .select("id,name,category,price,is_active");
 
-    allProducts =
-        allProductData ||
-        products;
+    if(allProductError){
+
+        console.error(
+            "Load all products error:",
+            allProductError
+        );
+
+        allProducts =
+            products;
+
+    }else{
+
+        allProducts =
+            allProductData ||
+            products;
+
+    }
 
     renderProducts();
 
@@ -2092,6 +2080,96 @@ async function loadInventory(){
     inventory =
         data || [];
 
+    /*
+     * Get the exact Product records used by
+     * the inventory items.
+     *
+     * This is intentionally done even if the
+     * product is inactive, because old inventory
+     * must still show its service name/category.
+     */
+
+    const productIds =
+        [
+            ...new Set(
+                inventory
+                    .map(
+                        item =>
+                            Number(
+                                item.product_id
+                            )
+                    )
+                    .filter(
+                        id =>
+                            Number.isFinite(id)
+                    )
+            )
+        ];
+
+    if(productIds.length){
+
+        const {
+            data:inventoryProducts,
+            error:productError
+        } =
+        await supabaseClient
+            .from("Product")
+            .select(
+                "id,name,category,price,is_active"
+            )
+            .in(
+                "id",
+                productIds
+            );
+
+        if(productError){
+
+            console.error(
+                "Inventory product lookup error:",
+                productError
+            );
+
+        }else{
+
+            /*
+             * Replace matching entries in allProducts
+             * with the fresh records from Product.
+             */
+
+            const productMap =
+                new Map();
+
+            allProducts.forEach(
+                product => {
+
+                    productMap.set(
+                        Number(product.id),
+                        product
+                    );
+
+                }
+            );
+
+            (inventoryProducts || []).forEach(
+                product => {
+
+                    productMap.set(
+                        Number(product.id),
+                        product
+                    );
+
+                }
+            );
+
+            allProducts =
+                Array.from(
+                    productMap.values()
+                );
+
+        }
+
+    }
+
     renderInventory();
 
 }
@@ -2132,12 +2210,34 @@ function renderInventory(){
                 );
 
             const productName =
-                product?.name ||
-                "";
+                String(
+                    product?.name ||
+                    ""
+                );
 
             const category =
-                product?.category ||
-                "";
+                String(
+                    product?.category ||
+                    ""
+                );
+
+            const content =
+                String(
+                    item.content ||
+                    ""
+                );
+
+            const status =
+                String(
+                    item.status ||
+                    ""
+                );
+
+            const productId =
+                String(
+                    item.product_id ||
+                    ""
+                );
 
             return !search ||
 
@@ -2149,17 +2249,17 @@ function renderInventory(){
                     .toLowerCase()
                     .includes(search) ||
 
-                String(
-                    item.content || ""
-                )
-                .toLowerCase()
-                .includes(search) ||
+                content
+                    .toLowerCase()
+                    .includes(search) ||
 
-                String(
-                    item.status || ""
-                )
-                .toLowerCase()
-                .includes(search);
+                status
+                    .toLowerCase()
+                    .includes(search) ||
+
+                productId
+                    .toLowerCase()
+                    .includes(search);
 
         });
 
@@ -2182,6 +2282,14 @@ function renderInventory(){
                     Number(item.product_id)
             );
 
+        const serviceName =
+            product?.name ||
+            "Unknown Service";
+
+        const category =
+            product?.category ||
+            "Unknown";
+
         const box =
             document.createElement(
                 "div"
@@ -2201,8 +2309,7 @@ function renderInventory(){
                 Service:
                 <b>
                     ${escapeHTML(
-                        product?.name ||
-                        "Unknown Service"
+                        serviceName
                     )}
                 </b>
 
@@ -2210,8 +2317,7 @@ function renderInventory(){
 
                 Category:
                 ${escapeHTML(
-                    product?.category ||
-                    "Unknown"
+                    category
                 )}
 
                 <br>
@@ -2256,7 +2362,8 @@ function renderInventory(){
 
                 <div class="user-details">
                     ${escapeHTML(
-                        item.content
+                        item.content ||
+                        ""
                     )}
                 </div>
 
@@ -2958,11 +3065,6 @@ async function loadUserDetails(){
 
     for(const user of users){
 
-        /*
-         * First try the wallet table used by
-         * the original admin.
-         */
-
         let walletBalance = 0;
 
         try{
@@ -2997,13 +3099,6 @@ async function loadUserDetails(){
 
         }
 
-        /*
-         * Fallback to profiles.balance.
-         * This prevents Users & Wallets from
-         * disappearing if balance is stored
-         * directly on profiles.
-         */
-
         if(
             walletBalance === 0 &&
             user.balance !== undefined &&
@@ -3019,10 +3114,6 @@ async function loadUserDetails(){
 
         user.wallet_balance =
             walletBalance;
-
-        /*
-         * Normal purchases
-         */
 
         const {
             data:purchases
@@ -3046,10 +3137,6 @@ async function loadUserDetails(){
         const normalPurchases =
             purchases || [];
 
-        /*
-         * Virtual-number purchases
-         */
-
         const virtualPurchases =
             allVirtualOrders.filter(
                 order =>
@@ -3060,10 +3147,6 @@ async function loadUserDetails(){
                         user.id
                     )
             );
-
-        /*
-         * Combine everything
-         */
 
         const combinedPurchases = [];
 
@@ -3104,10 +3187,6 @@ async function loadUserDetails(){
             }
         );
 
-        /*
-         * Newest first
-         */
-
         combinedPurchases.sort(
             (a,b) => {
 
@@ -3124,10 +3203,6 @@ async function loadUserDetails(){
 
         user.purchases =
             combinedPurchases;
-
-        /*
-         * TOTAL SPENT
-         */
 
         let totalSpent = 0;
 
@@ -3189,10 +3264,6 @@ async function loadUserDetails(){
         user.total_spent =
             totalSpent;
 
-        /*
-         * TRANSACTIONS
-         */
-
         const {
             data:transactions
         } =
@@ -3214,10 +3285,6 @@ async function loadUserDetails(){
 
         user.transactions =
             transactions || [];
-
-        /*
-         * PENDING ORDERS
-         */
 
         const {
             data:pending
@@ -4207,10 +4274,6 @@ async function refreshEverything(){
 
 async function startAdmin(){
 
-    /*
-     * Check administrator first.
-     */
-
     const isAdmin =
         await checkAdmin();
 
@@ -4219,11 +4282,6 @@ async function startAdmin(){
     }
 
     try{
-
-        /*
-         * Categories MUST load from
-         * service_categories.
-         */
 
         await loadCategories();
 
