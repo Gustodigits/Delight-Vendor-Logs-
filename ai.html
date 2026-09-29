@@ -1,420 +1,881 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AI Studio — Delight Vendor Logs</title>
+<title>AI Studio — Delight Vendor Logs</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    *{
-      box-sizing:border-box;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#f5f7fb;
-      color:#111827;
-    }
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f7fb;
+  color:#111827;
+}
 
-    header{
-      background:#111827;
-      color:white;
-      padding:18px 16px;
-      position:sticky;
-      top:0;
-      z-index:20;
-      box-shadow:0 2px 12px rgba(0,0,0,.15);
-    }
+/* =========================
+   HEADER
+========================= */
 
-    .header-inner{
-      max-width:1100px;
-      margin:auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
+.header{
+  background:#0b1020;
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 3px 18px rgba(0,0,0,.18);
+}
 
-    .brand{
-      font-size:20px;
-      font-weight:800;
-    }
+.header-inner{
+  max-width:1180px;
+  margin:auto;
+  padding:15px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
 
-    .wallet-box{
-      background:#2563eb;
-      padding:9px 13px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:14px;
-      white-space:nowrap;
-    }
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  font-size:19px;
+}
 
-    main{
-      max-width:1100px;
-      margin:auto;
-      padding:22px 14px 80px;
-    }
+.logo-mark{
+  width:39px;
+  height:39px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  font-size:21px;
+  box-shadow:0 5px 15px rgba(79,70,229,.35);
+}
 
-    .hero{
-      background:white;
-      border-radius:18px;
-      padding:22px;
-      box-shadow:0 5px 22px rgba(0,0,0,.06);
-      margin-bottom:20px;
-    }
+.wallet{
+  background:#172554;
+  border:1px solid #1e40af;
+  border-radius:12px;
+  padding:9px 13px;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
 
-    .hero h1{
-      margin:0 0 8px;
-      font-size:28px;
-    }
+/* =========================
+   MAIN
+========================= */
 
-    .hero p{
-      margin:0;
-      color:#6b7280;
-      line-height:1.5;
-    }
+.main{
+  max-width:1180px;
+  margin:auto;
+  padding:24px 15px 70px;
+}
 
-    .services-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:15px;
-    }
+.home-view{
+  display:block;
+}
 
-    .service-card{
-      background:white;
-      border-radius:17px;
-      padding:18px;
-      box-shadow:0 4px 18px rgba(0,0,0,.06);
-      border:2px solid transparent;
-      cursor:pointer;
-      transition:.2s;
-    }
+.tool-view{
+  display:none;
+}
 
-    .service-card:hover{
-      transform:translateY(-2px);
-      border-color:#2563eb;
-    }
+.tool-view.active{
+  display:block;
+}
 
-    .service-card.selected{
-      border-color:#2563eb;
-      box-shadow:0 5px 20px rgba(37,99,235,.14);
-    }
+/* =========================
+   HERO
+========================= */
 
-    .service-icon{
-      font-size:31px;
-      margin-bottom:10px;
-    }
+.hero{
+  background:
+    radial-gradient(circle at 85% 20%,rgba(124,58,237,.35),transparent 35%),
+    radial-gradient(circle at 15% 90%,rgba(37,99,235,.28),transparent 35%),
+    #0f172a;
+  color:white;
+  border-radius:24px;
+  padding:30px 25px;
+  margin-bottom:24px;
+  overflow:hidden;
+  position:relative;
+}
 
-    .service-name{
-      font-weight:800;
-      font-size:16px;
-      margin-bottom:7px;
-    }
+.hero h1{
+  margin:0 0 8px;
+  font-size:31px;
+  letter-spacing:-.7px;
+}
 
-    .service-description{
-      color:#6b7280;
-      font-size:13px;
-      line-height:1.45;
-      min-height:38px;
-    }
+.hero p{
+  margin:0;
+  max-width:650px;
+  color:#cbd5e1;
+  line-height:1.55;
+  font-size:14px;
+}
 
-    .service-price{
-      margin-top:14px;
-      font-weight:800;
-      color:#2563eb;
-      font-size:17px;
-    }
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.14);
+  padding:7px 11px;
+  border-radius:30px;
+  margin-bottom:14px;
+  font-size:12px;
+  font-weight:800;
+}
 
-    .tool-panel{
-      margin-top:22px;
-      background:white;
-      border-radius:18px;
-      padding:20px;
-      box-shadow:0 5px 22px rgba(0,0,0,.07);
-      display:none;
-    }
+/* =========================
+   SECTION TITLE
+========================= */
 
-    .tool-panel.active{
-      display:block;
-    }
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin:0 0 15px;
+}
 
-    .tool-title{
-      margin:0 0 5px;
-      font-size:23px;
-    }
+.section-title h2{
+  margin:0;
+  font-size:20px;
+}
 
-    .tool-subtitle{
-      margin:0 0 20px;
-      color:#6b7280;
-      font-size:14px;
-    }
+.section-title span{
+  color:#6b7280;
+  font-size:12px;
+}
 
-    .field{
-      margin-bottom:16px;
-    }
+/* =========================
+   AI CARDS
+========================= */
 
-    .field label{
-      display:block;
-      font-weight:700;
-      margin-bottom:7px;
-      font-size:14px;
-    }
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
 
-    input,
-    select,
-    textarea{
-      width:100%;
-      border:1px solid #d1d5db;
-      border-radius:11px;
-      padding:12px;
-      font-size:14px;
-      outline:none;
-      background:white;
-    }
+.ai-card{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:19px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s ease;
+  box-shadow:0 5px 18px rgba(15,23,42,.055);
+}
 
-    textarea{
-      min-height:120px;
-      resize:vertical;
-    }
+.ai-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 28px rgba(15,23,42,.12);
+  border-color:#c7d2fe;
+}
 
-    input:focus,
-    select:focus,
-    textarea:focus{
-      border-color:#2563eb;
-      box-shadow:0 0 0 3px rgba(37,99,235,.08);
-    }
+.ai-image{
+  height:145px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    input[type="file"]{
-      padding:10px;
-    }
+.ai-image::before{
+  content:"";
+  position:absolute;
+  width:130px;
+  height:130px;
+  border-radius:50%;
+  background:rgba(255,255,255,.16);
+  top:-55px;
+  right:-35px;
+}
 
-    .two-col{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
-    }
+.ai-image::after{
+  content:"";
+  position:absolute;
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:rgba(255,255,255,.1);
+  bottom:-35px;
+  left:-20px;
+}
 
-    .price-preview{
-      background:#eff6ff;
-      border:1px solid #bfdbfe;
-      border-radius:12px;
-      padding:14px;
-      margin:18px 0;
-    }
+.visual-box{
+  position:relative;
+  z-index:2;
+  width:78px;
+  height:78px;
+  border-radius:23px;
+  background:rgba(255,255,255,.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  box-shadow:0 12px 25px rgba(0,0,0,.16);
+}
 
-    .price-preview strong{
-      color:#1d4ed8;
-      font-size:20px;
-    }
+.ai-card-body{
+  padding:15px;
+}
 
-    .consent{
-      display:flex;
-      gap:9px;
-      align-items:flex-start;
-      background:#fff7ed;
-      border:1px solid #fed7aa;
-      padding:12px;
-      border-radius:11px;
-      margin:15px 0;
-      font-size:13px;
-      line-height:1.45;
-    }
+.ai-card-title{
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:6px;
+}
 
-    .consent input{
-      width:auto;
-      margin-top:3px;
-    }
+.ai-card-desc{
+  color:#6b7280;
+  font-size:12px;
+  line-height:1.45;
+  min-height:35px;
+}
 
-    .primary-btn{
-      width:100%;
-      border:0;
-      border-radius:12px;
-      background:#2563eb;
-      color:white;
-      padding:14px;
-      font-size:15px;
-      font-weight:800;
-      cursor:pointer;
-    }
+.ai-card-bottom{
+  margin-top:13px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
 
-    .primary-btn:hover{
-      background:#1d4ed8;
-    }
+.price{
+  font-weight:900;
+  color:#2563eb;
+  font-size:14px;
+}
 
-    .primary-btn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
+.use-btn{
+  border:0;
+  background:#111827;
+  color:white;
+  border-radius:9px;
+  padding:8px 11px;
+  font-size:11px;
+  font-weight:800;
+}
 
-    .secondary-btn{
-      border:0;
-      border-radius:11px;
-      padding:11px 14px;
-      background:#e5e7eb;
-      color:#111827;
-      font-weight:700;
-      cursor:pointer;
-    }
+/* Different visual backgrounds */
 
-    .result-box{
-      display:none;
-      margin-top:18px;
-      padding:15px;
-      border-radius:12px;
-      background:#ecfdf5;
-      border:1px solid #a7f3d0;
-      color:#065f46;
-    }
+.v1{
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+}
 
-    .result-box.show{
-      display:block;
-    }
+.v2{
+  background:linear-gradient(135deg,#2563eb,#06b6d4);
+}
 
-    .loading{
-      display:none;
-      margin-top:15px;
-      padding:12px;
-      border-radius:10px;
-      background:#f3f4f6;
-      text-align:center;
-      color:#374151;
-      font-size:14px;
-    }
+.v3{
+  background:linear-gradient(135deg,#059669,#14b8a6);
+}
 
-    .loading.show{
-      display:block;
-    }
+.v4{
+  background:linear-gradient(135deg,#f59e0b,#ef4444);
+}
 
-    .empty{
-      padding:30px;
-      text-align:center;
-      color:#6b7280;
-      background:white;
-      border-radius:15px;
-    }
+.v5{
+  background:linear-gradient(135deg,#ef4444,#f97316);
+}
 
-    .notice{
-      background:#fef2f2;
-      border:1px solid #fecaca;
-      color:#991b1b;
-      padding:12px;
-      border-radius:11px;
-      font-size:13px;
-      margin-bottom:15px;
-      line-height:1.45;
-    }
+.v6{
+  background:linear-gradient(135deg,#4f46e5,#9333ea);
+}
 
-    .back-btn{
-      display:inline-block;
-      margin-bottom:18px;
-      text-decoration:none;
-      color:#2563eb;
-      font-weight:700;
-      font-size:14px;
-    }
+.v7{
+  background:linear-gradient(135deg,#0891b2,#2563eb);
+}
 
-    @media(max-width:800px){
-      .services-grid{
-        grid-template-columns:repeat(2,1fr);
-      }
-    }
+.v8{
+  background:linear-gradient(135deg,#16a34a,#84cc16);
+}
 
-    @media(max-width:560px){
-      .services-grid{
-        grid-template-columns:1fr;
-      }
+.v9{
+  background:linear-gradient(135deg,#0f766e,#06b6d4);
+}
 
-      .two-col{
-        grid-template-columns:1fr;
-      }
+.v10{
+  background:linear-gradient(135deg,#db2777,#f43f5e);
+}
 
-      .hero h1{
-        font-size:24px;
-      }
+.v11{
+  background:linear-gradient(135deg,#9333ea,#6366f1);
+}
 
-      .header-inner{
-        align-items:flex-start;
-      }
+.v12{
+  background:linear-gradient(135deg,#ea580c,#eab308);
+}
 
-      .brand{
-        font-size:17px;
-      }
+/* =========================
+   TOOL PAGE
+========================= */
 
-      .wallet-box{
-        font-size:12px;
-      }
-    }
-  </style>
+.tool-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.back-btn{
+  border:0;
+  background:white;
+  border:1px solid #e5e7eb;
+  width:43px;
+  height:43px;
+  border-radius:12px;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.tool-heading{
+  flex:1;
+}
+
+.tool-heading h1{
+  margin:0 0 3px;
+  font-size:24px;
+}
+
+.tool-heading p{
+  margin:0;
+  color:#6b7280;
+  font-size:13px;
+}
+
+.tool-card{
+  background:white;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 6px 24px rgba(15,23,42,.07);
+  border:1px solid #e5e7eb;
+  max-width:760px;
+  margin:auto;
+}
+
+.tool-icon-large{
+  width:72px;
+  height:72px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:37px;
+  margin-bottom:18px;
+  color:white;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.tool-content{
+  display:none;
+}
+
+.tool-content.active{
+  display:block;
+}
+
+.field{
+  margin-bottom:16px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  font-weight:800;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  border:1px solid #d1d5db;
+  border-radius:11px;
+  padding:12px;
+  font-size:14px;
+  background:white;
+  outline:none;
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.08);
+}
+
+input[type="file"]{
+  padding:10px;
+}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+/* =========================
+   PRICE
+========================= */
+
+.price-box{
+  background:#eff6ff;
+  border:1px solid #bfdbfe;
+  border-radius:13px;
+  padding:15px;
+  margin:18px 0;
+}
+
+.price-label{
+  color:#64748b;
+  font-size:12px;
+  margin-bottom:3px;
+}
+
+.price-value{
+  color:#1d4ed8;
+  font-size:23px;
+  font-weight:900;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.primary-btn{
+  width:100%;
+  border:0;
+  background:linear-gradient(135deg,#2563eb,#4f46e5);
+  color:white;
+  border-radius:12px;
+  padding:14px;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.primary-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+/* =========================
+   CONSENT / NOTICE
+========================= */
+
+.consent{
+  display:flex;
+  gap:9px;
+  align-items:flex-start;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  border-radius:11px;
+  padding:12px;
+  margin:15px 0;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.consent input{
+  width:auto;
+  margin-top:3px;
+}
+
+.notice{
+  background:#fef2f2;
+  color:#991b1b;
+  border:1px solid #fecaca;
+  border-radius:11px;
+  padding:12px;
+  margin-bottom:16px;
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* =========================
+   RESULT / LOADING
+========================= */
+
+.loading{
+  display:none;
+  background:#f3f4f6;
+  padding:12px;
+  border-radius:10px;
+  text-align:center;
+  font-size:13px;
+  margin-bottom:12px;
+}
+
+.loading.show{
+  display:block;
+}
+
+.result{
+  display:none;
+  margin-top:16px;
+  padding:15px;
+  border-radius:12px;
+  background:#ecfdf5;
+  border:1px solid #a7f3d0;
+  color:#065f46;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.result.show{
+  display:block;
+}
+
+/* =========================
+   EMPTY / ERROR
+========================= */
+
+.empty{
+  background:white;
+  border-radius:15px;
+  padding:30px;
+  text-align:center;
+  color:#6b7280;
+  grid-column:1/-1;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:950px){
+
+  .services-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .services-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .ai-image{
+    height:125px;
+  }
+
+  .visual-box{
+    width:67px;
+    height:67px;
+    font-size:34px;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .header-inner{
+    padding:12px;
+  }
+
+  .logo{
+    font-size:15px;
+  }
+
+  .logo-mark{
+    width:34px;
+    height:34px;
+    font-size:18px;
+  }
+
+  .wallet{
+    font-size:11px;
+    padding:8px 9px;
+  }
+
+  .main{
+    padding:16px 11px 50px;
+  }
+
+  .hero{
+    padding:23px 18px;
+    border-radius:19px;
+  }
+
+  .hero h1{
+    font-size:25px;
+  }
+
+  .services-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+
+  .ai-image{
+    height:108px;
+  }
+
+  .visual-box{
+    width:57px;
+    height:57px;
+    border-radius:17px;
+    font-size:29px;
+  }
+
+  .ai-card-body{
+    padding:11px;
+  }
+
+  .ai-card-title{
+    font-size:13px;
+  }
+
+  .ai-card-desc{
+    font-size:10px;
+  }
+
+  .price{
+    font-size:12px;
+  }
+
+  .use-btn{
+    padding:7px 8px;
+    font-size:9px;
+  }
+
+  .two-col{
+    grid-template-columns:1fr;
+  }
+
+  .tool-card{
+    padding:16px;
+  }
+
+}
+</style>
 </head>
 
 <body>
 
-<header>
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
   <div class="header-inner">
-    <div class="brand">⚡ Delight Vendor Logs — AI Studio</div>
-    <div class="wallet-box">
+
+    <div class="logo">
+
+      <div class="logo-mark">
+        ✦
+      </div>
+
+      Delight AI Studio
+
+    </div>
+
+    <div class="wallet">
       Wallet: ₦<span id="walletBalance">0.00</span>
     </div>
+
   </div>
+
 </header>
 
-<main>
 
-  <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+<main class="main">
 
-  <section class="hero">
-    <h1>🤖 AI Studio</h1>
+<!-- =========================
+     HOME VIEW
+========================= -->
+
+<section id="homeView" class="home-view">
+
+  <div class="hero">
+
+    <div class="hero-badge">
+      ✨ AI POWERED TOOLS
+    </div>
+
+    <h1>
+      Create with AI
+    </h1>
+
     <p>
-      Create and edit content using AI-powered services.
-      Select a service below to get started.
+      Choose an AI tool below to create, edit and transform your content.
+      Select a tool to open its workspace.
     </p>
-  </section>
 
-  <div id="pageNotice"></div>
+  </div>
 
-  <section id="servicesGrid" class="services-grid">
-    <div class="empty">Loading AI services...</div>
-  </section>
 
-  <!-- TOOL PANEL -->
-  <section id="toolPanel" class="tool-panel">
+  <div class="section-title">
 
-    <h2 id="toolTitle" class="tool-title"></h2>
-    <p id="toolSubtitle" class="tool-subtitle"></p>
+    <h2>
+      AI Tools
+    </h2>
 
-    <!-- PICS TO VIDEO -->
-    <div id="toolPicsVideo" class="tool-content" style="display:none;">
+    <span>
+      12 services available
+    </span>
+
+  </div>
+
+
+  <div
+    id="servicesGrid"
+    class="services-grid"
+  >
+
+    <div class="empty">
+      Loading AI Studio...
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     TOOL VIEW
+========================= -->
+
+<section
+  id="toolView"
+  class="tool-view"
+>
+
+  <div class="tool-top">
+
+    <button
+      class="back-btn"
+      onclick="goBackHome()"
+    >
+      ←
+    </button>
+
+    <div class="tool-heading">
+
+      <h1 id="toolTitle">
+        AI Tool
+      </h1>
+
+      <p id="toolSubtitle">
+        AI Studio
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="tool-card">
+
+    <div
+      id="toolIconLarge"
+      class="tool-icon-large"
+    >
+      ✨
+    </div>
+
+
+    <!-- =====================
+         PICS TO VIDEO
+    ====================== -->
+
+    <div
+      id="toolPicsVideo"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Select picture</label>
-        <input type="file" id="picsVideoImage" accept="image/*">
+
+        <label>
+          Upload picture
+        </label>
+
+        <input
+          type="file"
+          id="picsVideoImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>Describe the video you want</label>
+
+        <label>
+          Describe your video
+        </label>
+
         <textarea
           id="picsVideoPrompt"
-          placeholder="Describe the movement or video style..."
+          placeholder="Describe the movement or video you want..."
         ></textarea>
+
       </div>
 
     </div>
 
-    <!-- VIDEO FACE SWAP -->
-    <div id="toolFaceSwap" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         FACE SWAP
+    ====================== -->
+
+    <div
+      id="toolFaceSwap"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Source video</label>
-        <input type="file" id="faceSwapVideo" accept="video/*">
+
+        <label>
+          Source video
+        </label>
+
+        <input
+          type="file"
+          id="faceSwapVideo"
+          accept="video/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>Face image</label>
-        <input type="file" id="faceSwapImage" accept="image/*">
+
+        <label>
+          Face image
+        </label>
+
+        <input
+          type="file"
+          id="faceSwapImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="notice">
@@ -423,319 +884,636 @@
 
     </div>
 
-    <!-- AI VOICE -->
-    <div id="toolAiVoice" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         AI VOICE
+    ====================== -->
+
+    <div
+      id="toolAiVoice"
+      class="tool-content"
+    >
 
       <div class="two-col">
 
         <div class="field">
-          <label>Language</label>
+
+          <label>
+            Language
+          </label>
+
           <select id="voiceLanguage">
-            <option value="English">English</option>
-            <option value="French">French</option>
-            <option value="Spanish">Spanish</option>
-            <option value="German">German</option>
-            <option value="Italian">Italian</option>
-            <option value="Portuguese">Portuguese</option>
-            <option value="Dutch">Dutch</option>
-            <option value="Arabic">Arabic</option>
-            <option value="Turkish">Turkish</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Chinese">Chinese</option>
-            <option value="Japanese">Japanese</option>
-            <option value="Korean">Korean</option>
-            <option value="Russian">Russian</option>
-            <option value="Yoruba">Yoruba</option>
-            <option value="Igbo">Igbo</option>
+
+            <option>English</option>
+            <option>French</option>
+            <option>Spanish</option>
+            <option>German</option>
+            <option>Italian</option>
+            <option>Portuguese</option>
+            <option>Dutch</option>
+            <option>Arabic</option>
+            <option>Turkish</option>
+            <option>Hindi</option>
+            <option>Chinese</option>
+            <option>Japanese</option>
+            <option>Korean</option>
+            <option>Russian</option>
+            <option>Yoruba</option>
+            <option>Igbo</option>
+
           </select>
+
         </div>
 
         <div class="field">
-          <label>Voice</label>
+
+          <label>
+            Voice
+          </label>
+
           <select id="voiceType">
-            <option value="female">Female</option>
-            <option value="male">Male</option>
+
+            <option value="female">
+              Female
+            </option>
+
+            <option value="male">
+              Male
+            </option>
+
           </select>
+
         </div>
 
       </div>
 
       <div class="field">
-        <label>Text</label>
+
+        <label>
+          Text
+        </label>
+
         <textarea
           id="voiceText"
           placeholder="Type the text you want the AI voice to speak..."
         ></textarea>
+
       </div>
 
     </div>
 
-    <!-- KYC -->
-    <div id="toolKyc" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         KYC
+    ====================== -->
+
+    <div
+      id="toolKyc"
+      class="tool-content"
+    >
 
       <div class="notice">
+
         This tool is for fictional/sample document design only.
-        Generated documents must remain clearly marked SAMPLE / NOT VALID
-        and must not imitate real government-issued identification.
+        Generated documents must remain clearly marked SAMPLE / NOT VALID.
+
       </div>
 
       <div class="two-col">
 
         <div class="field">
-          <label>Country</label>
+
+          <label>
+            Country
+          </label>
+
           <select id="kycCountry">
-            <option value="">Select country</option>
+
+            <option value="">
+              Select country
+            </option>
+
           </select>
+
         </div>
 
         <div class="field">
-          <label>Document type</label>
+
+          <label>
+            Document type
+          </label>
+
           <select id="kycDocument">
-            <option value="">Select document</option>
+
+            <option value="">
+              Select document
+            </option>
+
           </select>
+
         </div>
 
       </div>
 
       <div class="field">
-        <label>Name for sample</label>
+
+        <label>
+          Fictional name
+        </label>
+
         <input
           type="text"
           id="kycName"
           placeholder="Example fictional name"
         >
+
       </div>
 
       <div class="field">
-        <label>Photo</label>
-        <input type="file" id="kycPhoto" accept="image/*">
+
+        <label>
+          Photo
+        </label>
+
+        <input
+          type="file"
+          id="kycPhoto"
+          accept="image/*"
+        >
+
       </div>
 
     </div>
 
-    <!-- WATERMARK REMOVAL -->
-    <div id="toolWatermark" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         WATERMARK
+    ====================== -->
+
+    <div
+      id="toolWatermark"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Upload image</label>
-        <input type="file" id="watermarkImage" accept="image/*">
+
+        <label>
+          Upload image
+        </label>
+
+        <input
+          type="file"
+          id="watermarkImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>Upload video</label>
-        <input type="file" id="watermarkVideo" accept="video/*">
+
+        <label>
+          Upload video
+        </label>
+
+        <input
+          type="file"
+          id="watermarkVideo"
+          accept="video/*"
+        >
+
       </div>
 
       <div class="notice">
-        Only remove watermarks from content you own or have permission to edit.
+
+        Only edit content that you own or have permission to modify.
+
       </div>
 
     </div>
 
-    <!-- VOICE CLONER -->
-    <div id="toolVoiceCloner" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         VOICE CLONER
+    ====================== -->
+
+    <div
+      id="toolVoiceCloner"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Voice audio/video</label>
+
+        <label>
+          Voice audio/video
+        </label>
+
         <input
           type="file"
           id="voiceCloneSource"
           accept="audio/*,video/*"
         >
+
       </div>
 
       <div class="field">
-        <label>Text to speak</label>
+
+        <label>
+          Text to speak
+        </label>
+
         <textarea
           id="voiceCloneText"
-          placeholder="Type the text for the cloned voice..."
+          placeholder="Type what the cloned voice should say..."
         ></textarea>
+
       </div>
 
       <div class="consent">
-        <input type="checkbox" id="voiceCloneConsent">
+
+        <input
+          type="checkbox"
+          id="voiceCloneConsent"
+        >
+
         <label for="voiceCloneConsent">
           I confirm that I own this voice or have permission to clone and use it.
         </label>
+
       </div>
 
     </div>
 
-    <!-- VIDEO VOICE CLONE -->
-    <div id="toolVideoVoiceClone" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         VIDEO VOICE CLONE
+    ====================== -->
+
+    <div
+      id="toolVideoVoiceClone"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Source voice audio/video</label>
+
+        <label>
+          Source voice audio/video
+        </label>
+
         <input
           type="file"
           id="videoVoiceSource"
           accept="audio/*,video/*"
         >
+
       </div>
 
       <div class="field">
-        <label>Visual</label>
+
+        <label>
+          Visual
+        </label>
+
         <input
           type="file"
           id="videoVoiceVisual"
           accept="image/*,video/*"
         >
+
       </div>
 
       <div class="field">
-        <label>Text to speak</label>
+
+        <label>
+          Text to speak
+        </label>
+
         <textarea
           id="videoVoiceText"
           placeholder="Type what the generated voice should say..."
         ></textarea>
+
       </div>
 
       <div class="consent">
-        <input type="checkbox" id="videoVoiceConsent">
+
+        <input
+          type="checkbox"
+          id="videoVoiceConsent"
+        >
+
         <label for="videoVoiceConsent">
-          I confirm that I own these voice and visual materials or have permission
-          to use them.
+          I confirm that I own these voice and visual materials or have permission to use them.
         </label>
+
       </div>
 
     </div>
 
-    <!-- IMAGE ENHANCER -->
-    <div id="toolEnhancer" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         IMAGE ENHANCER
+    ====================== -->
+
+    <div
+      id="toolEnhancer"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Upload image</label>
-        <input type="file" id="enhancerImage" accept="image/*">
+
+        <label>
+          Upload image
+        </label>
+
+        <input
+          type="file"
+          id="enhancerImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>Enhancement level</label>
+
+        <label>
+          Enhancement level
+        </label>
+
         <select id="enhancerLevel">
-          <option value="standard">Standard</option>
-          <option value="high">High</option>
-          <option value="maximum">Maximum</option>
+
+          <option value="standard">
+            Standard
+          </option>
+
+          <option value="high">
+            High
+          </option>
+
+          <option value="maximum">
+            Maximum
+          </option>
+
         </select>
+
       </div>
 
     </div>
 
-    <!-- BACKGROUND / OBJECT REMOVAL -->
-    <div id="toolObjectRemoval" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         OBJECT REMOVAL
+    ====================== -->
+
+    <div
+      id="toolObjectRemoval"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Upload image</label>
-        <input type="file" id="objectRemovalImage" accept="image/*">
+
+        <label>
+          Upload image
+        </label>
+
+        <input
+          type="file"
+          id="objectRemovalImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>What should be removed?</label>
+
+        <label>
+          What should be removed?
+        </label>
+
         <input
           type="text"
           id="objectRemovalPrompt"
           placeholder="Example: remove the person in the background"
         >
+
       </div>
 
     </div>
 
-    <!-- OUTFIT EDITOR -->
-    <div id="toolOutfit" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         OUTFIT
+    ====================== -->
+
+    <div
+      id="toolOutfit"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Upload image</label>
-        <input type="file" id="outfitImage" accept="image/*">
+
+        <label>
+          Upload image
+        </label>
+
+        <input
+          type="file"
+          id="outfitImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>Describe the outfit</label>
+
+        <label>
+          Describe the outfit
+        </label>
+
         <textarea
           id="outfitPrompt"
           placeholder="Describe the clothing you want..."
         ></textarea>
+
       </div>
 
     </div>
 
-    <!-- IMAGE STYLE -->
-    <div id="toolStyle" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         IMAGE STYLE
+    ====================== -->
+
+    <div
+      id="toolStyle"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Upload image</label>
-        <input type="file" id="styleImage" accept="image/*">
+
+        <label>
+          Upload image
+        </label>
+
+        <input
+          type="file"
+          id="styleImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="field">
-        <label>Style</label>
+
+        <label>
+          Style
+        </label>
+
         <select id="styleType">
-          <option value="cinematic">Cinematic</option>
-          <option value="anime">Anime</option>
-          <option value="realistic">Realistic</option>
-          <option value="artistic">Artistic</option>
-          <option value="cartoon">Cartoon</option>
-          <option value="illustration">Illustration</option>
+
+          <option value="cinematic">
+            Cinematic
+          </option>
+
+          <option value="anime">
+            Anime
+          </option>
+
+          <option value="realistic">
+            Realistic
+          </option>
+
+          <option value="artistic">
+            Artistic
+          </option>
+
+          <option value="cartoon">
+            Cartoon
+          </option>
+
+          <option value="illustration">
+            Illustration
+          </option>
+
         </select>
+
       </div>
 
     </div>
 
-    <!-- TALKING PHOTO -->
-    <div id="toolTalkingPhoto" class="tool-content" style="display:none;">
+
+    <!-- =====================
+         TALKING PHOTO
+    ====================== -->
+
+    <div
+      id="toolTalkingPhoto"
+      class="tool-content"
+    >
 
       <div class="field">
-        <label>Photo</label>
-        <input type="file" id="talkingPhotoImage" accept="image/*">
+
+        <label>
+          Photo
+        </label>
+
+        <input
+          type="file"
+          id="talkingPhotoImage"
+          accept="image/*"
+        >
+
       </div>
 
       <div class="two-col">
 
         <div class="field">
-          <label>Language</label>
+
+          <label>
+            Language
+          </label>
+
           <select id="talkingPhotoLanguage">
-            <option value="English">English</option>
-            <option value="French">French</option>
-            <option value="Spanish">Spanish</option>
-            <option value="German">German</option>
-            <option value="Arabic">Arabic</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Chinese">Chinese</option>
-            <option value="Japanese">Japanese</option>
-            <option value="Korean">Korean</option>
-            <option value="Yoruba">Yoruba</option>
-            <option value="Igbo">Igbo</option>
+
+            <option>English</option>
+            <option>French</option>
+            <option>Spanish</option>
+            <option>German</option>
+            <option>Arabic</option>
+            <option>Hindi</option>
+            <option>Chinese</option>
+            <option>Japanese</option>
+            <option>Korean</option>
+            <option>Yoruba</option>
+            <option>Igbo</option>
+
           </select>
+
         </div>
 
         <div class="field">
-          <label>Voice</label>
+
+          <label>
+            Voice
+          </label>
+
           <select id="talkingPhotoVoice">
-            <option value="female">Female</option>
-            <option value="male">Male</option>
+
+            <option value="female">
+              Female
+            </option>
+
+            <option value="male">
+              Male
+            </option>
+
           </select>
+
         </div>
 
       </div>
 
       <div class="field">
-        <label>Text</label>
+
+        <label>
+          Text
+        </label>
+
         <textarea
           id="talkingPhotoText"
           placeholder="Type what the photo should say..."
         ></textarea>
+
       </div>
 
     </div>
 
-    <div class="price-preview">
-      <div>Service price</div>
-      <strong>₦<span id="selectedPrice">0.00</span></strong>
+
+    <!-- PRICE -->
+
+    <div class="price-box">
+
+      <div class="price-label">
+        Service price
+      </div>
+
+      <div class="price-value">
+        ₦<span id="selectedPrice">
+          0.00
+        </span>
+      </div>
+
     </div>
 
-    <div id="toolLoading" class="loading">
-      Processing purchase...
+
+    <div
+      id="toolLoading"
+      class="loading"
+    >
+      Processing secure purchase...
     </div>
+
 
     <button
-      type="button"
       id="purchaseButton"
       class="primary-btn"
       onclick="preparePurchase()"
@@ -743,13 +1521,24 @@
       Continue
     </button>
 
-    <div id="resultBox" class="result-box"></div>
 
-  </section>
+    <div
+      id="resultBox"
+      class="result"
+    ></div>
+
+  </div>
+
+</section>
 
 </main>
 
+
 <script>
+
+/* =========================
+   SUPABASE
+========================= */
 
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -763,6 +1552,7 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
+
 let currentUser = null;
 let walletBalance = 0;
 let aiServices = [];
@@ -770,70 +1560,127 @@ let selectedService = null;
 
 
 /* =========================
-   SERVICE MAPPING
+   SERVICE DESIGN
 ========================= */
 
-const serviceMap = {
+const serviceDesign = {
 
-  "🎬 Pics → Video": {
-    id: "toolPicsVideo",
-    description: "Turn a picture into an AI-generated video."
+  "🎬 Pics → Video":{
+    icon:"🎬",
+    visual:"v1",
+    description:"Turn still pictures into moving AI videos."
   },
 
-  "🎭 Video Face Swap": {
-    id: "toolFaceSwap",
-    description: "Create a face-swap edit using your permitted media."
+  "🎭 Video Face Swap":{
+    icon:"🎭",
+    visual:"v2",
+    description:"Create permitted AI face-swap video edits."
   },
 
-  "🎙️ AI Voice": {
-    id: "toolAiVoice",
-    description: "Generate AI voice audio from written text."
+  "🎙️ AI Voice":{
+    icon:"🎙️",
+    visual:"v3",
+    description:"Turn your text into natural AI speech."
   },
 
-  "🪪 KYC / Document Designer": {
-    id: "toolKyc",
-    description: "Create fictional/sample document designs."
+  "🪪 KYC / Document Designer":{
+    icon:"🪪",
+    visual:"v4",
+    description:"Design fictional sample documents."
   },
 
-  "🧹 Watermark Removal": {
-    id: "toolWatermark",
-    description: "Edit permitted images or videos."
+  "🧹 Watermark Removal":{
+    icon:"🧹",
+    visual:"v5",
+    description:"Remove unwanted marks from permitted media."
   },
 
-  "🗣️ Voice Cloner": {
-    id: "toolVoiceCloner",
-    description: "Generate speech using a permitted voice sample."
+  "🗣️ Voice Cloner":{
+    icon:"🗣️",
+    visual:"v6",
+    description:"Create speech from a permitted voice sample."
   },
 
-  "🎥 Video Voice Clone": {
-    id: "toolVideoVoiceClone",
-    description: "Create a video using generated speech from a permitted voice."
+  "🎥 Video Voice Clone":{
+    icon:"🎥",
+    visual:"v7",
+    description:"Create videos with generated AI speech."
   },
 
-  "✨ AI Image Enhancer": {
-    id: "toolEnhancer",
-    description: "Improve image quality using AI."
+  "✨ AI Image Enhancer":{
+    icon:"✨",
+    visual:"v8",
+    description:"Improve image quality with AI."
   },
 
-  "🖼️ Background / Object Removal": {
-    id: "toolObjectRemoval",
-    description: "Remove unwanted objects or backgrounds."
+  "🖼️ Background / Object Removal":{
+    icon:"🖼️",
+    visual:"v9",
+    description:"Remove unwanted objects or backgrounds."
   },
 
-  "👕 AI Outfit Editor": {
-    id: "toolOutfit",
-    description: "Edit clothing and outfit appearance."
+  "👕 AI Outfit Editor":{
+    icon:"👕",
+    visual:"v10",
+    description:"Change clothing and outfit appearance."
   },
 
-  "🎨 AI Image Style": {
-    id: "toolStyle",
-    description: "Apply an AI visual style to an image."
+  "🎨 AI Image Style":{
+    icon:"🎨",
+    visual:"v11",
+    description:"Transform images into different visual styles."
   },
 
-  "🗣️ Talking Photo": {
-    id: "toolTalkingPhoto",
-    description: "Create a talking-photo video from an image and text."
+  "🗣️ Talking Photo":{
+    icon:"🗣️",
+    visual:"v12",
+    description:"Make a photo speak using AI."
   }
+
+};
+
+
+/* =========================
+   TOOL MAPPING
+========================= */
+
+const toolMapping = {
+
+  "🎬 Pics → Video":
+    "toolPicsVideo",
+
+  "🎭 Video Face Swap":
+    "toolFaceSwap",
+
+  "🎙️ AI Voice":
+    "toolAiVoice",
+
+  "🪪 KYC / Document Designer":
+    "toolKyc",
+
+  "🧹 Watermark Removal":
+    "toolWatermark",
+
+  "🗣️ Voice Cloner":
+    "toolVoiceCloner",
+
+  "🎥 Video Voice Clone":
+    "toolVideoVoiceClone",
+
+  "✨ AI Image Enhancer":
+    "toolEnhancer",
+
+  "🖼️ Background / Object Removal":
+    "toolObjectRemoval",
+
+  "👕 AI Outfit Editor":
+    "toolOutfit",
+
+  "🎨 AI Image Style":
+    "toolStyle",
+
+  "🗣️ Talking Photo":
+    "toolTalkingPhoto"
 
 };
 
@@ -850,14 +1697,22 @@ async function checkAuth(){
   } = await supabaseClient.auth.getSession();
 
   if(error){
-    console.error(error);
+
+    console.error(
+      "Auth error:",
+      error
+    );
+
   }
 
   currentUser =
     data?.session?.user || null;
 
   if(!currentUser){
-    window.location.href = "login.html";
+
+    window.location.href =
+      "login.html";
+
     return false;
   }
 
@@ -881,25 +1736,29 @@ async function loadWallet(){
   } = await supabaseClient
     .from("wallet")
     .select("balance")
-    .eq('"user-id"', currentUser.id)
+    .eq(
+      '"user-id"',
+      currentUser.id
+    )
     .maybeSingle();
 
   if(error){
 
     console.error(
-      "Wallet load error:",
+      "Wallet error:",
       error
     );
 
     walletBalance = 0;
 
-    updateWalletDisplay();
+  }else{
 
-    return;
+    walletBalance =
+      Number(
+        data?.balance || 0
+      );
+
   }
-
-  walletBalance =
-    Number(data?.balance || 0);
 
   updateWalletDisplay();
 }
@@ -928,7 +1787,7 @@ function updateWalletDisplay(){
 
 
 /* =========================
-   LOAD SERVICES
+   LOAD AI SERVICES
 ========================= */
 
 async function loadServices(){
@@ -939,10 +1798,16 @@ async function loadServices(){
   } = await supabaseClient
     .from("ai_services")
     .select("*")
-    .eq("is_active", true)
-    .order("sort_order", {
-      ascending:true
-    });
+    .eq(
+      "is_active",
+      true
+    )
+    .order(
+      "sort_order",
+      {
+        ascending:true
+      }
+    );
 
   if(error){
 
@@ -953,19 +1818,25 @@ async function loadServices(){
 
     document.getElementById(
       "servicesGrid"
-    ).innerHTML =
-      `<div class="empty">
+    ).innerHTML = `
+      <div class="empty">
         Unable to load AI services.
-      </div>`;
+      </div>
+    `;
 
     return;
   }
 
-  aiServices = data || [];
+  aiServices =
+    data || [];
 
   renderServices();
 }
 
+
+/* =========================
+   RENDER HOME CARDS
+========================= */
 
 function renderServices(){
 
@@ -976,71 +1847,96 @@ function renderServices(){
 
   if(!aiServices.length){
 
-    grid.innerHTML =
-      `<div class="empty">
-        No AI services are currently available.
-      </div>`;
+    grid.innerHTML = `
+      <div class="empty">
+        No AI services available.
+      </div>
+    `;
 
     return;
   }
 
+
   grid.innerHTML =
-    aiServices.map(service => {
+    aiServices.map(
+      service => {
 
-      const mapped =
-        serviceMap[service.name];
+        const design =
+          serviceDesign[
+            service.name
+          ] || {
+            icon:"✨",
+            visual:"v11",
+            description:
+              service.description ||
+              "AI-powered service."
+          };
 
-      const description =
-        mapped?.description ||
-        service.description ||
-        "AI Studio service";
 
-      return `
-        <div
-          class="service-card"
-          id="service-card-${service.id}"
-          onclick="selectService('${service.id}')"
-        >
+        return `
 
-          <div class="service-icon">
-            ${getServiceIcon(service.name)}
+          <div
+            class="ai-card"
+            onclick="openTool('${service.id}')"
+          >
+
+            <div
+              class="ai-image ${design.visual}"
+            >
+
+              <div class="visual-box">
+                ${design.icon}
+              </div>
+
+            </div>
+
+
+            <div class="ai-card-body">
+
+              <div class="ai-card-title">
+                ${escapeHtml(service.name)}
+              </div>
+
+              <div class="ai-card-desc">
+                ${escapeHtml(
+                  design.description
+                )}
+              </div>
+
+
+              <div class="ai-card-bottom">
+
+                <div class="price">
+                  ₦${Number(
+                    service.price || 0
+                  ).toLocaleString()}
+                </div>
+
+                <button
+                  class="use-btn"
+                  onclick="event.stopPropagation();openTool('${service.id}')"
+                >
+                  Open
+                </button>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <div class="service-name">
-            ${escapeHtml(service.name)}
-          </div>
+        `;
 
-          <div class="service-description">
-            ${escapeHtml(description)}
-          </div>
-
-          <div class="service-price">
-            ₦${Number(service.price || 0).toLocaleString()}
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-}
-
-
-function getServiceIcon(name){
-
-  const first =
-    name.match(/^\S+/);
-
-  return first
-    ? first[0]
-    : "🤖";
+      }
+    ).join("");
 }
 
 
 /* =========================
-   SELECT SERVICE
+   OPEN TOOL
 ========================= */
 
-function selectService(serviceId){
+function openTool(serviceId){
 
   selectedService =
     aiServices.find(
@@ -1048,39 +1944,66 @@ function selectService(serviceId){
         service.id === serviceId
     );
 
+
   if(!selectedService){
     return;
   }
 
-  document
-    .querySelectorAll(".service-card")
-    .forEach(card => {
-      card.classList.remove("selected");
-    });
 
-  const card =
-    document.getElementById(
-      `service-card-${serviceId}`
-    );
+  const design =
+    serviceDesign[
+      selectedService.name
+    ] || {
+      icon:"✨",
+      visual:"v11",
+      description:
+        selectedService.description ||
+        "AI-powered service."
+    };
 
-  if(card){
-    card.classList.add("selected");
-  }
 
-  const mapped =
-    serviceMap[selectedService.name];
+  const toolId =
+    toolMapping[
+      selectedService.name
+    ];
+
+
+  document.getElementById(
+    "homeView"
+  ).style.display =
+    "none";
+
+
+  document.getElementById(
+    "toolView"
+  ).classList.add(
+    "active"
+  );
+
 
   document.getElementById(
     "toolTitle"
   ).textContent =
     selectedService.name;
 
+
   document.getElementById(
     "toolSubtitle"
   ).textContent =
-    mapped?.description ||
-    selectedService.description ||
-    "";
+    design.description;
+
+
+  const icon =
+    document.getElementById(
+      "toolIconLarge"
+    );
+
+  icon.textContent =
+    design.icon;
+
+  icon.className =
+    `tool-icon-large ${design.visual}`;
+
 
   document.getElementById(
     "selectedPrice"
@@ -1089,45 +2012,84 @@ function selectService(serviceId){
       selectedService.price || 0
     ).toLocaleString();
 
+
   hideAllTools();
 
-  if(mapped){
+
+  if(toolId){
 
     const tool =
       document.getElementById(
-        mapped.id
+        toolId
       );
 
     if(tool){
-      tool.style.display = "block";
+
+      tool.classList.add(
+        "active"
+      );
+
     }
 
   }
 
-  document
-    .getElementById("toolPanel")
-    .classList.add("active");
 
-  document
-    .getElementById("resultBox")
-    .classList.remove("show");
+  document.getElementById(
+    "resultBox"
+  ).classList.remove(
+    "show"
+  );
 
-  document
-    .getElementById("toolPanel")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+/* =========================
+   BACK HOME
+========================= */
+
+function goBackHome(){
+
+  selectedService =
+    null;
+
+  document.getElementById(
+    "toolView"
+  ).classList.remove(
+    "active"
+  );
+
+  document.getElementById(
+    "homeView"
+  ).style.display =
+    "block";
+
+  hideAllTools();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 }
 
 
 function hideAllTools(){
 
   document
-    .querySelectorAll(".tool-content")
-    .forEach(tool => {
-      tool.style.display = "none";
-    });
+    .querySelectorAll(
+      ".tool-content"
+    )
+    .forEach(
+      tool => {
+        tool.classList.remove(
+          "active"
+        );
+      }
+    );
 }
 
 
@@ -1138,11 +2100,15 @@ function hideAllTools(){
 function checkWalletForService(){
 
   if(!selectedService){
+
     return {
       ok:false,
-      message:"Please select an AI service."
+      message:
+        "Please select an AI service."
     };
+
   }
+
 
   const price =
     Number(
@@ -1150,33 +2116,42 @@ function checkWalletForService(){
     );
 
   const balance =
-    Number(walletBalance || 0);
+    Number(
+      walletBalance || 0
+    );
+
 
   if(balance < price){
 
     const shortfall =
       price - balance;
 
+
     return {
+
       ok:false,
+
       message:
         `Insufficient wallet balance.\n\n` +
         `Service: ${selectedService.name}\n` +
         `Price: ₦${price.toLocaleString()}\n` +
         `Your balance: ₦${balance.toLocaleString()}\n` +
         `You need: ₦${shortfall.toLocaleString()} more.`
+
     };
 
   }
 
+
   return {
     ok:true
   };
+
 }
 
 
 /* =========================
-   PURCHASE
+   SECURE PURCHASE
 ========================= */
 
 async function preparePurchase(){
@@ -1193,17 +2168,18 @@ async function preparePurchase(){
     return;
   }
 
+
   if(!selectedService){
 
     alert(
-      "Please select an AI service first."
+      "Please select an AI service."
     );
 
     return;
   }
 
 
-  /* Consent checks */
+  /* Voice consent */
 
   if(
     selectedService.name ===
@@ -1215,7 +2191,10 @@ async function preparePurchase(){
         "voiceCloneConsent"
       );
 
-    if(!consent.checked){
+    if(
+      !consent ||
+      !consent.checked
+    ){
 
       alert(
         "Please confirm that you own the voice or have permission to clone it."
@@ -1223,8 +2202,11 @@ async function preparePurchase(){
 
       return;
     }
+
   }
 
+
+  /* Video voice consent */
 
   if(
     selectedService.name ===
@@ -1236,7 +2218,10 @@ async function preparePurchase(){
         "videoVoiceConsent"
       );
 
-    if(!consent.checked){
+    if(
+      !consent ||
+      !consent.checked
+    ){
 
       alert(
         "Please confirm that you own the voice and visual materials or have permission to use them."
@@ -1244,11 +2229,13 @@ async function preparePurchase(){
 
       return;
     }
+
   }
 
 
   const walletCheck =
     checkWalletForService();
+
 
   if(!walletCheck.ok){
 
@@ -1270,7 +2257,9 @@ async function preparePurchase(){
       "toolLoading"
     );
 
-  button.disabled = true;
+
+  button.disabled =
+    true;
 
   loading.classList.add(
     "show"
@@ -1280,14 +2269,16 @@ async function preparePurchase(){
   try{
 
     /*
-      IMPORTANT:
-      This RPC performs the secure
-      wallet deduction on Supabase.
+      SECURE SUPABASE RPC
 
-      It also creates:
-      - transactions row
-      - purchases row
-      - ai_jobs row
+      This function:
+      - checks the authenticated user
+      - checks the real wallet
+      - locks the wallet row
+      - deducts the service price
+      - creates a transaction
+      - creates a purchase
+      - creates an AI job
     */
 
     const {
@@ -1305,7 +2296,7 @@ async function preparePurchase(){
     if(error){
 
       console.error(
-        "AI purchase error:",
+        "Purchase error:",
         error
       );
 
@@ -1331,16 +2322,11 @@ async function preparePurchase(){
     }
 
 
-    /*
-      Update wallet immediately
-      using the balance returned
-      by the secure database function.
-    */
-
     walletBalance =
       Number(
         data.wallet_balance || 0
       );
+
 
     updateWalletDisplay();
 
@@ -1350,8 +2336,13 @@ async function preparePurchase(){
         "resultBox"
       );
 
+
     result.innerHTML = `
-      <strong>Purchase successful 🎉</strong>
+
+      <strong>
+        Purchase successful 🎉
+      </strong>
+
       <br><br>
 
       Service:
@@ -1374,8 +2365,11 @@ async function preparePurchase(){
 
       <br><br>
 
-      Your AI job has been created and is waiting for processing.
+      AI job created successfully.
+      Processing will begin when the AI provider is connected.
+
     `;
+
 
     result.classList.add(
       "show"
@@ -1383,20 +2377,15 @@ async function preparePurchase(){
 
 
     console.log(
-      "AI purchase created:",
+      "AI purchase:",
       data
     );
 
 
-    /*
-      Provider processing will be
-      connected to ai_jobs next.
-    */
-
   }catch(error){
 
     console.error(
-      "Unexpected AI purchase error:",
+      "Unexpected purchase error:",
       error
     );
 
@@ -1406,12 +2395,15 @@ async function preparePurchase(){
 
   }finally{
 
-    button.disabled = false;
+    button.disabled =
+      false;
 
     loading.classList.remove(
       "show"
     );
+
   }
+
 }
 
 
@@ -1430,76 +2422,103 @@ async function loadKycCountries(){
     return;
   }
 
+
   const {
     data,
     error
   } = await supabaseClient
     .from("kyc_countries")
-    .select("id,country_name")
-    .eq("is_active", true)
-    .order("country_name");
+    .select(
+      "id,country_name"
+    )
+    .eq(
+      "is_active",
+      true
+    )
+    .order(
+      "country_name"
+    );
+
 
   if(error){
 
     console.error(
-      "KYC countries error:",
+      "KYC countries:",
       error
     );
 
     return;
   }
 
-  select.innerHTML =
-    `<option value="">
+
+  select.innerHTML = `
+    <option value="">
       Select country
-    </option>`;
+    </option>
+  `;
 
-  (data || []).forEach(country => {
 
-    const option =
-      document.createElement(
-        "option"
+  (data || []).forEach(
+    country => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        country.id;
+
+      option.textContent =
+        country.country_name;
+
+      select.appendChild(
+        option
       );
 
-    option.value =
-      country.id;
+    }
+  );
 
-    option.textContent =
-      country.country_name;
-
-    select.appendChild(
-      option
-    );
-
-  });
 }
 
 
-async function loadKycDocuments(countryId){
+/* =========================
+   KYC DOCUMENTS
+========================= */
+
+async function loadKycDocuments(
+  countryId
+){
 
   const select =
     document.getElementById(
       "kycDocument"
     );
 
+
   if(!select){
     return;
   }
 
-  select.innerHTML =
-    `<option value="">
-      Loading...
-    </option>`;
 
   if(!countryId){
 
-    select.innerHTML =
-      `<option value="">
+    select.innerHTML = `
+      <option value="">
         Select document
-      </option>`;
+      </option>
+    `;
 
     return;
   }
+
+
+  select.innerHTML = `
+    <option value="">
+      Loading...
+    </option>
+  `;
+
 
   const {
     data,
@@ -1521,59 +2540,85 @@ async function loadKycDocuments(countryId){
       "document_name"
     );
 
+
   if(error){
 
     console.error(
-      "KYC documents error:",
+      "KYC documents:",
       error
     );
 
-    select.innerHTML =
-      `<option value="">
+    select.innerHTML = `
+      <option value="">
         Unable to load documents
-      </option>`;
+      </option>
+    `;
 
     return;
   }
 
-  select.innerHTML =
-    `<option value="">
+
+  select.innerHTML = `
+    <option value="">
       Select document
-    </option>`;
+    </option>
+  `;
 
-  (data || []).forEach(doc => {
 
-    const option =
-      document.createElement(
-        "option"
+  (data || []).forEach(
+    documentType => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        documentType.id;
+
+      option.textContent =
+        documentType.document_name;
+
+      select.appendChild(
+        option
       );
 
-    option.value =
-      doc.id;
+    }
+  );
 
-    option.textContent =
-      doc.document_name;
-
-    select.appendChild(
-      option
-    );
-
-  });
 }
 
 
 /* =========================
-   HELPERS
+   ESCAPE HTML
 ========================= */
 
 function escapeHtml(value){
 
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
 }
 
 
@@ -1586,21 +2631,27 @@ async function init(){
   const authenticated =
     await checkAuth();
 
+
   if(!authenticated){
     return;
   }
 
+
   await Promise.all([
+
     loadWallet(),
+
     loadServices(),
+
     loadKycCountries()
+
   ]);
 
 }
 
 
 /* =========================
-   KYC COUNTRY CHANGE
+   EVENTS
 ========================= */
 
 document.addEventListener(
@@ -1611,6 +2662,7 @@ document.addEventListener(
       document.getElementById(
         "kycCountry"
       );
+
 
     if(country){
 
@@ -1626,6 +2678,7 @@ document.addEventListener(
       );
 
     }
+
 
     init();
 
