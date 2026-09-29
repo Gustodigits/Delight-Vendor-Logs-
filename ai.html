@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Studio — Delight Vendor Logs</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#f5f6f8;
+    color:#111;
+    min-height:100vh;
+}
+
+.header{
+    background:#000;
+    color:#fff;
+    padding:18px 16px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.header-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.brand{
+    font-size:21px;
+    font-weight:900;
+}
+
+.brand span{
+    display:block;
+    font-size:12px;
+    color:#aaa;
+    margin-top:3px;
+    font-weight:500;
+}
+
+.back-btn{
+    border:1px solid #444;
+    background:#151515;
+    color:#fff;
+    padding:9px 13px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.wallet{
+    margin:16px;
+    padding:18px;
+    background:#0d6efd;
+    color:#fff;
+    border-radius:16px;
+    box-shadow:0 6px 18px rgba(13,110,253,.2);
+}
+
+.wallet-label{
+    font-size:13px;
+    opacity:.85;
+}
+
+.wallet-balance{
+    font-size:28px;
+    font-weight:900;
+    margin-top:5px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:0 16px 40px;
+}
+
+.title{
+    font-size:24px;
+    font-weight:900;
+    margin:25px 0 6px;
+}
+
+.subtitle{
+    color:#666;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+.services{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.service-card{
+    background:#fff;
+    border:1px solid #e4e4e4;
+    border-radius:17px;
+    padding:18px;
+    cursor:pointer;
+    transition:.2s;
+    box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.service-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 22px rgba(0,0,0,.08);
+}
+
+.icon{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    background:#f0f2f5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    margin-bottom:13px;
+}
+
+.service-name{
+    font-size:17px;
+    font-weight:900;
+    margin-bottom:7px;
+}
+
+.service-description{
+    color:#666;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.service-price{
+    margin-top:14px;
+    font-weight:900;
+    color:#0d6efd;
+}
+
+.tool-page{
+    display:none;
+}
+
+.tool-header{
+    background:#fff;
+    border-radius:17px;
+    padding:20px;
+    margin-top:20px;
+    border:1px solid #e5e5e5;
+}
+
+.tool-icon{
+    font-size:38px;
+}
+
+.tool-title{
+    font-size:23px;
+    font-weight:900;
+    margin-top:8px;
+}
+
+.tool-description{
+    color:#666;
+    margin-top:6px;
+    font-size:14px;
+}
+
+.tool-box{
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:17px;
+    padding:20px;
+    margin-top:14px;
+}
+
+label{
+    display:block;
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #d7d7d7;
+    border-radius:11px;
+    outline:none;
+    font-size:14px;
+    margin-bottom:16px;
+    background:#fff;
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+.file-input{
+    padding:11px;
+}
+
+.continue-btn{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#000;
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.continue-btn:hover{
+    opacity:.88;
+}
+
+.back-tools{
+    margin-top:15px;
+    border:none;
+    background:none;
+    color:#0d6efd;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.kyc-note{
+    background:#fff8df;
+    border:1px solid #f0d878;
+    padding:13px;
+    border-radius:11px;
+    font-size:12px;
+    line-height:1.5;
+    margin-bottom:18px;
+}
+
+.voice-note{
+    background:#eef6ff;
+    border:1px solid #b9d9ff;
+    padding:13px;
+    border-radius:11px;
+    font-size:12px;
+    line-height:1.5;
+    margin-bottom:18px;
+}
+
+.consent-box{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    background:#f7f7f7;
+    border:1px solid #e2e2e2;
+    padding:13px;
+    border-radius:11px;
+    margin-bottom:16px;
+}
+
+.consent-box input{
+    width:auto;
+    margin:2px 0 0;
+    flex-shrink:0;
+}
+
+.consent-box span{
+    font-size:12px;
+    line-height:1.5;
+    color:#555;
+}
+
+.coming{
+    padding:30px 10px;
+    text-align:center;
+    color:#777;
+}
+
+@media(min-width:700px){
+    .services{
+        grid-template-columns:repeat(3,1fr);
+    }
+}
+
+@media(max-width:420px){
+    .services{
+        grid-template-columns:1fr;
+    }
+
+    .brand{
+        font-size:18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="header-top">
+
+        <div class="brand">
+            ⚡ Delight Vendor Logs
+            <span>AI Studio</span>
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <div class="wallet">
+
+        <div class="wallet-label">
+            Wallet Balance
+        </div>
+
+        <div class="wallet-balance" id="walletBalance">
+            ₦0
+        </div>
+
+    </div>
+
+
+    <section id="servicePage">
+
+        <h1 class="title">
+            AI Studio
+        </h1>
+
+        <p class="subtitle">
+            Choose an AI service to continue.
+        </p>
+
+
+        <div class="services">
+
+            <!-- 1 -->
+
+            <div class="service-card"
+                 onclick="openTool('picsVideo')">
+
+                <div class="icon">🎬</div>
+
+                <div class="service-name">
+                    Pics → Video
+                </div>
+
+                <div class="service-description">
+                    Turn an image into a video with instructions and voice.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 2 -->
+
+            <div class="service-card"
+                 onclick="openTool('faceSwap')">
+
+                <div class="icon">🎭</div>
+
+                <div class="service-name">
+                    Video Face Swap
+                </div>
+
+                <div class="service-description">
+                    Replace a face in a video with an authorized face.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 3 -->
+
+            <div class="service-card"
+                 onclick="openTool('voice')">
+
+                <div class="icon">🎙️</div>
+
+                <div class="service-name">
+                    AI Voice
+                </div>
+
+                <div class="service-description">
+                    Generate speech from your text using an AI voice.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 4 -->
+
+            <div class="service-card"
+                 onclick="openTool('kyc')">
+
+                <div class="icon">🪪</div>
+
+                <div class="service-name">
+                    KYC / Document Designer
+                </div>
+
+                <div class="service-description">
+                    Passport • ID • Licence • Tax ID • Residence Permit • More
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 5 -->
+
+            <div class="service-card"
+                 onclick="openTool('watermark')">
+
+                <div class="icon">🧹</div>
+
+                <div class="service-name">
+                    Watermark Removal
+                </div>
+
+                <div class="service-description">
+                    AI cleanup using automatic detection, brush or text targeting.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 6 -->
+
+            <div class="service-card"
+                 onclick="openTool('voiceCloner')">
+
+                <div class="icon">🗣️</div>
+
+                <div class="service-name">
+                    Voice Cloner
+                </div>
+
+                <div class="service-description">
+                    Clone an authorized voice sample and generate new speech from your text.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 7 -->
+
+            <div class="service-card"
+                 onclick="openTool('videoVoiceClone')">
+
+                <div class="icon">🎥</div>
+
+                <div class="service-name">
+                    Video Voice Clone
+                </div>
+
+                <div class="service-description">
+                    Use an authorized voice with a video or picture and generate a voiced video.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 8 -->
+
+            <div class="service-card"
+                 onclick="openTool('enhancer')">
+
+                <div class="icon">✨</div>
+
+                <div class="service-name">
+                    AI Image Enhancer
+                </div>
+
+                <div class="service-description">
+                    Improve image quality, sharpness and resolution.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 9 -->
+
+            <div class="service-card"
+                 onclick="openTool('objectRemoval')">
+
+                <div class="icon">🖼️</div>
+
+                <div class="service-name">
+                    Background / Object Removal
+                </div>
+
+                <div class="service-description">
+                    Remove unwanted backgrounds or objects from an image.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 10 -->
+
+            <div class="service-card"
+                 onclick="openTool('outfit')">
+
+                <div class="icon">👕</div>
+
+                <div class="service-name">
+                    AI Outfit Editor
+                </div>
+
+                <div class="service-description">
+                    Change clothing style, colors and outfit appearance.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 11 -->
+
+            <div class="service-card"
+                 onclick="openTool('style')">
+
+                <div class="icon">🎨</div>
+
+                <div class="service-name">
+                    AI Image Style
+                </div>
+
+                <div class="service-description">
+                    Transform your image into different artistic styles.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+
+            <!-- 12 -->
+
+            <div class="service-card"
+                 onclick="openTool('talkingPhoto')">
+
+                <div class="icon">🗣️</div>
+
+                <div class="service-name">
+                    Talking Photo
+                </div>
+
+                <div class="service-description">
+                    Create a talking-photo video from an authorized image and script.
+                </div>
+
+                <div class="service-price">
+                    Price: ₦—
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section id="toolPage" class="tool-page">
+
+        <div class="tool-header">
+
+            <div class="tool-icon" id="toolIcon">
+                🤖
+            </div>
+
+            <div class="tool-title" id="toolTitle">
+                AI Tool
+            </div>
+
+            <div class="tool-description" id="toolDescription">
+                Choose an AI service.
+            </div>
+
+        </div>
+
+
+        <div class="tool-box" id="toolContent"></div>
+
+
+        <button class="back-tools"
+                onclick="showServices()">
+            ← Back to AI Studio
+        </button>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const tools = {
+
+    picsVideo:{
+        icon:"🎬",
+        title:"Pics → Video",
+        description:"Turn a picture into a video using your instructions."
+    },
+
+    faceSwap:{
+        icon:"🎭",
+        title:"Video Face Swap",
+        description:"Upload a video and an authorized replacement face."
+    },
+
+    voice:{
+        icon:"🎙️",
+        title:"AI Voice",
+        description:"Generate speech from your text."
+    },
+
+    kyc:{
+        icon:"🪪",
+        title:"KYC / Document Designer",
+        description:"Choose a country and document type, then provide the required information."
+    },
+
+    watermark:{
+        icon:"🧹",
+        title:"Watermark Removal",
+        description:"Clean up images you own or have permission to edit."
+    },
+
+    voiceCloner:{
+        icon:"🗣️",
+        title:"Voice Cloner",
+        description:"Clone an authorized voice sample and generate new speech from your text."
+    },
+
+    videoVoiceClone:{
+        icon:"🎥",
+        title:"Video Voice Clone",
+        description:"Use an authorized voice with a picture or video to create a voiced video."
+    },
+
+    enhancer:{
+        icon:"✨",
+        title:"AI Image Enhancer",
+        description:"Improve image quality and resolution."
+    },
+
+    objectRemoval:{
+        icon:"🖼️",
+        title:"Background / Object Removal",
+        description:"Remove unwanted objects or backgrounds."
+    },
+
+    outfit:{
+        icon:"👕",
+        title:"AI Outfit Editor",
+        description:"Edit clothing and outfit appearance."
+    },
+
+    style:{
+        icon:"🎨",
+        title:"AI Image Style",
+        description:"Transform an image into a selected artistic style."
+    },
+
+    talkingPhoto:{
+        icon:"🗣️",
+        title:"Talking Photo",
+        description:"Create a talking-photo video using an authorized image."
+    }
+
+};
+
+
+function openTool(tool){
+
+    const data = tools[tool];
+
+    if(!data) return;
+
+    document.getElementById("servicePage").style.display = "none";
+
+    const page =
+        document.getElementById("toolPage");
+
+    page.style.display = "block";
+
+    document.getElementById("toolIcon").textContent =
+        data.icon;
+
+    document.getElementById("toolTitle").textContent =
+        data.title;
+
+    document.getElementById("toolDescription").textContent =
+        data.description;
+
+    renderTool(tool);
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+function showServices(){
+
+    document.getElementById("toolPage").style.display =
+        "none";
+
+    document.getElementById("servicePage").style.display =
+        "block";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+function goBack(){
+
+    showServices();
+
+}
+
+
+function renderTool(tool){
+
+    const box =
+        document.getElementById("toolContent");
+
+
+    /* PICS TO VIDEO */
+
+    if(tool === "picsVideo"){
+
+        box.innerHTML = `
+
+            <label>Upload Picture</label>
+
+            <input
+                class="file-input"
+                type="file"
+                accept="image/*"
+            >
+
+            <label>
+                What should the video say/do?
+            </label>
+
+            <textarea
+                placeholder="Describe what you want the video to say or do..."
+            ></textarea>
+
+            <label>Voice</label>
+
+            <select>
+
+                <option>Female Voice</option>
+                <option>Male Voice</option>
+
+            </select>
+
+            <button class="continue-btn">
+                Continue
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* FACE SWAP */
+
+    if(tool === "faceSwap"){
+
+        box.innerHTML = `
+
+            <label>Upload Video</label>
+
+            <input
+                class="file-input"
+                type="file"
+                accept="video/*"
+            >
+
+            <label>Upload Replacement Face</label>
+
+            <input
+                class="file-input"
+                type="file"
+                accept="image/*"
+            >
+
+            <button class="continue-btn">
+                Continue
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* AI VOICE */
+
+    if(tool === "voice"){
+
+        box.innerHTML = `
+
+            <label>Text</label>
+
+            <textarea
+                placeholder="Type what you want the AI voice to say..."
+            ></textarea>
+
+            <label>Voice</label>
+
+            <select>
+
+                <option>Female Voice</option>
+                <option>Male Voice</option>
+
+            </select>
+
+            <label>Language</label>
+
+            <select>
+
+                <option>English</option>
+                <option>French</option>
+                <option>Spanish</option>
+
+            </select>
+
+            <button class="continue-btn">
+                Generate Voice
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* KYC */
+
+    if(tool === "kyc"){
+
+        box.innerHTML = `
+
+            <div class="kyc-note">
+
+                Educational / design use only.
+                Do not use generated documents for
+                fraud, impersonation, identity theft,
+                deception or unlawful activity.
+
+            </div>
+
+            <label>Choose Country</label>
+
+            <select id="kycCountry">
+
+                <option value="">
+                    Select country
+                </option>
+
+                <option>Nigeria</option>
+                <option>United States</option>
+                <option>United Kingdom</option>
+                <option>India</option>
+                <option>Canada</option>
+                <option>Australia</option>
+                <option>South Africa</option>
+                <option>Ghana</option>
+
+            </select>
+
+
+            <label>Document Type</label>
+
+            <select id="kycDocument">
+
+                <option value="">
+                    Select document type
+                </option>
+
+                <option>Passport</option>
+                <option>National ID</option>
+                <option>Driver's Licence</option>
+                <option>Tax ID</option>
+                <option>Residence Permit</option>
+                <option>Voter's Card</option>
+
+            </select>
+
+
+            <label>
+                Or enter another document type
+            </label>
+
+            <input
+                type="text"
+                placeholder="Example: Residence Card"
+            >
+
+
+            <button class="continue-btn">
+                Continue
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* WATERMARK */
+
+    if(tool === "watermark"){
+
+        box.innerHTML = `
+
+            <label>Upload Image</label>
+
+            <input
+                class="file-input"
+                type="file"
+                accept="image/*"
+            >
+
+            <label>Removal Method</label>
+
+            <select>
+
+                <option>AI Auto Detect</option>
+                <option>Brush / Paint Area</option>
+                <option>Type Target Text</option>
+
+            </select>
+
+            <label>
+                Target Text (optional)
+            </label>
+
+            <input
+                type="text"
+                placeholder="Type the text to target..."
+            >
+
+            <button class="continue-btn">
+                Continue
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* VOICE CLONER */
+
+    if(tool === "voiceCloner"){
+
+        box.innerHTML = `
+
+            <div class="voice-note">
+
+                Upload a voice sample you own or have
+                permission to use. The sample can be
+                a video containing the voice.
+
+            </div>
+
+                   <label>Upload Voice Sample</label>
+
+            <input
+                id="voiceCloneSample"
+                class="file-input"
+                type="file"
+                accept="audio/*,video/*"
+            >
+
+            <label>
+                What should the cloned voice say?
+            </label>
+
+            <textarea
+                id="voiceCloneText"
+                placeholder="Type exactly what you want the cloned voice to say..."
+            ></textarea>
+
+            <div class="consent-box">
+
+                <input
+                    id="voiceCloneConsent"
+                    type="checkbox"
+                >
+
+                <span>
+                    I confirm that I own this voice or have
+                    permission to use it, and I will not use
+                    the generated voice for impersonation,
+                    fraud or unlawful activity.
+                </span>
+
+            </div>
+
+            <button
+                class="continue-btn"
+                onclick="startVoiceClone()"
+            >
+                Continue
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* VIDEO VOICE CLONE */
+
+    if(tool === "videoVoiceClone"){
+
+        box.innerHTML = `
+
+            <div class="voice-note">
+
+                Upload a voice sample you own or have
+                permission to use. Then upload either a
+                picture or video that you are authorized
+                to edit.
+
+            </div>
+
+
+            <label>1. Upload Voice Sample</label>
+
+            <input
+                id="videoVoiceSource"
+                class="file-input"
+                type="file"
+                accept="audio/*,video/*"
+            >
+
+
+            <label>2. Upload Picture or Video</label>
+
+            <input
+                id="videoVoiceVisual"
+                class="file-input"
+                type="file"
+                accept="image/*,video/*"
+            >
+
+
+            <label>
+                3. What should the voice say?
+            </label>
+
+            <textarea
+                id="videoVoiceText"
+                placeholder="Type exactly what you want the cloned voice to say..."
+            ></textarea>
+
+
+            <div class="consent-box">
+
+                <input
+                    id="videoVoiceConsent"
+                    type="checkbox"
+                >
+
+                <span>
+                    I confirm that I own or have permission
+                    to use the voice and visual uploaded.
+                    I will not use the result for impersonation,
+                    fraud or unlawful activity.
+                </span>
+
+            </div>
+
+
+            <button
+                class="continue-btn"
+                onclick="startVideoVoiceClone()"
+            >
+                Continue
+            </button>
+
+        `;
+
+        return;
+    }
+
+
+    /* OTHER TOOLS */
+
+    box.innerHTML = `
+
+        <div class="coming">
+
+            This AI tool is ready for setup.
+            Provider processing will be connected next.
+
+        </div>
+
+    `;
+
+}
+
+
+function startVoiceClone(){
+
+    const sample =
+        document.getElementById("voiceCloneSample");
+
+    const text =
+        document.getElementById("voiceCloneText");
+
+    const consent =
+        document.getElementById("voiceCloneConsent");
+
+
+    if(!sample || !sample.files.length){
+
+        alert("Please upload a voice sample.");
+
+        return;
+    }
+
+
+    if(!text || !text.value.trim()){
+
+        alert("Please type what you want the cloned voice to say.");
+
+        return;
+    }
+
+
+    if(!consent || !consent.checked){
+
+        alert("Please confirm that you have permission to use this voice.");
+
+        return;
+    }
+
+
+    alert(
+        "Voice Clone request is ready. AI processing will be connected next."
+    );
+
+}
+
+
+function startVideoVoiceClone(){
+
+    const source =
+        document.getElementById("videoVoiceSource");
+
+    const visual =
+        document.getElementById("videoVoiceVisual");
+
+    const text =
+        document.getElementById("videoVoiceText");
+
+    const consent =
+        document.getElementById("videoVoiceConsent");
+
+
+    if(!source || !source.files.length){
+
+        alert("Please upload the voice sample.");
+
+        return;
+    }
+
+
+    if(!visual || !visual.files.length){
+
+        alert("Please upload a picture or video.");
+
+        return;
+    }
+
+
+    if(!text || !text.value.trim()){
+
+        alert("Please type what you want the cloned voice to say.");
+
+        return;
+    }
+
+
+    if(!consent || !consent.checked){
+
+        alert(
+            "Please confirm that you have permission to use the voice and visual."
+        );
+
+        return;
+    }
+
+
+    alert(
+        "Video Voice Clone request is ready. AI processing will be connected next."
+    );
+
+}
+
+</script>
+
+</body>
+</html>
