@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI Studio — Delight Vendor Logs</title>
+<title>Virtual Numbers — Delight Vendor Logs</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -16,694 +16,488 @@
 }
 
 body{
-    font-family:Arial,sans-serif;
-    background:#f5f6f8;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
     color:#111;
     min-height:100vh;
 }
 
-.header{
-    background:#000;
-    color:#fff;
-    padding:18px 16px;
-    position:sticky;
-    top:0;
-    z-index:100;
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
+button,
+input{
+    font-family:inherit;
 }
 
-.header-top{
+button{
+    cursor:pointer;
+}
+
+.header{
+    height:62px;
+    background:#111;
+    color:#fff;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:12px;
+    padding:0 16px;
+    position:sticky;
+    top:0;
+    z-index:1000;
 }
 
-.brand{
-    font-size:21px;
-    font-weight:900;
-}
-
-.brand span{
-    display:block;
-    font-size:12px;
-    color:#aaa;
-    margin-top:3px;
-    font-weight:500;
-}
-
-.back-btn{
-    border:1px solid #444;
-    background:#151515;
-    color:#fff;
-    padding:9px 13px;
-    border-radius:10px;
-    cursor:pointer;
+.header-title{
+    font-size:19px;
+    font-weight:800;
 }
 
 .wallet{
-    margin:16px;
-    padding:18px;
-    background:#0d6efd;
-    color:#fff;
-    border-radius:16px;
-    box-shadow:0 6px 18px rgba(13,110,253,.2);
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
 }
 
-.wallet-top{
+.menu-btn{
+    width:40px;
+    height:40px;
+    border:0;
+    border-radius:10px;
+    background:#222;
+    color:#fff;
+    font-size:22px;
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-}
-
-.wallet-label{
-    font-size:13px;
-    opacity:.85;
-}
-
-.wallet-balance{
-    font-size:28px;
-    font-weight:900;
-    margin-top:5px;
-}
-
-.refresh-wallet{
-    border:1px solid rgba(255,255,255,.4);
-    background:rgba(255,255,255,.12);
-    color:#fff;
-    padding:8px 11px;
-    border-radius:9px;
-    cursor:pointer;
-    font-weight:700;
+    justify-content:center;
 }
 
 .container{
-    max-width:900px;
-    margin:auto;
-    padding:0 16px 40px;
+    width:min(1100px,94%);
+    margin:18px auto 50px;
 }
 
-.title{
-    font-size:24px;
+.card{
+    background:#fff;
+    border-radius:15px;
+    padding:16px;
+    margin-bottom:15px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+
+.provider-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+}
+
+.provider-tab{
+    min-height:54px;
+    border:2px solid #d8d8d8;
+    background:#fff;
+    color:#111;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:800;
+    transition:.18s ease;
+    position:relative;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+
+.provider-tab:hover{
+    border-color:#111;
+    transform:translateY(-1px);
+}
+
+.provider-tab:active{
+    transform:scale(.98);
+}
+
+.provider-tab.active{
+    background:#111;
+    color:#fff;
+    border-color:#111;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+.provider-tab.active::after{
+    content:"✓";
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#fff;
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
     font-weight:900;
-    margin:25px 0 6px;
 }
 
-.subtitle{
-    color:#666;
-    font-size:14px;
-    margin-bottom:20px;
-}
-
-.status{
-    display:none;
-    padding:12px 14px;
-    border-radius:11px;
-    margin-bottom:16px;
+.notice{
     font-size:13px;
+    line-height:1.65;
+    background:#fff8df;
+    border:1px solid #f0d879;
+    border-radius:12px;
+    padding:13px;
+    margin-bottom:15px;
+}
+
+.notice strong{
+    font-weight:900;
+}
+
+.section-title{
+    font-size:17px;
+    font-weight:900;
+    margin-bottom:10px;
+}
+
+.search-box{
+    position:relative;
+    margin-bottom:12px;
+}
+
+.search-box input{
+    width:100%;
+    height:44px;
+    border:1px solid #d5d5d5;
+    border-radius:11px;
+    padding:0 14px 0 42px;
+    outline:none;
+    font-size:14px;
+    background:#fff;
+}
+
+.search-box input:focus{
+    border-color:#111;
+}
+
+.search-icon{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:18px;
+    color:#666;
+    pointer-events:none;
+}
+
+.country-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:8px;
+    max-height:420px;
+    overflow-y:auto;
+    padding-right:2px;
+}
+
+.country-btn{
+    min-height:42px;
+    border:1px solid #ddd;
+    background:#fff;
+    border-radius:9px;
+    padding:8px 6px;
+    font-size:12px;
     font-weight:700;
+    color:#111;
+    transition:.15s ease;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
-.status.show{
-    display:block;
+.country-btn:hover{
+    border-color:#111;
+    background:#f7f7f7;
 }
 
-.status.error{
-    background:#fee2e2;
-    color:#991b1b;
+.country-btn.active{
+    background:#111;
+    color:#fff;
+    border-color:#111;
 }
 
-.status.success{
+.service-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:9px;
+}
+
+.service-btn{
+    min-height:45px;
+    border:1px solid #ddd;
+    background:#fff;
+    border-radius:10px;
+    padding:8px;
+    font-size:12px;
+    font-weight:800;
+}
+
+.service-btn:hover{
+    border-color:#111;
+}
+
+.service-btn.active{
+    background:#111;
+    color:#fff;
+    border-color:#111;
+}
+
+.empty{
+    color:#777;
+    font-size:13px;
+    padding:12px 0;
+}
+
+.server-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.server-card{
+    border:1px solid #ddd;
+    background:#fff;
+    border-radius:12px;
+    padding:13px;
+    cursor:pointer;
+    transition:.15s ease;
+}
+
+.server-card:hover{
+    border-color:#111;
+}
+
+.server-card.active{
+    border:2px solid #111;
+}
+
+.server-name{
+    font-weight:900;
+    font-size:14px;
+    margin-bottom:6px;
+}
+
+.server-price{
+    font-size:17px;
+    font-weight:900;
+}
+
+.server-stock{
+    color:#777;
+    font-size:11px;
+    margin-top:5px;
+}
+
+.buy-btn{
+    width:100%;
+    margin-top:12px;
+    height:46px;
+    border:0;
+    border-radius:11px;
+    background:#111;
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+}
+
+.buy-btn:disabled{
+    background:#aaa;
+    cursor:not-allowed;
+}
+
+.order-card{
+    border:1px solid #e0e0e0;
+    border-radius:13px;
+    padding:14px;
+    margin-bottom:10px;
+    background:#fff;
+}
+
+.order-number{
+    font-size:17px;
+    font-weight:900;
+    word-break:break-all;
+}
+
+.order-service{
+    font-size:13px;
+    color:#555;
+    margin-top:5px;
+}
+
+.order-price{
+    font-weight:900;
+    margin-top:8px;
+}
+
+.order-status{
+    display:inline-block;
+    margin-top:9px;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:900;
+    background:#eee;
+}
+
+.order-status.received{
     background:#dcfce7;
     color:#166534;
 }
 
-.status.info{
-    background:#e0f2fe;
-    color:#075985;
+.order-status.cancelled{
+    background:#fee2e2;
+    color:#991b1b;
 }
 
-.services{
+.order-status.pending,
+.order-status.waiting{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.otp{
+    margin-top:8px;
+    background:#f1f5f9;
+    border-radius:9px;
+    padding:9px;
+    font-weight:900;
+}
+
+.order-actions{
     display:flex;
-    flex-direction:column;
-    gap:13px;
+    gap:8px;
+    margin-top:10px;
 }
 
-.service-card{
-    background:#fff;
-    border:1px solid #e4e4e4;
-    border-radius:18px;
-    padding:12px;
-    cursor:pointer;
-    transition:.2s;
-    box-shadow:0 3px 12px rgba(0,0,0,.04);
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.service-card:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 22px rgba(0,0,0,.08);
-    border-color:#cfcfcf;
-}
-
-.service-visual{
-    width:70px;
-    height:70px;
-    min-width:70px;
-    border-radius:17px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    position:relative;
-}
-
-.service-visual svg{
-    width:46px;
-    height:46px;
-    position:relative;
-    z-index:2;
-}
-
-.visual-purple{
-    background:linear-gradient(135deg,#6d28d9,#c026d3);
-}
-
-.visual-blue{
-    background:linear-gradient(135deg,#2563eb,#06b6d4);
-}
-
-.visual-green{
-    background:linear-gradient(135deg,#059669,#14b8a6);
-}
-
-.visual-orange{
-    background:linear-gradient(135deg,#f59e0b,#ef4444);
-}
-
-.visual-red{
-    background:linear-gradient(135deg,#dc2626,#f97316);
-}
-
-.visual-indigo{
-    background:linear-gradient(135deg,#4338ca,#7c3aed);
-}
-
-.visual-cyan{
-    background:linear-gradient(135deg,#0891b2,#2563eb);
-}
-
-.visual-lime{
-    background:linear-gradient(135deg,#16a34a,#65a30d);
-}
-
-.visual-teal{
-    background:linear-gradient(135deg,#0f766e,#0891b2);
-}
-
-.visual-pink{
-    background:linear-gradient(135deg,#db2777,#e11d48);
-}
-
-.visual-violet{
-    background:linear-gradient(135deg,#9333ea,#4f46e5);
-}
-
-.visual-gold{
-    background:linear-gradient(135deg,#ea580c,#ca8a04);
-}
-
-.service-info{
+.small-btn{
     flex:1;
-    min-width:0;
-}
-
-.service-name{
-    font-size:16px;
-    font-weight:900;
-    margin-bottom:5px;
-}
-
-.service-description{
-    color:#666;
-    font-size:12px;
-    line-height:1.45;
-}
-
-.service-right{
-    min-width:92px;
-    text-align:right;
-}
-
-.service-price{
-    font-weight:900;
-    color:#0d6efd;
-    font-size:13px;
-    margin-bottom:7px;
-}
-
-.open-arrow{
-    color:#999;
-    font-size:20px;
-    font-weight:900;
-}
-
-.tool-page{
-    display:none;
-}
-
-.tool-header{
+    height:38px;
+    border-radius:9px;
+    border:1px solid #ccc;
     background:#fff;
-    border-radius:17px;
-    padding:20px;
-    margin-top:20px;
-    border:1px solid #e5e5e5;
-}
-
-.tool-brand-row{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.tool-icon-wrap{
-    width:65px;
-    height:65px;
-    min-width:65px;
-    border-radius:17px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-}
-
-.tool-icon-wrap svg{
-    width:43px;
-    height:43px;
-}
-
-.tool-title{
-    font-size:23px;
-    font-weight:900;
-}
-
-.tool-description{
-    color:#666;
-    margin-top:6px;
-    font-size:14px;
-    line-height:1.5;
-}
-
-.tool-price{
-    margin-top:14px;
-    font-size:17px;
-    font-weight:900;
-    color:#0d6efd;
-}
-
-.tool-box{
-    background:#fff;
-    border:1px solid #e5e5e5;
-    border-radius:17px;
-    padding:20px;
-    margin-top:14px;
-}
-
-label{
-    display:block;
-    font-size:13px;
     font-weight:800;
-    margin-bottom:7px;
 }
 
-input,
-textarea,
-select{
-    width:100%;
-    padding:13px;
-    border:1px solid #d7d7d7;
-    border-radius:11px;
-    outline:none;
-    font-size:14px;
-    margin-bottom:16px;
-    background:#fff;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-    border-color:#0d6efd;
-    box-shadow:0 0 0 3px rgba(13,110,253,.08);
-}
-
-textarea{
-    min-height:110px;
-    resize:vertical;
-}
-
-.file-input{
-    padding:11px;
-}
-
-.two-col{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:13px;
-}
-
-.continue-btn{
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    background:#000;
+.small-btn.black{
+    background:#111;
     color:#fff;
-    font-size:15px;
-    font-weight:900;
-    cursor:pointer;
-}
-
-.continue-btn:hover{
-    opacity:.88;
-}
-
-.continue-btn:disabled{
-    opacity:.5;
-    cursor:not-allowed;
-}
-
-.back-tools{
-    margin-top:15px;
-    border:none;
-    background:none;
-    color:#0d6efd;
-    font-weight:800;
-    cursor:pointer;
-}
-
-.kyc-note{
-    background:#fff8df;
-    border:1px solid #f0d878;
-    padding:13px;
-    border-radius:11px;
-    font-size:12px;
-    line-height:1.5;
-    margin-bottom:18px;
-}
-
-.voice-note{
-    background:#eef6ff;
-    border:1px solid #b9d9ff;
-    padding:13px;
-    border-radius:11px;
-    font-size:12px;
-    line-height:1.5;
-    margin-bottom:18px;
-}
-
-.consent-box{
-    display:flex;
-    align-items:flex-start;
-    gap:9px;
-    background:#f7f7f7;
-    border:1px solid #e2e2e2;
-    padding:13px;
-    border-radius:11px;
-    margin-bottom:16px;
-}
-
-.consent-box input{
-    width:auto;
-    margin:2px 0 0;
-    flex-shrink:0;
-}
-
-.consent-box span{
-    font-size:12px;
-    line-height:1.5;
-    color:#555;
+    border-color:#111;
 }
 
 .loading{
-    display:none;
-    background:#eef6ff;
-    border:1px solid #b9d9ff;
-    color:#075985;
-    padding:13px;
-    border-radius:11px;
-    margin-bottom:14px;
-    font-size:13px;
-    font-weight:700;
-}
-
-.loading.show{
-    display:block;
-}
-
-.result-box{
-    display:none;
-    margin-top:15px;
-    padding:15px;
-    border-radius:12px;
-    background:#ecfdf5;
-    border:1px solid #a7f3d0;
-    color:#065f46;
-    font-size:13px;
-    line-height:1.6;
-}
-
-.result-box.show{
-    display:block;
-}
-
-/* =========================================================
-   KYC SEARCHABLE SELECT
-========================================================= */
-
-.kyc-search-select{
-    position:relative;
-    width:100%;
-    margin-bottom:16px;
-}
-
-.kyc-search-input{
-    width:100%;
-    padding:13px 42px 13px 13px;
-    border:1px solid #d7d7d7;
-    border-radius:11px;
-    outline:none;
-    font-size:14px;
-    margin:0;
-    background:#fff;
-    cursor:text;
-}
-
-.kyc-search-input:focus{
-    border-color:#0d6efd;
-    box-shadow:0 0 0 3px rgba(13,110,253,.08);
-}
-
-.kyc-search-input:disabled{
-    background:#f1f1f1;
-    color:#999;
-    cursor:not-allowed;
-}
-
-.kyc-dropdown-arrow{
-    position:absolute;
-    right:14px;
-    top:14px;
-    font-size:16px;
-    color:#777;
-    pointer-events:none;
-    transition:.15s;
-}
-
-.kyc-search-select.open .kyc-dropdown-arrow{
-    transform:rotate(180deg);
-}
-
-.kyc-dropdown-menu{
-    display:none;
-    position:absolute;
-    left:0;
-    right:0;
-    top:calc(100% + 5px);
-    max-height:280px;
-    overflow-y:auto;
-    background:#fff;
-    border:1px solid #d7d7d7;
-    border-radius:11px;
-    box-shadow:0 10px 28px rgba(0,0,0,.14);
-    z-index:9999;
-}
-
-.kyc-search-select.open .kyc-dropdown-menu{
-    display:block;
-}
-
-.kyc-dropdown-option{
-    padding:12px 13px;
-    font-size:14px;
-    cursor:pointer;
-    border-bottom:1px solid #f0f0f0;
-    background:#fff;
-}
-
-.kyc-dropdown-option:last-child{
-    border-bottom:none;
-}
-
-.kyc-dropdown-option:hover,
-.kyc-dropdown-option.active{
-    background:#f1f5f9;
-}
-
-.kyc-dropdown-empty{
-    padding:13px;
-    font-size:13px;
-    color:#777;
     text-align:center;
+    padding:18px;
+    color:#777;
+    font-size:13px;
 }
 
-.kyc-selected-value{
+.hidden{
+    display:none !important;
+}
+
+.popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    z-index:5000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+}
+
+.popup{
+    width:min(440px,100%);
     background:#fff;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
 }
 
-.kyc-custom-box{
-    margin-top:2px;
-    padding:12px;
-    background:#f8fafc;
-    border:1px solid #e5e7eb;
-    border-radius:11px;
-}
-
-.kyc-custom-box input{
+.popup h2{
+    font-size:19px;
     margin-bottom:10px;
 }
 
-.kyc-search-btn{
-    width:auto;
-    min-width:78px;
-    padding:10px 14px;
-    border:1px solid #d7d7d7;
-    border-radius:11px;
-    background:#f5f5f5;
-    font-weight:800;
-    cursor:pointer;
+.popup p{
+    font-size:13px;
+    line-height:1.65;
+    color:#444;
 }
 
-.kyc-search-btn:hover{
-    background:#eaeaea;
+.popup-btn{
+    width:100%;
+    height:44px;
+    margin-top:16px;
+    background:#111;
+    color:#fff;
+    border:0;
+    border-radius:10px;
+    font-weight:900;
 }
 
-.kyc-search-hint{
-    color:#777;
-    font-size:11px;
-    margin:-2px 0 12px;
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:22px;
+    transform:translateX(-50%);
+    background:#111;
+    color:#fff;
+    padding:12px 16px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:700;
+    z-index:7000;
+    max-width:90%;
+    text-align:center;
+    display:none;
 }
 
-.kyc-generated-number{
-    background:#f3f4f6;
-    border:1px dashed #c7c7c7;
-    color:#555;
-    font-weight:800;
+@media(max-width:800px){
+    .country-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+    .service-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .server-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
-.kyc-generated-note{
-    color:#777;
-    font-size:11px;
-    margin-top:-10px;
-    margin-bottom:14px;
-    line-height:1.4;
-}
-
-@media(max-width:600px){
-
+@media(max-width:520px){
     .container{
-        padding-left:12px;
-        padding-right:12px;
+        width:94%;
     }
 
-    .service-card{
-        padding:10px;
+    .country-grid{
+        grid-template-columns:repeat(3,1fr);
     }
 
-    .service-visual{
-        width:61px;
-        height:61px;
-        min-width:61px;
-        border-radius:15px;
+    .service-grid{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .service-visual svg{
-        width:39px;
-        height:39px;
+    .server-grid{
+        grid-template-columns:1fr;
     }
 
-    .service-name{
+    .provider-tab{
         font-size:14px;
     }
 
-    .service-description{
-        font-size:11px;
-    }
-
-    .service-right{
-        min-width:70px;
-    }
-
-    .service-price{
-        font-size:11px;
-    }
-
-    .open-arrow{
+    .header-title{
         font-size:17px;
     }
 
-    .two-col{
-        grid-template-columns:1fr;
-        gap:0;
-    }
-
-    .tool-title{
-        font-size:19px;
-    }
-
-    .tool-description{
+    .wallet{
         font-size:12px;
-    }
-}
-
-@media(max-width:390px){
-
-    .brand{
-        font-size:18px;
-    }
-
-    .wallet-balance{
-        font-size:24px;
-    }
-
-    .service-visual{
-        width:55px;
-        height:55px;
-        min-width:55px;
-    }
-
-    .service-info{
-        min-width:0;
-    }
-
-    .service-description{
-        display:none;
-    }
-
-    .service-right{
-        min-width:62px;
     }
 }
 </style>
@@ -712,136 +506,249 @@ textarea{
 <body>
 
 <header class="header">
+    <div class="header-title">Virtual Numbers</div>
 
-    <div class="header-top">
-
-        <div class="brand">
-            ⚡ Delight Vendor Logs
-            <span>AI Studio</span>
-        </div>
-
-        <button class="back-btn" onclick="goBack()">
-            ← Back
-        </button>
-
+    <div class="wallet" id="walletBalance">
+        ₦0
     </div>
 
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
 </header>
 
 <main class="container">
 
-    <div class="wallet">
+    <!-- ALL COUNTRY NUMBERS -->
+    <section class="card">
 
-        <div class="wallet-top">
-
-            <div>
-
-                <div class="wallet-label">
-                    Wallet Balance
-                </div>
-
-                <div class="wallet-balance" id="walletBalance">
-                    ₦0
-                </div>
-
-            </div>
+        <div class="provider-tabs">
 
             <button
-                class="refresh-wallet"
-                onclick="loadWallet()"
+                id="option1Tab"
+                class="provider-tab active"
+                onclick="changeProvider('grizzly')"
             >
-                ↻ Refresh
+                All Country Number 1
+            </button>
+
+            <button
+                id="option2Tab"
+                class="provider-tab"
+                onclick="changeProvider('smsbower')"
+            >
+                All Country Number 2
             </button>
 
         </div>
 
-    </div>
+        <div class="notice">
 
-    <div id="statusBox" class="status"></div>
+            <strong>Note!!:</strong>
+            If You Do Not Receive Code For A Number Kindly Set Vpn To Match The Location Of The Country Purchased.
 
-    <section id="servicePage">
+            <br><br>
 
-        <h1 class="title">
-            AI Studio
-        </h1>
+            <strong>1:</strong>
+            If All Country Number 1 doesn't Work Switch To All Country Number 2.
 
-        <p class="subtitle">
-            Choose an AI service to open its workspace.
-        </p>
+            <br><br>
 
-        <div id="services" class="services"></div>
+            <strong>Note!!!:</strong>
+            US(virtual) In All Country Number 1 Might Fail Sometimes.
+            So You Can Use Normal US Instead.
+
+            <br><br>
+
+            If a country needed is not available in All Country Number 1,
+            check All Country Number 2.
+
+            <br><br>
+
+            If you're purchasing Whatsapp choose the server with recommended
+            for a better results or buy from All Country Number 2.
+
+            <br><br>
+
+            <strong>Important:</strong>
+            After purchasing a number, please wait for the code and
+            complete the verification code process before cancelling the number.
+        </div>
 
     </section>
 
-    <section id="toolPage" class="tool-page">
 
-        <div class="tool-header">
+    <!-- COUNTRY -->
+    <section class="card">
 
-            <div class="tool-brand-row">
+        <div class="section-title">
+            Country
+        </div>
 
-                <div
-                    id="toolIcon"
-                    class="tool-icon-wrap visual-purple"
-                ></div>
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
 
-                <div>
-
-                    <div
-                        class="tool-title"
-                        id="toolTitle"
-                    >
-                        AI Tool
-                    </div>
-
-                    <div
-                        class="tool-description"
-                        id="toolDescription"
-                    >
-                        Choose an AI service.
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div
-                class="tool-price"
-                id="toolPrice"
+            <input
+                id="countrySearch"
+                type="text"
+                placeholder="Search country..."
+                autocomplete="off"
+                oninput="renderCountries()"
             >
-                Price: ₦0
+        </div>
+
+        <div id="countryGrid" class="country-grid">
+            <div class="loading">Loading countries...</div>
+        </div>
+
+    </section>
+
+
+    <!-- SERVICE -->
+    <section class="card">
+
+        <div class="section-title">
+            Service
+        </div>
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+
+            <input
+                id="serviceSearch"
+                type="text"
+                placeholder="Search service..."
+                autocomplete="off"
+                oninput="renderServices()"
+            >
+        </div>
+
+        <div id="serviceGrid" class="service-grid">
+            <div class="empty">
+                Select a country first.
             </div>
-
         </div>
 
-        <div
-            class="tool-box"
-            id="toolContent"
-        ></div>
+    </section>
 
-        <div
-            id="loadingBox"
-            class="loading"
-        >
-            Creating your AI job securely...
+
+    <!-- SERVER -->
+    <section class="card">
+
+        <div class="section-title">
+            Server
         </div>
 
-        <div
-            id="resultBox"
-            class="result-box"
-        ></div>
+        <div id="serverGrid" class="server-grid">
+            <div class="empty">
+                Select a service first.
+            </div>
+        </div>
 
         <button
-            class="back-tools"
-            onclick="showServices()"
+            id="buyButton"
+            class="buy-btn"
+            disabled
+            onclick="buyNumber()"
         >
-            ← Back to AI Studio
+            Buy Number
         </button>
+
+    </section>
+
+
+    <!-- CURRENT ORDER -->
+    <section class="card">
+
+        <div class="section-title">
+            Current / New Order
+        </div>
+
+        <div id="currentOrder">
+            <div class="empty">
+                No current order.
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- PREVIOUS ORDERS -->
+    <section class="card">
+
+        <div class="section-title">
+            Previous Orders
+        </div>
+
+        <div id="previousOrders">
+            <div class="loading">
+                Loading orders...
+            </div>
+        </div>
 
     </section>
 
 </main>
 
+
+<!-- VERIFICATION POPUP -->
+<div id="verificationPopup" class="popup-overlay">
+
+    <div class="popup">
+
+        <h2>Virtual Number Notice</h2>
+
+        <p>
+            Please make sure you understand the instructions before purchasing
+            a virtual number. If you receive a number, wait for the verification
+            code and complete the code process before cancelling.
+        </p>
+
+        <button
+            class="popup-btn"
+            onclick="closeVerificationPopup()"
+        >
+            Continue
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- MENU -->
+<div id="menuPopup" class="popup-overlay">
+
+    <div class="popup">
+
+        <h2>Menu</h2>
+
+        <button
+            class="popup-btn"
+            onclick="location.href='index.html'"
+        >
+            Home
+        </button>
+
+        <button
+            class="popup-btn"
+            style="background:#fff;color:#111;border:1px solid #ccc;"
+            onclick="closeMenu()"
+        >
+            Close
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
 <script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
     "https://hkfhehbhmucymusaytoe.supabase.co";
@@ -855,240 +762,498 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-let currentUser = null;
-let walletBalance = 0;
-let aiServices = [];
-let selectedService = null;
 
-/* KYC state */
-let kycCountries = [];
-let kycDocuments = [];
-let selectedKycCountry = null;
-let selectedKycDocument = null;
+/* =========================================================
+   INTERNAL PROVIDER CONNECTIONS
+   These names are NOT displayed anywhere in the customer UI.
+========================================================= */
+
+const GRIZZLY_FUNCTION_URL =
+    `${SUPABASE_URL}/functions/v1/grizzly-api`;
+
+const SMSBOWER_FUNCTION_URL =
+    `${SUPABASE_URL}/functions/v1/numpool-api`;
+
+
+/*
+   Customer-facing:
+   All Country Number 1 = internal provider connection 1
+   All Country Number 2 = internal provider connection 2
+*/
+let provider = "grizzly";
+
+
+/*
+   Backend compatibility only.
+   No version buttons are shown.
+*/
+const API_VERSION = "V1";
 
 
 /* =========================================================
-   SERVICE VISUALS
+   STATE
 ========================================================= */
 
-const serviceVisuals = {
+let countries = [];
+let services = [];
+let servers = [];
 
-    "Pics → Video": {
-        cls:"visual-purple",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="8" y="12" width="42" height="34" rx="7" fill="white" opacity=".95"/>
-            <circle cx="20" cy="24" r="5" fill="#8b5cf6"/>
-            <path d="M13 40l11-10 8 7 6-6 8 9H13z" fill="#c026d3"/>
-            <path d="M43 22l13 9-13 9V22z" fill="white"/>
-        </svg>`
-    },
+let selectedCountry = null;
+let selectedService = null;
+let selectedServer = null;
 
-    "Video Face Swap": {
-        cls:"visual-blue",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <circle cx="22" cy="30" r="14" fill="white"/>
-            <circle cx="42" cy="30" r="14" fill="white" opacity=".85"/>
-            <circle cx="18" cy="28" r="2" fill="#2563eb"/>
-            <circle cx="26" cy="28" r="2" fill="#2563eb"/>
-            <path d="M19 35c2 3 6 3 8 0" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-            <path d="M36 30h-8" stroke="white" stroke-width="4" stroke-linecap="round"/>
-            <path d="M32 25l-6 5 6 5" stroke="white" stroke-width="3"/>
-        </svg>`
-    },
+let orders = [];
 
-    "AI Voice": {
-        cls:"visual-green",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="22" y="8" width="20" height="32" rx="10" fill="white"/>
-            <path d="M15 30c0 10 7 17 17 17s17-7 17-17" stroke="white" stroke-width="5" stroke-linecap="round"/>
-            <path d="M32 47v9" stroke="white" stroke-width="5" stroke-linecap="round"/>
-            <path d="M23 56h18" stroke="white" stroke-width="5" stroke-linecap="round"/>
-        </svg>`
-    },
+let currentOrderId = null;
+let currentOrderProvider = null;
 
-    "KYC / Document Designer": {
-        cls:"visual-orange",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="12" y="8" width="40" height="48" rx="6" fill="white"/>
-            <rect x="19" y="17" width="14" height="17" rx="3" fill="#f59e0b"/>
-            <path d="M37 20h9M37 26h9M19 41h27M19 47h20" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
-            <path d="M47 7v9M42.5 11.5h9" stroke="white" stroke-width="3"/>
-        </svg>`
-    },
+let watermarkText = "";
 
-    "Watermark Removal": {
-        cls:"visual-red",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="9" y="14" width="46" height="36" rx="6" fill="white"/>
-            <path d="M16 41l10-11 8 8 7-7 8 10" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M13 49L51 11" stroke="#ef4444" stroke-width="5" stroke-linecap="round"/>
-        </svg>`
-    },
 
-    "Voice Cloner": {
-        cls:"visual-indigo",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="21" y="10" width="22" height="30" rx="11" fill="white"/>
-            <path d="M13 30c0 11 8 18 19 18s19-7 19-18" stroke="white" stroke-width="4" stroke-linecap="round"/>
-            <path d="M32 48v9" stroke="white" stroke-width="4"/>
-            <path d="M25 57h14" stroke="white" stroke-width="4" stroke-linecap="round"/>
-            <path d="M48 13c5 3 7 7 7 12" stroke="white" stroke-width="3" stroke-linecap="round"/>
-            <path d="M52 7c7 4 10 10 10 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>`
-    },
+/* =========================================================
+   COUNTRY CODE -> COUNTRY NAME
+========================================================= */
 
-    "Video Voice Clone": {
-        cls:"visual-cyan",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="7" y="13" width="39" height="37" rx="6" fill="white"/>
-            <path d="M46 25l11-7v28l-11-7V25z" fill="white"/>
-            <path d="M16 42c5-9 8-9 11 0s6 9 11 0" stroke="#0891b2" stroke-width="3" stroke-linecap="round"/>
-        </svg>`
-    },
+const COUNTRY_NAMES = {
 
-    "AI Image Enhancer": {
-        cls:"visual-lime",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="8" y="12" width="48" height="40" rx="7" fill="white"/>
-            <circle cx="22" cy="25" r="5" fill="#65a30d"/>
-            <path d="M13 45l12-12 8 7 7-8 11 13H13z" fill="#16a34a"/>
-            <path d="M47 7v13M40.5 13.5h13" stroke="white" stroke-width="3" stroke-linecap="round"/>
-        </svg>`
-    },
+    0:"Russia",
+    1:"Ukraine",
+    2:"Kazakhstan",
+    3:"China",
+    4:"Philippines",
+    5:"Myanmar",
+    6:"Indonesia",
+    7:"Malaysia",
+    8:"Kenya",
+    9:"Tanzania",
+    10:"Vietnam",
+    11:"Kyrgyzstan",
+    12:"United States (virtual)",
+    13:"Israel",
+    14:"Hong Kong",
+    15:"Poland",
+    16:"United Kingdom",
+    17:"Madagascar",
+    18:"DR Congo",
+    19:"Nigeria",
+    20:"Macao",
+    21:"Egypt",
+    22:"India",
+    23:"Ireland",
+    24:"Cambodia",
+    25:"Laos",
+    26:"Haiti",
+    27:"Ivory Coast",
+    28:"Gambia",
+    29:"Serbia",
+    30:"Yemen",
+    31:"South Africa",
+    32:"Romania",
+    33:"Colombia",
+    34:"Estonia",
+    35:"Azerbaijan",
+    36:"Canada",
+    37:"Morocco",
+    38:"Ghana",
+    39:"Argentina",
+    40:"Uzbekistan",
+    41:"Cameroon",
+    42:"Chad",
+    43:"Germany",
+    44:"Lithuania",
+    45:"Croatia",
+    46:"Sweden",
+    47:"Belarus",
+    48:"Netherlands",
+    49:"Latvia",
+    50:"Austria",
+    51:"Belarus",
+    52:"Thailand",
+    53:"Saudi Arabia",
+    54:"Mexico",
+    55:"Taiwan",
+    56:"Spain",
+    57:"Cuba",
+    58:"Algeria",
+    59:"Slovenia",
+    60:"Bangladesh",
+    61:"Senegal",
+    62:"Turkey",
+    63:"Czech Republic",
+    64:"Sri Lanka",
+    65:"Peru",
+    66:"Pakistan",
+    67:"New Zealand",
+    68:"Guinea",
+    69:"Mali",
+    70:"Venezuela",
+    71:"Ethiopia",
+    72:"Guinea-Bissau",
+    73:"Brazil",
+    74:"Afghanistan",
+    75:"Uganda",
+    76:"Angola",
+    77:"Cyprus",
+    78:"France",
+    79:"Papua New Guinea",
+    80:"Mozambique",
+    81:"Nepal",
+    82:"Belgium",
+    83:"Bulgaria",
+    84:"Hungary",
+    85:"Moldova",
+    86:"Italy",
+    87:"Paraguay",
+    88:"Honduras",
+    89:"Tunisia",
+    90:"Nicaragua",
+    91:"Timor-Leste",
+    92:"Bolivia",
+    93:"Costa Rica",
+    94:"Guatemala",
+    95:"United Arab Emirates",
+    96:"Zimbabwe",
+    97:"Puerto Rico",
+    98:"Gabon",
+    99:"Togo",
+    100:"Kuwait",
+    101:"El Salvador",
+    102:"Samoa",
+    103:"Jamaica",
+    104:"Trinidad and Tobago",
+    105:"Ecuador",
+    106:"Eswatini",
+    107:"Oman",
+    108:"Bosnia and Herzegovina",
+    109:"Dominican Republic",
+    110:"Maldives",
+    111:"Qatar",
+    112:"Panama",
+    113:"Cuba",
+    114:"Mauritania",
+    115:"Sierra Leone",
+    116:"Jordan",
+    117:"Portugal",
+    118:"Barbados",
+    119:"Burundi",
+    120:"Benin",
+    121:"Brunei",
+    122:"Bahamas",
+    123:"Botswana",
+    124:"Belize",
+    125:"Central African Republic",
+    126:"Dominica",
+    127:"Grenada",
+    128:"Georgia",
+    129:"Greece",
+    130:"Guinea-Bissau",
+    131:"Guyana",
+    132:"Iceland",
+    133:"Syria",
+    134:"Saint Kitts and Nevis",
+    135:"Liberia",
+    136:"Lesotho",
+    137:"Malawi",
+    138:"Namibia",
+    139:"Niger",
+    140:"Rwanda",
+    141:"Slovakia",
+    142:"Suriname",
+    143:"Tajikistan",
+    144:"Montserrat",
+    145:"Bahrain",
+    146:"Reunion",
+    147:"Zambia",
+    148:"Armenia",
+    149:"Somalia",
+    150:"Republic of the Congo",
+    151:"Chile",
+    152:"Burkina Faso",
+    153:"Mongolia",
+    154:"Gabon",
+    155:"Albania",
+    156:"Uruguay",
+    157:"Mauritius",
+    158:"Bhutan",
+    159:"Maldives",
+    160:"Burundi",
+    161:"Turkmenistan",
+    162:"French Guiana",
+    163:"Finland",
+    164:"Saint Lucia",
+    165:"Luxembourg",
+    166:"Saint Vincent",
+    167:"Equatorial Guinea",
+    168:"Djibouti",
+    169:"Antigua and Barbuda",
+    170:"Cayman Islands",
+    171:"Montenegro",
+    172:"Denmark",
+    173:"Switzerland",
+    174:"Norway",
+    175:"Australia",
+    176:"Eritrea",
+    177:"South Sudan",
+    178:"Sao Tome and Principe",
+    179:"Aruba",
+    180:"Montserrat",
+    181:"Anguilla",
+    182:"Japan",
+    183:"North Macedonia",
+    184:"Seychelles",
+    185:"New Caledonia",
+    186:"Cape Verde",
+    187:"United States",
+    188:"Palestine",
+    189:"Fiji",
+    199:"Malta",
+    201:"Gibraltar",
+    203:"Kosovo",
+    204:"Niue",
 
-    "Background / Object Removal": {
-        cls:"visual-teal",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <rect x="9" y="12" width="46" height="40" rx="7" fill="white"/>
-            <circle cx="23" cy="25" r="5" fill="#0891b2"/>
-            <path d="M14 45l11-11 7 6 8-10 10 15H14z" fill="#0f766e"/>
-            <path d="M43 17l9 9M52 17l-9 9" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
-        </svg>`
-    },
-
-    "AI Outfit Editor": {
-        cls:"visual-pink",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <path d="M24 10l8 6 8-6 13 9-6 13-6-4v26H23V28l-6 4-6-13 13-9z" fill="white"/>
-            <path d="M27 17c2 5 10 5 12 0" stroke="#db2777" stroke-width="3"/>
-            <path d="M42 9v13M35.5 15.5h13" stroke="white" stroke-width="3" stroke-linecap="round"/>
-        </svg>`
-    },
-
-    "AI Image Style": {
-        cls:"visual-violet",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <path d="M12 42c0-16 9-27 22-27 10 0 18 6 18 16 0 7-5 10-10 10h-6c-4 0-6 2-6 5 0 4-3 6-7 6-6 0-11-4-11-10z" fill="white"/>
-            <circle cx="22" cy="31" r="3" fill="#9333ea"/>
-            <circle cx="32" cy="25" r="3" fill="#ec4899"/>
-            <circle cx="41" cy="30" r="3" fill="#6366f1"/>
-            <circle cx="25" cy="41" r="3" fill="#f59e0b"/>
-        </svg>`
-    },
-
-    "Talking Photo": {
-        cls:"visual-gold",
-        svg:`
-        <svg viewBox="0 0 64 64" fill="none">
-            <circle cx="28" cy="27" r="17" fill="white"/>
-            <circle cx="22" cy="25" r="2.5" fill="#ea580c"/>
-            <circle cx="34" cy="25" r="2.5" fill="#ea580c"/>
-            <path d="M22 33c4 4 8 4 12 0" stroke="#ea580c" stroke-width="3" stroke-linecap="round"/>
-            <path d="M42 40h12l5 6v-6h3V22c0-4-3-7-7-7H45" stroke="white" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M49 26h7M49 32h5" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>`
-    }
-
+    1003:"Bermuda",
+    1007:"Vanuatu",
+    1008:"Greenland",
+    1011:"Martinique",
+    1012:"French Polynesia",
+    10161:"American Samoa",
+    10227:"Tonga",
+    10231:"Samoa",
+    10348:"Liechtenstein",
+    10349:"Sint Maarten",
+    10350:"South Korea",
+    10351:"Singapore"
 };
 
 
 /* =========================================================
-   FIX FOR EMOJI SERVICE NAMES
+   COUNTRY NAME NORMALIZATION
 ========================================================= */
 
-function getVisualForService(serviceName){
+function normalizeCountryDisplayName(name){
 
-    if(!serviceName){
-        return null;
+    const raw =
+        String(name ?? "").trim();
+
+    if(!raw){
+        return "";
     }
 
-    if(serviceVisuals[serviceName]){
-        return serviceVisuals[serviceName];
+    const q =
+        raw.toLowerCase();
+
+    if(
+        q === "us" ||
+        q === "usa" ||
+        q === "united states" ||
+        q === "united states of america"
+    ){
+        return "United States";
     }
 
-    const cleanName =
-        String(serviceName)
-            .replace(/^[^\p{L}\p{N}]+/u,"")
-            .trim();
+    if(
+        q === "us (virtual)" ||
+        q === "usa (virtual)" ||
+        q === "united states (virtual)"
+    ){
+        return "United States (virtual)";
+    }
 
-    return serviceVisuals[cleanName] || null;
+    if(
+        q === "uk" ||
+        q === "gb" ||
+        q === "england" ||
+        q === "great britain" ||
+        q === "united kingdom"
+    ){
+        return "United Kingdom";
+    }
+
+    return raw;
+}
+
+
+function countryName(country){
+
+    const raw =
+        country?.name ??
+        country?.country_name ??
+        country?.eng ??
+        country?.provider_name ??
+        country?.country ??
+        country?.key ??
+        country?.id ??
+        "";
+
+    const normalized =
+        normalizeCountryDisplayName(raw);
+
+    if(
+        normalized &&
+        !/^\d+$/.test(normalized)
+    ){
+        return normalized;
+    }
+
+    const possibleId =
+        country?.id ??
+        country?.country_id ??
+        country?.country ??
+        country?.key ??
+        raw;
+
+    const mapped =
+        COUNTRY_NAMES[String(possibleId)];
+
+    if(mapped){
+        return mapped;
+    }
+
+    return normalized ||
+        String(possibleId || "Unknown");
+}
+
+
+function countryId(country){
+
+    return (
+        country?.id ??
+        country?.country_id ??
+        country?.code ??
+        country?.country ??
+        country?.key ??
+        null
+    );
+}
+
+
+function countryKey(country){
+
+    return String(
+        country?.country_key ??
+        country?.code ??
+        country?.id ??
+        country?.key ??
+        country?.slug ??
+        country?.country ??
+        country?.name ??
+        ""
+    )
+    .trim()
+    .toLowerCase();
 }
 
 
 /* =========================================================
-   MONEY
+   SERVICE HELPERS
 ========================================================= */
 
-function formatMoney(amount){
+function serviceName(service){
 
-    return "₦" +
-        Number(amount || 0).toLocaleString(
-            "en-NG",
-            {
-                minimumFractionDigits:0,
-                maximumFractionDigits:2
-            }
-        );
+    return String(
+        service?.name ??
+        service?.service_name ??
+        service?.title ??
+        service?.service ??
+        service?.key ??
+        service?.code ??
+        ""
+    ).trim();
+}
+
+
+function serviceCode(service){
+
+    return String(
+        service?.code ??
+        service?.service_code ??
+        service?.id ??
+        service?.key ??
+        service?.service ??
+        ""
+    ).trim();
 }
 
 
 /* =========================================================
-   STATUS
+   SERVER HELPERS
 ========================================================= */
 
-function showStatus(message,type="info"){
+function serverName(server){
 
-    const box =
-        document.getElementById("statusBox");
-
-    box.textContent = message;
-
-    box.className =
-        "status show " + type;
+    return String(
+        server?.name ??
+        server?.title ??
+        server?.operator_name ??
+        server?.operator ??
+        server?.provider_name ??
+        server?.server ??
+        "Any"
+    ).trim();
 }
 
-function hideStatus(){
 
-    const box =
-        document.getElementById("statusBox");
+function serverId(server){
 
-    box.className = "status";
+    return String(
+        server?.id ??
+        server?.server_id ??
+        server?.operator ??
+        server?.operator_id ??
+        server?.provider_id ??
+        "any"
+    ).trim();
+}
+
+
+function serverPrice(server){
+
+    const values = [
+        server?.customer_price_ngn,
+        server?.price_ngn,
+        server?.customerPrice,
+        server?.price,
+        server?.amount,
+        server?.cost
+    ];
+
+    for(const value of values){
+
+        const n =
+            Number(value);
+
+        if(Number.isFinite(n)){
+            return n;
+        }
+    }
+
+    return 0;
+}
+
+
+function serverStock(server){
+
+    return (
+        server?.stock ??
+        server?.count ??
+        server?.available ??
+        server?.quantity ??
+        ""
+    );
 }
 
 
 /* =========================================================
-   ESCAPE
+   INTERNAL FUNCTION URL
 ========================================================= */
 
-function escapeHtml(value){
+function functionURL(providerName){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    if(providerName === "grizzly"){
+        return GRIZZLY_FUNCTION_URL;
+    }
+
+    return SMSBOWER_FUNCTION_URL;
 }
 
 
@@ -1096,7 +1261,7 @@ function escapeHtml(value){
    AUTH
 ========================================================= */
 
-async function checkLogin(){
+async function getAuthToken(){
 
     const {
         data,
@@ -1105,25 +1270,1775 @@ async function checkLogin(){
         await supabaseClient.auth.getSession();
 
     if(error){
+        throw new Error(
+            "Unable to check login session."
+        );
+    }
+
+    const session =
+        data?.session;
+
+    if(!session?.access_token){
+
+        window.location.href =
+            "login.html";
+
+        throw new Error(
+            "Please login first."
+        );
+    }
+
+    return session.access_token;
+}
+
+
+/* =========================================================
+   API
+========================================================= */
+
+async function api(
+    action,
+    payload = {},
+    providerName = provider
+){
+
+    const token =
+        await getAuthToken();
+
+    const response =
+        await fetch(
+            functionURL(providerName),
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "apikey":
+                        String(SUPABASE_KEY),
+
+                    "Authorization":
+                        "Bearer " +
+                        String(token)
+                },
+
+                body:JSON.stringify({
+                    action,
+                    version:API_VERSION,
+                    ...payload
+                })
+            }
+        );
+
+    const data =
+        await response
+            .json()
+            .catch(() => ({}));
+
+    if(
+        !response.ok ||
+        data?.success === false
+    ){
+
+        throw new Error(
+            data?.error ||
+            data?.message ||
+            "Something went wrong."
+        );
+    }
+
+    return data;
+}
+
+
+/* =========================================================
+   ALL COUNTRY NUMBER SWITCH
+========================================================= */
+
+async function changeProvider(newProvider){
+
+    /*
+       The customer only sees:
+       All Country Number 1
+       All Country Number 2
+
+       The actual backend connection stays internal.
+    */
+
+    provider =
+        newProvider === "smsbower"
+            ? "smsbower"
+            : "grizzly";
+
+    document
+        .getElementById("option1Tab")
+        .classList.toggle(
+            "active",
+            provider === "grizzly"
+        );
+
+    document
+        .getElementById("option2Tab")
+        .classList.toggle(
+            "active",
+            provider === "smsbower"
+        );
+
+    selectedCountry = null;
+    selectedService = null;
+    selectedServer = null;
+
+    services = [];
+    servers = [];
+
+    document
+        .getElementById("serviceSearch")
+        .value = "";
+
+    renderCountries();
+    renderServices();
+    renderServers();
+
+    await loadCountries();
+    await loadAllOrders();
+}
+
+
+/* =========================================================
+   COUNTRIES
+========================================================= */
+
+async function loadCountries(){
+
+    const grid =
+        document.getElementById(
+            "countryGrid"
+        );
+
+    grid.innerHTML =
+        `<div class="loading">
+            Loading countries...
+        </div>`;
+
+    try{
+
+        const data =
+            await api(
+                "countries",
+                {},
+                provider
+            );
+
+        let list =
+            data?.countries ??
+            data?.data ??
+            data?.result ??
+            data;
+
+        if(!Array.isArray(list)){
+
+            if(
+                list &&
+                typeof list === "object"
+            ){
+
+                list =
+                    Object.entries(list)
+                        .map(
+                            ([key,value]) => {
+
+                                if(
+                                    value &&
+                                    typeof value ===
+                                    "object"
+                                ){
+
+                                    return {
+                                        ...value,
+                                        id:
+                                            value.id ??
+                                            value.country_id ??
+                                            key
+                                    };
+                                }
+
+                                return {
+                                    id:key,
+                                    name:key,
+                                    price:value
+                                };
+                            }
+                        );
+
+            }else{
+
+                list = [];
+            }
+        }
+
+        countries = list;
+
+        renderCountries();
+
+    }catch(error){
 
         console.error(error);
 
-        window.location.href = "login.html";
+        grid.innerHTML =
+            `<div class="empty">
+                Unable to load countries.<br>
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>`;
+    }
+}
 
-        return false;
+
+function countryMatches(country,query){
+
+    if(!query){
+        return true;
     }
 
-    if(!data?.session){
+    const q =
+        query
+            .toLowerCase()
+            .trim();
 
-        window.location.href = "login.html";
+    const display =
+        countryName(country)
+            .toLowerCase();
 
-        return false;
+    const id =
+        String(
+            countryId(country) ?? ""
+        ).toLowerCase();
+
+    const key =
+        countryKey(country);
+
+    const raw =
+        String(
+            country?.name ??
+            country?.eng ??
+            country?.country ??
+            country?.key ??
+            ""
+        ).toLowerCase();
+
+    const aliases = [];
+
+    if(
+        display === "united states" ||
+        display ===
+        "united states (virtual)"
+    ){
+
+        aliases.push(
+            "usa",
+            "us",
+            "united states",
+            "america"
+        );
     }
 
-    currentUser =
-        data.session.user;
+    if(
+        display ===
+        "united states (virtual)"
+    ){
 
-    return true;
+        aliases.push(
+            "usa virtual",
+            "us virtual",
+            "virtual usa",
+            "virtual us"
+        );
+    }
+
+    if(
+        display ===
+        "united kingdom"
+    ){
+
+        aliases.push(
+            "uk",
+            "gb",
+            "england",
+            "great britain"
+        );
+    }
+
+    const haystack =
+        [
+            display,
+            id,
+            key,
+            raw,
+            ...aliases
+        ]
+        .join(" ")
+        .toLowerCase();
+
+    return haystack.includes(q);
+}
+
+
+function renderCountries(){
+
+    const grid =
+        document.getElementById(
+            "countryGrid"
+        );
+
+    const search =
+        document.getElementById(
+            "countrySearch"
+        ).value;
+
+    if(!countries.length){
+
+        grid.innerHTML =
+            `<div class="empty">
+                No countries available.
+            </div>`;
+
+        return;
+    }
+
+    const filtered =
+        countries.filter(
+            country =>
+                countryMatches(
+                    country,
+                    search
+                )
+        );
+
+    if(!filtered.length){
+
+        grid.innerHTML =
+            `<div class="empty">
+                No country found.
+            </div>`;
+
+        return;
+    }
+
+    grid.innerHTML =
+        filtered
+            .map(
+                country => {
+
+                    const name =
+                        countryName(country);
+
+                    const id =
+                        String(
+                            countryId(country) ??
+                            countries.indexOf(
+                                country
+                            )
+                        );
+
+                    const isActive =
+                        selectedCountry &&
+                        String(
+                            countryId(
+                                selectedCountry
+                            )
+                        ) === id;
+
+                    return `
+                        <button
+                            class="country-btn ${
+                                isActive
+                                    ? "active"
+                                    : ""
+                            }"
+                            onclick="selectCountryByIndex(
+                                ${countries.indexOf(country)}
+                            )"
+                            title="${escapeHtml(name)}"
+                        >
+                            ${escapeHtml(name)}
+                        </button>
+                    `;
+                }
+            )
+            .join("");
+}
+
+
+async function selectCountryByIndex(index){
+
+    const country =
+        countries[index];
+
+    if(!country){
+        return;
+    }
+
+    selectedCountry =
+        country;
+
+    selectedService = null;
+    selectedServer = null;
+
+    services = [];
+    servers = [];
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+    renderCountries();
+    renderServices();
+    renderServers();
+
+    await loadServices();
+}
+
+
+/* =========================================================
+   SERVICES
+========================================================= */
+
+async function loadServices(){
+
+    const grid =
+        document.getElementById(
+            "serviceGrid"
+        );
+
+    if(!selectedCountry){
+
+        grid.innerHTML =
+            `<div class="empty">
+                Select a country first.
+            </div>`;
+
+        return;
+    }
+
+    grid.innerHTML =
+        `<div class="loading">
+            Loading services...
+        </div>`;
+
+    try{
+
+        const payload =
+            provider === "smsbower"
+                ? {
+                    country_id:
+                        countryId(
+                            selectedCountry
+                        )
+                }
+                : {
+                    country:
+                        countryKey(
+                            selectedCountry
+                        )
+                };
+
+        const data =
+            await api(
+                "services",
+                payload,
+                provider
+            );
+
+        let list =
+            data?.services ??
+            data?.data ??
+            data?.result ??
+            data;
+
+        if(!Array.isArray(list)){
+
+            if(
+                list &&
+                typeof list ===
+                "object"
+            ){
+
+                list =
+                    Object.entries(list)
+                        .map(
+                            ([key,value]) => {
+
+                                if(
+                                    value &&
+                                    typeof value ===
+                                    "object"
+                                ){
+
+                                    return {
+                                        ...value,
+                                        code:
+                                            value.code ??
+                                            value.service_code ??
+                                            key
+                                    };
+                                }
+
+                                return {
+                                    code:key,
+                                    name:key,
+                                    price:value
+                                };
+                            }
+                        );
+
+            }else{
+
+                list = [];
+            }
+        }
+
+        services = list;
+
+        renderServices();
+
+    }catch(error){
+
+        console.error(error);
+
+        grid.innerHTML =
+            `<div class="empty">
+                Unable to load services.<br>
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>`;
+    }
+}
+
+
+function renderServices(){
+
+    const grid =
+        document.getElementById(
+            "serviceGrid"
+        );
+
+    if(!selectedCountry){
+
+        grid.innerHTML =
+            `<div class="empty">
+                Select a country first.
+            </div>`;
+
+        return;
+    }
+
+    const query =
+        document.getElementById(
+            "serviceSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        services.filter(
+            service => {
+
+                if(!query){
+                    return true;
+                }
+
+                return (
+                    serviceName(service)
+                        .toLowerCase()
+                        .includes(query) ||
+
+                    serviceCode(service)
+                        .toLowerCase()
+                        .includes(query)
+                );
+            }
+        );
+
+    if(!filtered.length){
+
+        grid.innerHTML =
+            `<div class="empty">
+                No service available.
+            </div>`;
+
+        return;
+    }
+
+    grid.innerHTML =
+        filtered
+            .map(
+                service => {
+
+                    const code =
+                        serviceCode(service);
+
+                    const active =
+                        selectedService &&
+                        serviceCode(
+                            selectedService
+                        ) === code;
+
+                    return `
+                        <button
+                            class="service-btn ${
+                                active
+                                    ? "active"
+                                    : ""
+                            }"
+                            onclick="selectService(
+                                '${escapeJs(code)}'
+                            )"
+                        >
+                            ${escapeHtml(
+                                serviceName(service) ||
+                                code
+                            )}
+                        </button>
+                    `;
+                }
+            )
+            .join("");
+}
+
+
+async function selectService(code){
+
+    const service =
+        services.find(
+            item =>
+                serviceCode(item) ===
+                String(code)
+        );
+
+    if(!service){
+        return;
+    }
+
+    selectedService =
+        service;
+
+    selectedServer = null;
+
+    renderServices();
+
+    await loadServers();
+}
+
+
+/* =========================================================
+   SERVERS
+========================================================= */
+
+async function loadServers(){
+
+    const grid =
+        document.getElementById(
+            "serverGrid"
+        );
+
+    const buyButton =
+        document.getElementById(
+            "buyButton"
+        );
+
+    buyButton.disabled = true;
+
+    if(
+        !selectedCountry ||
+        !selectedService
+    ){
+
+        grid.innerHTML =
+            `<div class="empty">
+                Select a service first.
+            </div>`;
+
+        return;
+    }
+
+    grid.innerHTML =
+        `<div class="loading">
+            Loading servers...
+        </div>`;
+
+    try{
+
+        let data;
+
+        if(
+            provider === "smsbower"
+        ){
+
+            data =
+                await api(
+                    "prices",
+                    {
+                        country_id:
+                            countryId(
+                                selectedCountry
+                            ),
+
+                        service_code:
+                            serviceCode(
+                                selectedService
+                            )
+                    },
+                    "smsbower"
+                );
+
+        }else{
+
+            data =
+                await api(
+                    "servers",
+                    {
+                        country:
+                            countryKey(
+                                selectedCountry
+                            ),
+
+                        service:
+                            serviceCode(
+                                selectedService
+                            ),
+
+                        product:
+                            serviceCode(
+                                selectedService
+                            )
+                    },
+                    "grizzly"
+                );
+        }
+
+        let list =
+            data?.servers ??
+            data?.prices ??
+            data?.data ??
+            data?.result ??
+            data;
+
+        if(!Array.isArray(list)){
+
+            if(
+                list &&
+                typeof list ===
+                "object"
+            ){
+
+                list =
+                    Object.entries(list)
+                        .map(
+                            ([key,value]) => {
+
+                                if(
+                                    value &&
+                                    typeof value ===
+                                    "object"
+                                ){
+
+                                    return {
+                                        ...value,
+
+                                        id:
+                                            value.id ??
+                                            key,
+
+                                        name:
+                                            value.name ??
+                                            key
+                                    };
+                                }
+
+                                return {
+                                    id:key,
+                                    name:key,
+                                    price:value
+                                };
+                            }
+                        );
+
+            }else{
+
+                list = [];
+            }
+        }
+
+        servers = list;
+
+        renderServers();
+
+    }catch(error){
+
+        console.error(error);
+
+        grid.innerHTML =
+            `<div class="empty">
+                Unable to load servers.<br>
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>`;
+    }
+}
+
+
+function renderServers(){
+
+    const grid =
+        document.getElementById(
+            "serverGrid"
+        );
+
+    const buyButton =
+        document.getElementById(
+            "buyButton"
+        );
+
+    if(
+        !selectedCountry ||
+        !selectedService
+    ){
+
+        grid.innerHTML =
+            `<div class="empty">
+                Select a service first.
+            </div>`;
+
+        buyButton.disabled = true;
+
+        return;
+    }
+
+    if(!servers.length){
+
+        grid.innerHTML =
+            `<div class="empty">
+                No server available for this service.
+            </div>`;
+
+        buyButton.disabled = true;
+
+        return;
+    }
+
+    grid.innerHTML =
+        servers
+            .map(
+                (server,index) => {
+
+                    const price =
+                        serverPrice(server);
+
+                    const active =
+                        selectedServer ===
+                        server;
+
+                    const stock =
+                        serverStock(server);
+
+                    return `
+                        <div
+                            class="server-card ${
+                                active
+                                    ? "active"
+                                    : ""
+                            }"
+                            onclick="selectServer(${index})"
+                        >
+
+                            <div class="server-name">
+                                ${escapeHtml(
+                                    serverName(server)
+                                )}
+                            </div>
+
+                            <div class="server-price">
+                                ₦${formatMoney(price)}
+                            </div>
+
+                            ${
+                                stock !== ""
+                                    ? `
+                                        <div class="server-stock">
+                                            Stock:
+                                            ${escapeHtml(
+                                                String(stock)
+                                            )}
+                                        </div>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+                    `;
+                }
+            )
+            .join("");
+
+    buyButton.disabled =
+        !selectedServer;
+}
+
+
+function selectServer(index){
+
+    selectedServer =
+        servers[index] ?? null;
+
+    renderServers();
+}
+
+
+/* =========================================================
+   BUY
+========================================================= */
+
+async function buyNumber(){
+
+    if(
+        !selectedCountry ||
+        !selectedService ||
+        !selectedServer
+    ){
+
+        showToast(
+            "Please select country, service and server."
+        );
+
+        return;
+    }
+
+    const price =
+        serverPrice(
+            selectedServer
+        );
+
+    const confirmed =
+        confirm(
+            `Buy ${
+                serviceName(selectedService)
+            } number from ${
+                countryName(selectedCountry)
+            } for ₦${
+                formatMoney(price)
+            }?`
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            "buyButton"
+        );
+
+    button.disabled = true;
+    button.textContent =
+        "Processing...";
+
+    try{
+
+        let data;
+
+        if(
+            provider === "smsbower"
+        ){
+
+            data =
+                await api(
+                    "buy",
+                    {
+                        country_id:
+                            countryId(
+                                selectedCountry
+                            ),
+
+                        service_code:
+                            serviceCode(
+                                selectedService
+                            ),
+
+                        provider_id:
+                            serverId(
+                                selectedServer
+                            ),
+
+                        max_price:
+                            price
+                    },
+                    "smsbower"
+                );
+
+        }else{
+
+            data =
+                await api(
+                    "buy",
+                    {
+                        country:
+                            countryKey(
+                                selectedCountry
+                            ),
+
+                        service:
+                            serviceCode(
+                                selectedService
+                            ),
+
+                        product:
+                            serviceCode(
+                                selectedService
+                            ),
+
+                        operator:
+                            serverId(
+                                selectedServer
+                            )
+                    },
+                    "grizzly"
+                );
+        }
+
+        const order =
+            normalizeOrder(
+                data?.order ??
+                data?.data ??
+                data
+            );
+
+        currentOrderId =
+            order?.id ??
+            order?.order_id ??
+            data?.order_id ??
+            data?.activationId ??
+            null;
+
+        currentOrderProvider =
+            provider;
+
+        renderCurrentOrder(order);
+
+        showToast(
+            "Number purchased successfully."
+        );
+
+        await loadWallet();
+        await loadAllOrders();
+
+        startAutoCheck();
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Purchase failed."
+        );
+
+    }finally{
+
+        button.disabled =
+            !selectedServer;
+
+        button.textContent =
+            "Buy Number";
+    }
+}
+
+
+/* =========================================================
+   ORDER NORMALIZATION
+========================================================= */
+
+function normalizeOrder(raw){
+
+    if(!raw){
+        return null;
+    }
+
+    const number =
+        raw.phoneNumber ??
+        raw.phone_number ??
+        raw.number ??
+        raw.phone ??
+        "";
+
+    const activationId =
+        raw.activationId ??
+        raw.activation_id ??
+        raw.order_id ??
+        raw.id ??
+        "";
+
+    const service =
+        raw.service_name ??
+        raw.service ??
+        raw.product ??
+        serviceName(
+            selectedService
+        );
+
+    const country =
+        raw.country_name ??
+        raw.country ??
+        countryName(
+            selectedCountry
+        );
+
+    const price =
+        Number(
+            raw.customer_price_ngn ??
+            raw.price_ngn ??
+            raw.price ??
+            raw.amount ??
+            serverPrice(
+                selectedServer
+            )
+        );
+
+    const status =
+        raw.status ??
+        "pending";
+
+    const otp =
+        raw.otp ??
+        raw.code ??
+        raw.sms_code ??
+        raw.sms?.code ??
+        "";
+
+    return {
+        ...raw,
+
+        id:
+            raw.id ??
+            activationId,
+
+        order_id:
+            raw.order_id ??
+            activationId,
+
+        activationId,
+
+        number,
+
+        phoneNumber:
+            number,
+
+        service,
+
+        country,
+
+        price,
+
+        status,
+
+        otp,
+
+        server:
+            raw.server ??
+            provider
+    };
+}
+
+
+/* =========================================================
+   CURRENT ORDER
+========================================================= */
+
+function renderCurrentOrder(order){
+
+    const box =
+        document.getElementById(
+            "currentOrder"
+        );
+
+    if(!order){
+
+        box.innerHTML =
+            `<div class="empty">
+                No current order.
+            </div>`;
+
+        return;
+    }
+
+    box.innerHTML =
+        orderCardHtml(
+            order,
+            true
+        );
+}
+
+
+/* =========================================================
+   PREVIOUS ORDERS
+========================================================= */
+
+async function loadAllOrders(){
+
+    const box =
+        document.getElementById(
+            "previousOrders"
+        );
+
+    box.innerHTML =
+        `<div class="loading">
+            Loading orders...
+        </div>`;
+
+    try{
+
+        const results =
+            await Promise.allSettled([
+                api(
+                    "orders",
+                    {},
+                    "smsbower"
+                ),
+
+                api(
+                    "orders",
+                    {},
+                    "grizzly"
+                )
+            ]);
+
+        const all = [];
+
+        for(
+            const result of results
+        ){
+
+            if(
+                result.status !==
+                "fulfilled"
+            ){
+                continue;
+            }
+
+            const data =
+                result.value;
+
+            let list =
+                data?.orders ??
+                data?.data ??
+                data?.result ??
+                data;
+
+            if(
+                Array.isArray(list)
+            ){
+                all.push(...list);
+            }
+        }
+
+        orders =
+            all
+                .map(normalizeOrder)
+                .filter(Boolean)
+                .sort(
+                    (a,b) =>
+                        orderTime(b) -
+                        orderTime(a)
+                );
+
+        renderPreviousOrders();
+
+    }catch(error){
+
+        console.error(error);
+
+        box.innerHTML =
+            `<div class="empty">
+                Unable to load orders.
+            </div>`;
+    }
+}
+
+
+function renderPreviousOrders(){
+
+    const box =
+        document.getElementById(
+            "previousOrders"
+        );
+
+    if(!orders.length){
+
+        box.innerHTML =
+            `<div class="empty">
+                No previous orders.
+            </div>`;
+
+        return;
+    }
+
+    box.innerHTML =
+        orders
+            .map(
+                order =>
+                    orderCardHtml(
+                        order,
+                        false
+                    )
+            )
+            .join("");
+}
+
+
+function orderCardHtml(
+    order,
+    isCurrent
+){
+
+    const status =
+        normalizeStatus(
+            order.status
+        );
+
+    const number =
+        order.number ||
+        order.phoneNumber ||
+        "Number unavailable";
+
+    const service =
+        order.service ||
+        "Unknown service";
+
+    const country =
+        order.country ||
+        "Unknown country";
+
+    const price =
+        Number(
+            order.price || 0
+        );
+
+    const otp =
+        order.otp ||
+        order.code ||
+        "";
+
+    const orderId =
+        order.id ||
+        order.order_id ||
+        order.activationId ||
+        "";
+
+    return `
+        <div class="order-card">
+
+            <div class="order-number">
+                ${escapeHtml(
+                    String(number)
+                )}
+            </div>
+
+            <div class="order-service">
+                ${escapeHtml(
+                    String(service)
+                )}
+                ·
+                ${escapeHtml(
+                    String(country)
+                )}
+            </div>
+
+            <div class="order-price">
+                ₦${formatMoney(price)}
+            </div>
+
+            <span class="order-status ${
+                escapeHtml(status)
+            }">
+                ${escapeHtml(
+                    statusLabel(status)
+                )}
+            </span>
+
+            ${
+                otp
+                    ? `
+                        <div class="otp">
+                            OTP:
+                            ${escapeHtml(
+                                String(otp)
+                            )}
+                        </div>
+                      `
+                    : ""
+            }
+
+            ${
+                isCurrent
+                    ? `
+                        <div class="order-actions">
+
+                            ${
+                                orderId
+                                    ? `
+                                        <button
+                                            class="small-btn"
+                                            onclick="checkSpecificOrder(
+                                                '${escapeJs(orderId)}'
+                                            )"
+                                        >
+                                            Check Code
+                                        </button>
+                                      `
+                                    : ""
+                            }
+
+                            ${
+                                isActiveStatus(
+                                    status
+                                )
+                                    ? `
+                                        <button
+                                            class="small-btn black"
+                                            onclick="cancelSpecificOrder(
+                                                '${escapeJs(orderId)}'
+                                            )"
+                                        >
+                                            Cancel
+                                        </button>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+                      `
+                    : ""
+            }
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   ORDER STATUS
+========================================================= */
+
+function normalizeStatus(status){
+
+    const s =
+        String(
+            status ??
+            "pending"
+        )
+        .toLowerCase()
+        .trim();
+
+    if(
+        s.includes("receive") ||
+        s === "received" ||
+        s === "completed" ||
+        s === "success"
+    ){
+        return "received";
+    }
+
+    if(
+        s.includes("cancel") ||
+        s === "cancelled" ||
+        s === "canceled"
+    ){
+        return "cancelled";
+    }
+
+    if(
+        s.includes("wait") ||
+        s === "pending" ||
+        s === "active"
+    ){
+        return "pending";
+    }
+
+    return s || "pending";
+}
+
+
+function statusLabel(status){
+
+    if(
+        status === "received"
+    ){
+        return "Received";
+    }
+
+    if(
+        status === "cancelled"
+    ){
+        return "Cancelled";
+    }
+
+    return "Waiting";
+}
+
+
+function isActiveStatus(status){
+
+    return [
+        "pending",
+        "waiting",
+        "active"
+    ].includes(
+        normalizeStatus(status)
+    );
+}
+
+
+/* =========================================================
+   ORDER PROVIDER
+   Internal only.
+========================================================= */
+
+function orderProvider(order){
+
+    const server =
+        String(
+            order?.server ??
+            order?.provider ??
+            ""
+        ).toLowerCase();
+
+    if(
+        server === "grizzly"
+    ){
+        return "grizzly";
+    }
+
+    return "smsbower";
+}
+
+
+/* =========================================================
+   CHECK CURRENT ORDER
+========================================================= */
+
+let autoCheckTimer = null;
+
+
+function startAutoCheck(){
+
+    if(autoCheckTimer){
+
+        clearInterval(
+            autoCheckTimer
+        );
+    }
+
+    autoCheckTimer =
+        setInterval(
+            async () => {
+
+                if(
+                    !currentOrderId
+                ){
+                    return;
+                }
+
+                try{
+
+                    const providerName =
+                        currentOrderProvider ||
+                        provider;
+
+                    const data =
+                        await api(
+                            "check",
+                            {
+                                order_id:
+                                    currentOrderId,
+
+                                activation_id:
+                                    currentOrderId
+                            },
+                            providerName
+                        );
+
+                    const order =
+                        normalizeOrder(
+                            data?.order ??
+                            data?.data ??
+                            data
+                        );
+
+                    if(order){
+
+                        currentOrderProvider =
+                            providerName;
+
+                        renderCurrentOrder(
+                            order
+                        );
+
+                        if(
+                            normalizeStatus(
+                                order.status
+                            ) === "received"
+                        ){
+
+                            clearInterval(
+                                autoCheckTimer
+                            );
+
+                            await loadWallet();
+                            await loadAllOrders();
+                        }
+                    }
+
+                }catch(error){
+
+                    console.warn(
+                        "Auto check:",
+                        error.message
+                    );
+                }
+
+            },
+            7000
+        );
+}
+
+
+async function checkSpecificOrder(
+    orderId
+){
+
+    if(!orderId){
+        return;
+    }
+
+    try{
+
+        const providerName =
+            currentOrderProvider ||
+            provider;
+
+        const data =
+            await api(
+                "check",
+                {
+                    order_id:orderId,
+                    activation_id:orderId
+                },
+                providerName
+            );
+
+        const order =
+            normalizeOrder(
+                data?.order ??
+                data?.data ??
+                data
+            );
+
+        if(order){
+
+            renderCurrentOrder(
+                order
+            );
+
+            showToast(
+                order.otp
+                    ? `OTP: ${order.otp}`
+                    : "No OTP received yet."
+            );
+
+            await loadAllOrders();
+        }
+
+    }catch(error){
+
+        showToast(
+            error.message ||
+            "Unable to check order."
+        );
+    }
+}
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+async function cancelSpecificOrder(
+    orderId
+){
+
+    if(!orderId){
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to cancel this number?"
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        const providerName =
+            currentOrderProvider ||
+            provider;
+
+        await api(
+            "cancel",
+            {
+                order_id:orderId,
+                activation_id:orderId
+            },
+            providerName
+        );
+
+        showToast(
+            "Order cancelled."
+        );
+
+        if(
+            String(currentOrderId) ===
+            String(orderId)
+        ){
+
+            currentOrderId = null;
+
+            if(autoCheckTimer){
+
+                clearInterval(
+                    autoCheckTimer
+                );
+            }
+        }
+
+        await loadWallet();
+        await loadAllOrders();
+
+    }catch(error){
+
+        showToast(
+            error.message ||
+            "Unable to cancel order."
+        );
+    }
 }
 
 
@@ -1133,3664 +3048,239 @@ async function checkLogin(){
 
 async function loadWallet(){
 
-    if(!currentUser){
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("wallet")
-            .select("balance")
-            .eq(
-                '"user-id"',
-                currentUser.id
-            )
-            .maybeSingle();
-
-    if(error){
-
-        console.error(
-            "Wallet error:",
-            error
-        );
-
-        showStatus(
-            "Could not load your wallet balance.",
-            "error"
-        );
-
-        return;
-    }
-
-    walletBalance =
-        Number(data?.balance || 0);
-
-    document.getElementById(
-        "walletBalance"
-    ).textContent =
-        formatMoney(walletBalance);
-}
-
-
-/* =========================================================
-   LOAD SERVICES
-========================================================= */
-
-async function loadServices(){
-
-    showStatus(
-        "Loading AI services...",
-        "info"
-    );
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("ai_services")
-            .select(
-                "id,name,description,price,is_active,sort_order"
-            )
-            .eq(
-                "is_active",
-                true
-            )
-            .order(
-                "sort_order",
-                {
-                    ascending:true
-                }
-            );
-
-    if(error){
-
-        console.error(
-            "AI services error:",
-            error
-        );
-
-        showStatus(
-            "Could not load AI services.",
-            "error"
-        );
-
-        return;
-    }
-
-    aiServices =
-        data || [];
-
-    renderServices();
-}
-
-
-/* =========================================================
-   RENDER SERVICES
-========================================================= */
-
-function renderServices(){
-
-    const container =
-        document.getElementById("services");
-
-    if(!aiServices.length){
-
-        container.innerHTML = `
-            <div class="empty">
-                No AI services are currently available.
-            </div>
-        `;
-
-        hideStatus();
-
-        return;
-    }
-
-    container.innerHTML =
-        aiServices.map(service => {
-
-            const visual =
-                getVisualForService(
-                    service.name
-                );
-
-            let description =
-                service.description || "";
-
-            const cleanServiceName =
-                String(service.name || "")
-                    .replace(
-                        /^[^\p{L}\p{N}]+/u,
-                        ""
-                    )
-                    .trim();
-
-            if(
-                cleanServiceName ===
-                "KYC / Document Designer"
-            ){
-
-                description =
-                    "Create SAMPLE layouts for Passport, National ID, Driver License, Residence Permit, Student ID, Employee ID, Business ID and Custom Sample.";
-            }
-
-            if(!visual){
-
-                return `
-                    <div
-                        class="service-card"
-                        onclick="openTool('${escapeHtml(service.id)}')"
-                    >
-
-                        <div class="service-visual visual-purple">
-                            <span style="
-                                color:#fff;
-                                font-weight:900;
-                                font-size:20px;
-                            ">
-                                AI
-                            </span>
-                        </div>
-
-                        <div class="service-info">
-
-                            <div class="service-name">
-                                ${escapeHtml(service.name)}
-                            </div>
-
-                            <div class="service-description">
-                                ${escapeHtml(description)}
-                            </div>
-
-                        </div>
-
-                        <div class="service-right">
-
-                            <div class="service-price">
-                                ${formatMoney(service.price)}
-                            </div>
-
-                            <div class="open-arrow">
-                                ›
-                            </div>
-
-                        </div>
-
-                    </div>
-                `;
-            }
-
-            return `
-
-                <div
-                    class="service-card"
-                    onclick="openTool('${escapeHtml(service.id)}')"
-                >
-
-                    <div
-                        class="service-visual ${visual.cls}"
-                    >
-                        ${visual.svg}
-                    </div>
-
-                    <div class="service-info">
-
-                        <div class="service-name">
-                            ${escapeHtml(service.name)}
-                        </div>
-
-                        <div class="service-description">
-                            ${escapeHtml(description)}
-                        </div>
-
-                    </div>
-
-                    <div class="service-right">
-
-                        <div class="service-price">
-                            ${formatMoney(service.price)}
-                        </div>
-
-                        <div class="open-arrow">
-                            ›
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        }).join("");
-
-    hideStatus();
-}
-
-
-/* =========================================================
-   OPEN TOOL
-========================================================= */
-
-function openTool(serviceId){
-
-    selectedService =
-        aiServices.find(
-            service =>
-                service.id === serviceId
-        );
-
-    if(!selectedService){
-        return;
-    }
-
-    const visual =
-        getVisualForService(
-            selectedService.name
-        );
-
-    if(!visual){
-
-        alert(
-            "This AI service is not configured correctly."
-        );
-
-        return;
-    }
-
-    document.getElementById(
-        "servicePage"
-    ).style.display = "none";
-
-    document.getElementById(
-        "toolPage"
-    ).style.display = "block";
-
-    const icon =
+    const wallet =
         document.getElementById(
-            "toolIcon"
+            "walletBalance"
         );
-
-    icon.className =
-        "tool-icon-wrap " +
-        visual.cls;
-
-    icon.innerHTML =
-        visual.svg;
-
-    document.getElementById(
-        "toolTitle"
-    ).textContent =
-        selectedService.name;
-
-    let toolDescription =
-        selectedService.description ||
-        "Complete the form below.";
-
-    const cleanServiceName =
-        String(selectedService.name || "")
-            .replace(
-                /^[^\p{L}\p{N}]+/u,
-                ""
-            )
-            .trim();
-
-    if(
-        cleanServiceName ===
-        "KYC / Document Designer"
-    ){
-
-        toolDescription =
-            "Create clearly marked SAMPLE layouts only. Not valid government identification.";
-    }
-
-    document.getElementById(
-        "toolDescription"
-    ).textContent =
-        toolDescription;
-
-    document.getElementById(
-        "toolPrice"
-    ).textContent =
-        "Price: " +
-        formatMoney(
-            selectedService.price
-        );
-
-    document.getElementById(
-        "resultBox"
-    ).classList.remove("show");
-
-    document.getElementById(
-        "loadingBox"
-    ).classList.remove("show");
-
-    renderToolForm(
-        selectedService.name
-    );
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-}
-
-
-/* =========================================================
-   BACK TO SERVICES
-========================================================= */
-
-function showServices(){
-
-    document.getElementById(
-        "toolPage"
-    ).style.display = "none";
-
-    document.getElementById(
-        "servicePage"
-    ).style.display = "block";
-
-    selectedService = null;
-    selectedKycDocument = null;
-    selectedKycCountry = null;
-    kycCountries = [];
-    kycDocuments = [];
-
-    document.getElementById(
-        "toolContent"
-    ).innerHTML = "";
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-}
-
-
-/* =========================================================
-   BACK DASHBOARD
-========================================================= */
-
-function goBack(){
-
-    window.location.href =
-        "dashboard.html";
-}
-
-
-/* =========================================================
-   TOOL FORMS
-========================================================= */
-
-function renderToolForm(serviceName){
-
-    const box =
-        document.getElementById(
-            "toolContent"
-        );
-
-
-    if(serviceName === "🎬 Pics → Video" ||
-       serviceName === "Pics → Video"){
-
-        box.innerHTML = `
-
-            <label>Upload Picture</label>
-
-            <input
-                id="picsVideoImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <label>Describe the Video</label>
-
-            <textarea
-                id="picsVideoPrompt"
-                placeholder="Describe what you want to happen in the video..."
-            ></textarea>
-
-            <label>Voice</label>
-
-            <select id="picsVideoVoice">
-                <option>Female Voice</option>
-                <option>Male Voice</option>
-            </select>
-
-            <label>Language</label>
-
-            <select id="picsVideoLanguage">
-                <option>English</option>
-                <option>French</option>
-                <option>Spanish</option>
-                <option>German</option>
-                <option>Arabic</option>
-                <option>Yoruba</option>
-                <option>Igbo</option>
-            </select>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Video
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "🎭 Video Face Swap" ||
-       serviceName === "Video Face Swap"){
-
-        box.innerHTML = `
-
-            <label>Upload Video</label>
-
-            <input
-                id="faceSwapVideo"
-                class="file-input"
-                type="file"
-                accept="video/*"
-            >
-
-            <label>Upload Replacement Face</label>
-
-            <input
-                id="faceSwapFace"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <div class="consent-box">
-
-                <input
-                    id="faceSwapConsent"
-                    type="checkbox"
-                >
-
-                <span>
-                    I confirm that I have permission to use
-                    the uploaded face and video.
-                </span>
-
-            </div>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Face Swap
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "🎙️ AI Voice" ||
-       serviceName === "AI Voice"){
-
-        box.innerHTML = `
-
-            <label>Text</label>
-
-            <textarea
-                id="aiVoiceText"
-                placeholder="Type what you want the AI voice to say..."
-            ></textarea>
-
-            <div class="two-col">
-
-                <div>
-
-                    <label>Language</label>
-
-                    <select id="aiVoiceLanguage">
-
-                        <option>English</option>
-                        <option>French</option>
-                        <option>Spanish</option>
-                        <option>German</option>
-                        <option>Italian</option>
-                        <option>Portuguese</option>
-                        <option>Dutch</option>
-                        <option>Arabic</option>
-                        <option>Turkish</option>
-                        <option>Hindi</option>
-                        <option>Chinese</option>
-                        <option>Japanese</option>
-                        <option>Korean</option>
-                        <option>Russian</option>
-                        <option>Yoruba</option>
-                        <option>Igbo</option>
-
-                    </select>
-
-                </div>
-
-                <div>
-
-                    <label>Voice</label>
-
-                    <select id="aiVoiceGender">
-                        <option>Female</option>
-                        <option>Male</option>
-                    </select>
-
-                </div>
-
-            </div>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Voice
-            </button>
-        `;
-
-        return;
-    }
-
-
-    /* =====================================================
-       KYC / DOCUMENT DESIGNER
-    ===================================================== */
-
-    if(serviceName === "🪪 KYC / Document Designer" ||
-       serviceName === "KYC / Document Designer"){
-
-        box.innerHTML = `
-
-            <div class="kyc-note">
-
-                <strong>SAMPLE / NOT VALID</strong><br><br>
-
-                Create fictional sample document layouts
-                for design and demonstration purposes only.
-                These samples must not function as government
-                identification or reproduce real security
-                features. Sample identifiers are generated
-                automatically by the system.
-
-            </div>
-
-
-            <label>Country</label>
-
-            <div
-                class="kyc-search-select"
-                id="kycCountrySelect"
-            >
-
-                <input
-                    id="kycCountrySearch"
-                    class="kyc-search-input"
-                    type="text"
-                    placeholder="Search or select country..."
-                    autocomplete="off"
-                    aria-haspopup="listbox"
-                    aria-expanded="false"
-                >
-
-                <span class="kyc-dropdown-arrow">
-                    ▼
-                </span>
-
-                <div
-                    id="kycCountryMenu"
-                    class="kyc-dropdown-menu"
-                    role="listbox"
-                ></div>
-
-            </div>
-
-            <input
-                id="kycCountry"
-                type="hidden"
-            >
-
-
-            <label>Document Type</label>
-
-            <div
-                class="kyc-search-select"
-                id="kycDocumentSelect"
-            >
-
-                <input
-                    id="kycDocumentSearch"
-                    class="kyc-search-input"
-                    type="text"
-                    placeholder="Select country first..."
-                    autocomplete="off"
-                    aria-haspopup="listbox"
-                    aria-expanded="false"
-                    disabled
-                >
-
-                <span class="kyc-dropdown-arrow">
-                    ▼
-                </span>
-
-                <div
-                    id="kycDocumentMenu"
-                    class="kyc-dropdown-menu"
-                    role="listbox"
-                ></div>
-
-            </div>
-
-            <input
-                id="kycDocument"
-                type="hidden"
-            >
-
-
-            <div class="kyc-custom-box">
-
-                <label>
-                    Custom Sample Document Type
-                </label>
-
-                <input
-                    id="kycCustomDocument"
-                    type="text"
-                    placeholder="Example: Employee ID"
-                >
-
-                <button
-                    type="button"
-                    class="kyc-search-btn"
-                    onclick="useCustomKycDocument()"
-                >
-                    Use Custom Type
-                </button>
-
-                <div class="kyc-search-hint">
-                    Custom types are for fictional SAMPLE documents only.
-                </div>
-
-            </div>
-
-
-            <div id="kycFields"></div>
-
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Sample
-            </button>
-
-        `;
-
-        loadKycCountries();
-
-        return;
-    }
-
-
-    /* =====================================================
-       WATERMARK REMOVAL
-       ONLY THIS SECTION WAS CHANGED
-    ===================================================== */
-
-    if(serviceName === "🧹 Watermark Removal" ||
-       serviceName === "Watermark Removal"){
-
-        box.innerHTML = `
-
-            <label>Upload Image</label>
-
-            <input
-                id="watermarkImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <label>Removal Method</label>
-
-            <select id="watermarkMethod">
-
-                <option value="ai_auto_detect">
-                    🤖 AI Auto Detect
-                </option>
-
-                <option value="brush_watermark">
-                    🖌️ Brush Watermark
-                </option>
-
-                <option value="type_watermark">
-                    ⌨️ Type Watermark
-                </option>
-
-            </select>
-
-            <div
-                id="watermarkMethodFields"
-            ></div>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Remove Watermark
-            </button>
-
-        `;
-
-        const methodSelect =
-            document.getElementById(
-                "watermarkMethod"
-            );
-
-        methodSelect.addEventListener(
-            "change",
-            renderWatermarkMethod
-        );
-
-        renderWatermarkMethod();
-
-        return;
-    }
-
-
-    if(serviceName === "🗣️ Voice Cloner" ||
-       serviceName === "Voice Cloner"){
-
-        box.innerHTML = `
-
-            <div class="voice-note">
-
-                Upload an audio or video containing a voice
-                that you own or have permission to use.
-
-            </div>
-
-            <label>Voice Sample</label>
-
-            <input
-                id="voiceCloneSample"
-                class="file-input"
-                type="file"
-                accept="audio/*,video/*"
-            >
-
-            <label>Text to Speak</label>
-
-            <textarea
-                id="voiceCloneText"
-                placeholder="Type what the cloned voice should say..."
-            ></textarea>
-
-            <div class="consent-box">
-
-                <input
-                    id="voiceCloneConsent"
-                    type="checkbox"
-                >
-
-                <span>
-                    I confirm that I own this voice or have
-                    permission to clone and use it.
-                </span>
-
-            </div>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Voice
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "🎥 Video Voice Clone" ||
-       serviceName === "Video Voice Clone"){
-
-        box.innerHTML = `
-
-            <div class="voice-note">
-
-                Upload an authorized voice source and a
-                picture or video. A picture can become a
-                talking video; a video can receive the
-                generated voice.
-
-            </div>
-
-            <label>Voice Source</label>
-
-            <input
-                id="videoVoiceSource"
-                class="file-input"
-                type="file"
-                accept="audio/*,video/*"
-            >
-
-            <label>Picture or Video</label>
-
-            <input
-                id="videoVoiceVisual"
-                class="file-input"
-                type="file"
-                accept="image/*,video/*"
-            >
-
-            <label>Text to Speak</label>
-
-            <textarea
-                id="videoVoiceText"
-                placeholder="Type what the generated voice should say..."
-            ></textarea>
-
-            <div class="consent-box">
-
-                <input
-                    id="videoVoiceConsent"
-                    type="checkbox"
-                >
-
-                <span>
-                    I confirm that I own or have permission
-                    to use the uploaded voice and visual.
-                </span>
-
-            </div>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Video
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "✨ AI Image Enhancer" ||
-       serviceName === "AI Image Enhancer"){
-
-        box.innerHTML = `
-
-            <label>Upload Image</label>
-
-            <input
-                id="enhancerImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <label>Enhancement</label>
-
-            <select id="enhancerLevel">
-                <option>Standard</option>
-                <option>High</option>
-                <option>Maximum</option>
-            </select>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Enhance Image
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "🖼️ Background / Object Removal" ||
-       serviceName === "Background / Object Removal"){
-
-        box.innerHTML = `
-
-            <label>Upload Image</label>
-
-            <input
-                id="objectRemovalImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <label>What should be removed?</label>
-
-            <textarea
-                id="objectRemovalPrompt"
-                placeholder="Describe the object or background..."
-            ></textarea>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Remove
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "👕 AI Outfit Editor" ||
-       serviceName === "AI Outfit Editor"){
-
-        box.innerHTML = `
-
-            <label>Upload Image</label>
-
-            <input
-                id="outfitImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <label>Describe New Outfit</label>
-
-            <textarea
-                id="outfitPrompt"
-                placeholder="Describe the clothing or outfit..."
-            ></textarea>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Outfit
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "🎨 AI Image Style" ||
-       serviceName === "AI Image Style"){
-
-        box.innerHTML = `
-
-            <label>Upload Image</label>
-
-            <input
-                id="styleImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <label>Style</label>
-
-            <select id="styleType">
-
-                <option>Cinematic</option>
-                <option>Anime</option>
-                <option>Realistic</option>
-                <option>Artistic</option>
-                <option>Cartoon</option>
-                <option>Illustration</option>
-
-            </select>
-
-            <label>Extra Instructions</label>
-
-            <textarea
-                id="stylePrompt"
-                placeholder="Describe any extra changes..."
-            ></textarea>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Style
-            </button>
-        `;
-
-        return;
-    }
-
-
-    if(serviceName === "🗣️ Talking Photo" ||
-       serviceName === "Talking Photo"){
-
-        box.innerHTML = `
-
-            <label>Upload Photo</label>
-
-            <input
-                id="talkingPhotoImage"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <div class="two-col">
-
-                <div>
-
-                    <label>Language</label>
-
-                    <select id="talkingPhotoLanguage">
-
-                        <option>English</option>
-                        <option>French</option>
-                        <option>Spanish</option>
-                        <option>German</option>
-                        <option>Arabic</option>
-                        <option>Hindi</option>
-                        <option>Chinese</option>
-                        <option>Japanese</option>
-                        <option>Korean</option>
-                        <option>Yoruba</option>
-                        <option>Igbo</option>
-
-                    </select>
-
-                </div>
-
-                <div>
-
-                    <label>Voice</label>
-
-                    <select id="talkingPhotoVoice">
-                        <option>Female</option>
-                        <option>Male</option>
-                    </select>
-
-                </div>
-
-            </div>
-
-            <label>
-                What should the photo say?
-            </label>
-
-            <textarea
-                id="talkingPhotoText"
-                placeholder="Type the script..."
-            ></textarea>
-
-            <button
-                class="continue-btn"
-                onclick="generateAI()"
-            >
-                Generate Video
-            </button>
-        `;
-
-        return;
-    }
-
-
-    box.innerHTML = `
-        <div class="empty">
-            This service does not have a workspace configured.
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   WATERMARK REMOVAL METHODS
-========================================================= */
-
-function renderWatermarkMethod(){
-
-    const method =
-        document.getElementById(
-            "watermarkMethod"
-        )?.value;
-
-    const fields =
-        document.getElementById(
-            "watermarkMethodFields"
-        );
-
-    if(!fields){
-        return;
-    }
-
-
-    if(method === "ai_auto_detect"){
-
-        fields.innerHTML = `
-
-            <div class="voice-note">
-
-                🤖 AI will automatically detect the
-                watermark area from the uploaded image.
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    if(method === "brush_watermark"){
-
-        fields.innerHTML = `
-
-            <label>
-                Brush Watermark Area
-            </label>
-
-            <div class="voice-note">
-
-                🖌️ Select or describe the area containing
-                the watermark for removal.
-
-            </div>
-
-            <label>
-                Watermark Area Description
-            </label>
-
-            <input
-                id="watermarkBrushArea"
-                type="text"
-                placeholder="Example: top-right corner"
-            >
-
-        `;
-
-        return;
-    }
-
-
-    if(method === "type_watermark"){
-
-        fields.innerHTML = `
-
-            <label>
-                Type Watermark
-            </label>
-
-            <input
-                id="watermarkText"
-                type="text"
-                placeholder="Type the watermark text..."
-            >
-
-            <div class="kyc-search-hint">
-
-                Enter the visible watermark text you want
-                the AI to identify.
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    fields.innerHTML = "";
-}
-
-
-/* =========================================================
-   KYC COUNTRIES
-   SEARCH + SELECT IN THE SAME BOX
-========================================================= */
-
-async function loadKycCountries(){
-
-    const searchInput =
-        document.getElementById(
-            "kycCountrySearch"
-        );
-
-    const menu =
-        document.getElementById(
-            "kycCountryMenu"
-        );
-
-    if(!searchInput || !menu){
-        return;
-    }
-
-    searchInput.disabled = true;
-    searchInput.placeholder =
-        "Loading all countries...";
-
-    menu.innerHTML = `
-        <div class="kyc-dropdown-empty">
-            Loading countries...
-        </div>
-    `;
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("kyc_countries")
-            .select(
-                "id,country_code,country_name"
-            )
-            .eq(
-                "is_active",
-                true
-            )
-            .order(
-                "country_name",
-                {
-                    ascending:true
-                }
-            );
-
-    if(error){
-
-        console.error(
-            "KYC country error:",
-            error
-        );
-
-        searchInput.disabled = false;
-        searchInput.placeholder =
-            "Could not load countries";
-
-        menu.innerHTML = `
-            <div class="kyc-dropdown-empty">
-                Could not load countries.
-            </div>
-        `;
-
-        return;
-    }
-
-    kycCountries =
-        data || [];
-
-    searchInput.disabled = false;
-    searchInput.placeholder =
-        "Search or select country...";
-
-    renderKycCountryOptions("");
-
-    setupKycSearchSelect(
-        "kycCountrySelect",
-        "kycCountrySearch",
-        "kycCountryMenu",
-        function(searchTerm){
-
-            renderKycCountryOptions(
-                searchTerm
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   RENDER ALL COUNTRY OPTIONS
-========================================================= */
-
-function renderKycCountryOptions(
-    searchTerm=""
-){
-
-    const menu =
-        document.getElementById(
-            "kycCountryMenu"
-        );
-
-    if(!menu){
-        return;
-    }
-
-    const search =
-        String(searchTerm || "")
-            .trim()
-            .toLowerCase();
-
-    const filtered =
-        kycCountries.filter(country => {
-
-            const countryName =
-                String(
-                    country.country_name || ""
-                ).toLowerCase();
-
-            const countryCode =
-                String(
-                    country.country_code || ""
-                ).toLowerCase();
-
-            return (
-                !search ||
-                countryName.includes(search) ||
-                countryCode.includes(search)
-            );
-
-        });
-
-    if(!filtered.length){
-
-        menu.innerHTML = `
-            <div class="kyc-dropdown-empty">
-                No matching country found.
-            </div>
-        `;
-
-        return;
-    }
-
-    menu.innerHTML =
-        filtered.map(country => `
-
-            <div
-                class="kyc-dropdown-option"
-                role="option"
-                data-id="${escapeHtml(country.id)}"
-                data-name="${escapeHtml(country.country_name)}"
-            >
-                ${escapeHtml(country.country_name)}
-            </div>
-
-        `).join("");
-
-    menu
-        .querySelectorAll(
-            ".kyc-dropdown-option"
-        )
-        .forEach(option => {
-
-            option.addEventListener(
-                "click",
-                function(){
-
-                    selectKycCountry(
-                        this.dataset.id,
-                        this.dataset.name
-                    );
-
-                }
-            );
-
-        });
-}
-
-
-/* =========================================================
-   SELECT COUNTRY
-========================================================= */
-
-function selectKycCountry(
-    id,
-    name
-){
-
-    selectedKycCountry = {
-        id:id,
-        name:name
-    };
-
-    const searchInput =
-        document.getElementById(
-            "kycCountrySearch"
-        );
-
-    const hiddenInput =
-        document.getElementById(
-            "kycCountry"
-        );
-
-    if(searchInput){
-
-        searchInput.value =
-            name;
-
-        searchInput.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-    }
-
-    if(hiddenInput){
-        hiddenInput.value = id;
-    }
-
-    closeAllKycDropdowns();
-
-    loadKycDocuments(id);
-}
-
-
-/* =========================================================
-   KYC DOCUMENTS
-   SEARCH + SELECT IN THE SAME BOX
-========================================================= */
-
-async function loadKycDocuments(
-    countryId
-){
-
-    const searchInput =
-        document.getElementById(
-            "kycDocumentSearch"
-        );
-
-    const menu =
-        document.getElementById(
-            "kycDocumentMenu"
-        );
-
-    const hiddenInput =
-        document.getElementById(
-            "kycDocument"
-        );
-
-    const fieldsBox =
-        document.getElementById(
-            "kycFields"
-        );
-
-    const customInput =
-        document.getElementById(
-            "kycCustomDocument"
-        );
-
-    if(
-        !searchInput ||
-        !menu ||
-        !hiddenInput
-    ){
-
-        return;
-    }
-
-    selectedKycDocument = null;
-    kycDocuments = [];
-
-    if(fieldsBox){
-        fieldsBox.innerHTML = "";
-    }
-
-    if(customInput){
-        customInput.value = "";
-    }
-
-    hiddenInput.value = "";
-
-    searchInput.value = "";
-    searchInput.disabled = true;
-    searchInput.placeholder =
-        "Loading document types...";
-
-    menu.innerHTML = `
-        <div class="kyc-dropdown-empty">
-            Loading document types...
-        </div>
-    `;
-
-    closeAllKycDropdowns();
-
-    if(!countryId){
-
-        searchInput.disabled = true;
-        searchInput.placeholder =
-            "Select country first...";
-
-        menu.innerHTML = "";
-
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("kyc_document_types")
-            .select(
-                "id,country_id,document_name,is_custom"
-            )
-            .eq(
-                "country_id",
-                countryId
-            )
-            .eq(
-                "is_active",
-                true
-            )
-            .order(
-                "document_name",
-                {
-                    ascending:true
-                }
-            );
-
-    if(error){
-
-        console.error(
-            "KYC document error:",
-            error
-        );
-
-        searchInput.disabled = false;
-        searchInput.placeholder =
-            "Could not load documents";
-
-        menu.innerHTML = `
-            <div class="kyc-dropdown-empty">
-                Could not load document types.
-            </div>
-        `;
-
-        return;
-    }
-
-    kycDocuments =
-        data || [];
-
-    searchInput.disabled = false;
-    searchInput.placeholder =
-        "Search or select document...";
-
-    renderKycDocumentOptions("");
-
-    setupKycSearchSelect(
-        "kycDocumentSelect",
-        "kycDocumentSearch",
-        "kycDocumentMenu",
-        function(searchTerm){
-
-            renderKycDocumentOptions(
-                searchTerm
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   RENDER ALL DOCUMENT OPTIONS
-========================================================= */
-
-function renderKycDocumentOptions(
-    searchTerm=""
-){
-
-    const menu =
-        document.getElementById(
-            "kycDocumentMenu"
-        );
-
-    if(!menu){
-        return;
-    }
-
-    const search =
-        String(searchTerm || "")
-            .trim()
-            .toLowerCase();
-
-    const filtered =
-        kycDocuments.filter(
-            documentType => {
-
-                const name =
-                    String(
-                        documentType.document_name ||
-                        ""
-                    ).toLowerCase();
-
-                return (
-                    !search ||
-                    name.includes(search)
-                );
-
-            }
-        );
-
-    if(!filtered.length){
-
-        menu.innerHTML = `
-            <div class="kyc-dropdown-empty">
-                No matching document type found.
-            </div>
-        `;
-
-        return;
-    }
-
-    menu.innerHTML =
-        filtered.map(documentType => `
-
-            <div
-                class="kyc-dropdown-option"
-                role="option"
-                data-id="${escapeHtml(documentType.id)}"
-                data-name="${escapeHtml(documentType.document_name)}"
-            >
-                ${escapeHtml(documentType.document_name)}
-            </div>
-
-        `).join("");
-
-    menu
-        .querySelectorAll(
-            ".kyc-dropdown-option"
-        )
-        .forEach(option => {
-
-            option.addEventListener(
-                "click",
-                function(){
-
-                    selectKycDocument(
-                        this.dataset.id,
-                        this.dataset.name
-                    );
-
-                }
-            );
-
-        });
-}
-
-
-/* =========================================================
-   SELECT DOCUMENT
-========================================================= */
-
-function selectKycDocument(
-    id,
-    name
-){
-
-    selectedKycDocument = {
-
-        id:id,
-
-        name:name,
-
-        is_custom:false
-
-    };
-
-    const searchInput =
-        document.getElementById(
-            "kycDocumentSearch"
-        );
-
-    const hiddenInput =
-        document.getElementById(
-            "kycDocument"
-        );
-
-    const customInput =
-        document.getElementById(
-            "kycCustomDocument"
-        );
-
-    if(searchInput){
-
-        searchInput.value =
-            name;
-
-        searchInput.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-    }
-
-    if(hiddenInput){
-        hiddenInput.value = id;
-    }
-
-    if(customInput){
-        customInput.value = "";
-    }
-
-    closeAllKycDropdowns();
-
-    renderKycFields(name);
-}
-
-
-/* =========================================================
-   SEARCHABLE DROPDOWN SETUP
-========================================================= */
-
-function setupKycSearchSelect(
-    wrapperId,
-    inputId,
-    menuId,
-    onSearch
-){
-
-    const wrapper =
-        document.getElementById(
-            wrapperId
-        );
-
-    const input =
-        document.getElementById(
-            inputId
-        );
-
-    const menu =
-        document.getElementById(
-            menuId
-        );
-
-    if(
-        !wrapper ||
-        !input ||
-        !menu
-    ){
-
-        return;
-    }
-
-    const freshInput =
-        input.cloneNode(true);
-
-    input.parentNode.replaceChild(
-        freshInput,
-        input
-    );
-
-    freshInput.addEventListener(
-        "focus",
-        function(){
-
-            if(freshInput.disabled){
-                return;
-            }
-
-            closeAllKycDropdowns(
-                wrapper
-            );
-
-            wrapper.classList.add("open");
-
-            freshInput.setAttribute(
-                "aria-expanded",
-                "true"
-            );
-
-            onSearch(
-                freshInput.value
-            );
-
-        }
-    );
-
-    freshInput.addEventListener(
-        "click",
-        function(event){
-
-            event.stopPropagation();
-
-            if(freshInput.disabled){
-                return;
-            }
-
-            closeAllKycDropdowns(
-                wrapper
-            );
-
-            wrapper.classList.add("open");
-
-            freshInput.setAttribute(
-                "aria-expanded",
-                "true"
-            );
-
-            onSearch(
-                freshInput.value
-            );
-
-        }
-    );
-
-    freshInput.addEventListener(
-        "input",
-        function(){
-
-            if(freshInput.disabled){
-                return;
-            }
-
-            wrapper.classList.add("open");
-
-            freshInput.setAttribute(
-                "aria-expanded",
-                "true"
-            );
-
-            onSearch(
-                freshInput.value
-            );
-
-        }
-    );
-
-    freshInput.addEventListener(
-        "keydown",
-        function(event){
-
-            if(event.key === "Escape"){
-
-                wrapper.classList.remove(
-                    "open"
-                );
-
-                freshInput.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-
-                return;
-            }
-
-            if(event.key === "Enter"){
-
-                event.preventDefault();
-
-                const first =
-                    menu.querySelector(
-                        ".kyc-dropdown-option"
-                    );
-
-                if(first){
-
-                    first.click();
-
-                }
-
-            }
-
-        }
-    );
-}
-
-
-/* =========================================================
-   CLOSE KYC DROPDOWNS
-========================================================= */
-
-function closeAllKycDropdowns(
-    exceptWrapper=null
-){
-
-    document
-        .querySelectorAll(
-            ".kyc-search-select"
-        )
-        .forEach(wrapper => {
-
-            if(
-                exceptWrapper &&
-                wrapper === exceptWrapper
-            ){
-
-                return;
-            }
-
-            wrapper.classList.remove(
-                "open"
-            );
-
-            const input =
-                wrapper.querySelector(
-                    ".kyc-search-input"
-                );
-
-            if(input){
-
-                input.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-
-            }
-
-        });
-}
-
-
-document.addEventListener(
-    "click",
-    function(event){
-
-        if(
-            !event.target.closest(
-                ".kyc-search-select"
-            )
-        ){
-
-            closeAllKycDropdowns();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   FILTER COMPATIBILITY FUNCTIONS
-========================================================= */
-
-function filterKycCountries(){
-
-    const input =
-        document.getElementById(
-            "kycCountrySearch"
-        );
-
-    if(!input){
-        return;
-    }
-
-    renderKycCountryOptions(
-        input.value || ""
-    );
-
-    const wrapper =
-        document.getElementById(
-            "kycCountrySelect"
-        );
-
-    if(wrapper){
-
-        wrapper.classList.add(
-            "open"
-        );
-
-        input.setAttribute(
-            "aria-expanded",
-            "true"
-        );
-
-    }
-}
-
-
-function filterKycDocuments(){
-
-    const input =
-        document.getElementById(
-            "kycDocumentSearch"
-        );
-
-    if(!input){
-        return;
-    }
-
-    renderKycDocumentOptions(
-        input.value || ""
-    );
-
-    const wrapper =
-        document.getElementById(
-            "kycDocumentSelect"
-        );
-
-    if(wrapper){
-
-        wrapper.classList.add(
-            "open"
-        );
-
-        input.setAttribute(
-            "aria-expanded",
-            "true"
-        );
-
-    }
-}
-
-
-/* =========================================================
-   CUSTOM KYC DOCUMENT
-========================================================= */
-
-function useCustomKycDocument(){
-
-    const input =
-        document.getElementById(
-            "kycCustomDocument"
-        );
-
-    const customName =
-        input?.value.trim() || "";
-
-    if(!customName){
-
-        alert(
-            "Please type a custom sample document type."
-        );
-
-        input?.focus();
-
-        return;
-    }
-
-    selectedKycDocument = {
-
-        id:"",
-
-        name:customName,
-
-        is_custom:true
-
-    };
-
-    const hiddenDocument =
-        document.getElementById(
-            "kycDocument"
-        );
-
-    const documentSearch =
-        document.getElementById(
-            "kycDocumentSearch"
-        );
-
-    if(hiddenDocument){
-        hiddenDocument.value = "";
-    }
-
-    if(documentSearch){
-
-        documentSearch.value =
-            customName;
-
-    }
-
-    closeAllKycDropdowns();
-
-    renderKycFields(
-        customName
-    );
-}
-
-
-/* =========================================================
-   SAMPLE IDENTIFIER
-========================================================= */
-
-function generateSampleIdentifier(
-    prefix
-){
-
-    const chars =
-        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-    let part = "";
-
-    const bytes =
-        new Uint8Array(8);
-
-    if(
-        window.crypto &&
-        window.crypto.getRandomValues
-    ){
-
-        window.crypto.getRandomValues(
-            bytes
-        );
-
-        bytes.forEach(
-            byte => {
-
-                part +=
-                    chars[
-                        byte %
-                        chars.length
-                    ];
-
-            }
-        );
-
-    }else{
-
-        part =
-            Math.random()
-                .toString(36)
-                .slice(2,10)
-                .toUpperCase();
-
-    }
-
-    return (
-        "SAMPLE-" +
-        prefix +
-        "-" +
-        part
-    );
-}
-
-
-/* =========================================================
-   KYC IDENTIFIER CONFIG
-========================================================= */
-
-function getKycIdentifierConfig(
-    documentName
-){
-
-    const name =
-        String(
-            documentName || ""
-        ).toLowerCase();
-
-    if(
-        name.includes("passport")
-    ){
-
-        return {
-            label:
-                "Document Number (Auto-generated Sample)",
-            prefix:"PAS"
-        };
-    }
-
-    if(
-        name.includes("driver") ||
-        name.includes("license") ||
-        name.includes("licence")
-    ){
-
-        return {
-            label:
-                "Licence Number (Auto-generated Sample)",
-            prefix:"DL"
-        };
-    }
-
-    if(
-        name.includes("national") ||
-        name.includes("identity") ||
-        name === "id" ||
-        name.includes(" id")
-    ){
-
-        return {
-            label:
-                "ID Number (Auto-generated Sample)",
-            prefix:"ID"
-        };
-    }
-
-    return {
-
-        label:
-            "Document Number (Auto-generated Sample)",
-
-        prefix:"DOC"
-
-    };
-}
-
-
-/* =========================================================
-   KYC DYNAMIC FIELDS
-========================================================= */
-
-function renderKycFields(
-    documentName
-){
-
-    const box =
-        document.getElementById(
-            "kycFields"
-        );
-
-    if(!box){
-        return;
-    }
-
-    const name =
-        String(documentName || "")
-            .toLowerCase();
-
-    const identifier =
-        getKycIdentifierConfig(
-            documentName
-        );
-
-    const generatedNumber =
-        generateSampleIdentifier(
-            identifier.prefix
-        );
-
-    let fields = [];
-
-
-    if(name.includes("passport")){
-
-        fields = [
-
-            {
-                id:"kycFullName",
-                label:"Full Name",
-                type:"text",
-                placeholder:"Enter sample full name"
-            },
-
-            {
-                id:"kycDateOfBirth",
-                label:"Date of Birth",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycNationality",
-                label:"Nationality",
-                type:"text",
-                placeholder:"Enter sample nationality"
-            },
-
-            {
-                id:"kycDocumentNumber",
-                label:identifier.label,
-                type:"text",
-                placeholder:"",
-                value:generatedNumber,
-                readonly:true
-            },
-
-            {
-                id:"kycIssueDate",
-                label:"Issue Date",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycExpiryDate",
-                label:"Expiry Date",
-                type:"date",
-                placeholder:""
-            }
-
-        ];
-
-    }
-    else if(
-        name.includes("driver") ||
-        name.includes("licence") ||
-        name.includes("license")
-    ){
-
-        fields = [
-
-            {
-                id:"kycFullName",
-                label:"Full Name",
-                type:"text",
-                placeholder:"Enter sample full name"
-            },
-
-            {
-                id:"kycDateOfBirth",
-                label:"Date of Birth",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycDocumentNumber",
-                label:identifier.label,
-                type:"text",
-                placeholder:"",
-                value:generatedNumber,
-                readonly:true
-            },
-
-            {
-                id:"kycIssueDate",
-                label:"Issue Date",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycExpiryDate",
-                label:"Expiry Date",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycAddress",
-                label:"Address",
-                type:"text",
-                placeholder:"Enter sample address"
-            }
-
-        ];
-
-    }
-    else if(
-        name.includes("national") ||
-        name.includes("identity") ||
-        name === "id" ||
-        name.includes(" id")
-    ){
-
-        fields = [
-
-            {
-                id:"kycFullName",
-                label:"Full Name",
-                type:"text",
-                placeholder:"Enter sample full name"
-            },
-
-            {
-                id:"kycDateOfBirth",
-                label:"Date of Birth",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycNationality",
-                label:"Nationality",
-                type:"text",
-                placeholder:"Enter sample nationality"
-            },
-
-            {
-                id:"kycDocumentNumber",
-                label:identifier.label,
-                type:"text",
-                placeholder:"",
-                value:generatedNumber,
-                readonly:true
-            },
-
-            {
-                id:"kycIssueDate",
-                label:"Issue Date",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycExpiryDate",
-                label:"Expiry Date",
-                type:"date",
-                placeholder:""
-            }
-
-        ];
-
-    }
-    else{
-
-        fields = [
-
-            {
-                id:"kycFullName",
-                label:"Full Name",
-                type:"text",
-                placeholder:"Enter sample full name"
-            },
-
-            {
-                id:"kycDateOfBirth",
-                label:"Date of Birth",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycDocumentNumber",
-                label:identifier.label,
-                type:"text",
-                placeholder:"",
-                value:generatedNumber,
-                readonly:true
-            },
-
-            {
-                id:"kycIssueDate",
-                label:"Issue Date",
-                type:"date",
-                placeholder:""
-            },
-
-            {
-                id:"kycExpiryDate",
-                label:"Expiry Date",
-                type:"date",
-                placeholder:""
-            }
-
-        ];
-
-    }
-
-
-    let html = "";
-
-
-    fields.forEach(field => {
-
-        html += `
-
-            <label>
-                ${escapeHtml(
-                    field.label
-                )}
-            </label>
-
-            <input
-                id="${escapeHtml(
-                    field.id
-                )}"
-                type="${escapeHtml(
-                    field.type
-                )}"
-                placeholder="${escapeHtml(
-                    field.placeholder
-                )}"
-                ${
-                    field.value
-                    ? `value="${escapeHtml(field.value)}"`
-                    : ""
-                }
-                ${
-                    field.readonly
-                    ? `readonly class="kyc-generated-number"`
-                    : ""
-                }
-            >
-
-            ${
-                field.readonly
-                ? `
-                    <div class="kyc-generated-note">
-                        Generated automatically as a fictional sample identifier.
-                    </div>
-                `
-                : ""
-            }
-
-        `;
-
-    });
-
-
-    html += `
-
-        <label>
-            Photo
-        </label>
-
-        <input
-            id="kycPhoto"
-            class="file-input"
-            type="file"
-            accept="image/*"
-        >
-
-    `;
-
-
-    box.innerHTML =
-        html;
-}
-
-
-/* =========================================================
-   VALIDATE INPUTS
-========================================================= */
-
-function validateTool(){
-
-    if(!selectedService){
-        return false;
-    }
-
-    const name =
-        selectedService.name;
-
-
-    if(
-        name === "🎬 Pics → Video" ||
-        name === "Pics → Video"
-    ){
-
-        if(
-            !document.getElementById(
-                "picsVideoImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload a picture."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "picsVideoPrompt"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please describe the video."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🎭 Video Face Swap" ||
-        name === "Video Face Swap"
-    ){
-
-        if(
-            !document.getElementById(
-                "faceSwapVideo"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload a video."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "faceSwapFace"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload the replacement face."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "faceSwapConsent"
-            )?.checked
-        ){
-
-            alert(
-                "Please confirm you have permission to use the face and video."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🎙️ AI Voice" ||
-        name === "AI Voice"
-    ){
-
-        if(
-            !document.getElementById(
-                "aiVoiceText"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please enter the text."
-            );
-
-            return false;
-        }
-    }
-
-
-    /* =====================================================
-       KYC VALIDATION
-    ===================================================== */
-
-    if(
-        name === "🪪 KYC / Document Designer" ||
-        name === "KYC / Document Designer"
-    ){
-
-        const country =
-            document.getElementById(
-                "kycCountry"
-            )?.value || "";
-
-        const countrySearch =
-            document.getElementById(
-                "kycCountrySearch"
-            )?.value.trim() || "";
-
-        const documentHidden =
-            document.getElementById(
-                "kycDocument"
-            );
-
-        let documentType =
-            documentHidden?.value || "";
-
-        const documentSearch =
-            document.getElementById(
-                "kycDocumentSearch"
-            )?.value.trim() || "";
-
-        const customInput =
-            document.getElementById(
-                "kycCustomDocument"
-            );
-
-        const customName =
-            customInput?.value.trim() || "";
-
-
-        if(!country){
-
-            alert(
-                "Please select a country."
-            );
-
-            return false;
-        }
-
-
-        if(
-            !selectedKycCountry ||
-            String(selectedKycCountry.id) !==
-            String(country)
-        ){
-
-            alert(
-                "Please select a country from the list."
-            );
-
-            return false;
-        }
-
-
-        if(
-            !documentType &&
-            customName
-        ){
-
-            selectedKycDocument = {
-
-                id:"",
-                name:customName,
-                is_custom:true
-
-            };
-
-            if(documentHidden){
-                documentHidden.value = "";
-            }
-
-            if(
-                document.getElementById(
-                    "kycDocumentSearch"
-                )
-            ){
-
-                document.getElementById(
-                    "kycDocumentSearch"
-                ).value =
-                    customName;
-
-            }
-
-            renderKycFields(
-                customName
-            );
-
-        }
-
-
-        if(
-            !documentType &&
-            !selectedKycDocument?.is_custom
-        ){
-
-            alert(
-                "Please select a document type or enter a custom document type."
-            );
-
-            return false;
-        }
-
-
-        const fields =
-            document.querySelectorAll(
-                "#kycFields input"
-            );
-
-        for(
-            const field of fields
-        ){
-
-            if(
-                field.id === "kycPhoto"
-            ){
-                continue;
-            }
-
-            if(
-                !field.value.trim()
-            ){
-
-                const label =
-                    field
-                        .previousElementSibling
-                        ?.textContent
-                        ?.trim() ||
-                    "this field";
-
-                alert(
-                    "Please enter " +
-                    label.toLowerCase() +
-                    "."
-                );
-
-                field.focus();
-
-                return false;
-            }
-        }
-
-
-        const generatedNumber =
-            document.getElementById(
-                "kycDocumentNumber"
-            );
-
-        if(
-            !generatedNumber ||
-            !generatedNumber.value ||
-            !generatedNumber.value.startsWith(
-                "SAMPLE-"
-            )
-        ){
-
-            alert(
-                "The sample identifier could not be generated. Please select the document type again."
-            );
-
-            return false;
-        }
-
-
-        const photo =
-            document.getElementById(
-                "kycPhoto"
-            );
-
-        if(
-            !photo ||
-            !photo.files.length
-        ){
-
-            alert(
-                "Please upload a photo."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🗣️ Voice Cloner" ||
-        name === "Voice Cloner"
-    ){
-
-        if(
-            !document.getElementById(
-                "voiceCloneSample"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload a voice sample."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "voiceCloneText"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please enter the text."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "voiceCloneConsent"
-            )?.checked
-        ){
-
-            alert(
-                "Please confirm that you have permission to use the voice."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🎥 Video Voice Clone" ||
-        name === "Video Voice Clone"
-    ){
-
-        if(
-            !document.getElementById(
-                "videoVoiceSource"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload the voice source."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "videoVoiceVisual"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload a picture or video."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "videoVoiceText"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please enter the text."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "videoVoiceConsent"
-            )?.checked
-        ){
-
-            alert(
-                "Please confirm permission to use the voice and visual."
-            );
-
-            return false;
-        }
-    }
-
-
-    /* =====================================================
-       WATERMARK REMOVAL VALIDATION
-       ONLY THIS SECTION WAS CHANGED
-    ===================================================== */
-
-    if(
-        name === "🧹 Watermark Removal" ||
-        name === "Watermark Removal"
-    ){
-
-        if(
-            !document.getElementById(
-                "watermarkImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload an image."
-            );
-
-            return false;
-        }
-
-
-        const watermarkMethod =
-            document.getElementById(
-                "watermarkMethod"
-            )?.value;
-
-
-        if(!watermarkMethod){
-
-            alert(
-                "Please select a removal method."
-            );
-
-            return false;
-        }
-
-
-        if(
-            watermarkMethod ===
-            "brush_watermark"
-        ){
-
-            if(
-                !document.getElementById(
-                    "watermarkBrushArea"
-                )?.value.trim()
-            ){
-
-                alert(
-                    "Please describe the watermark area."
-                );
-
-                return false;
-            }
-        }
-
-
-        if(
-            watermarkMethod ===
-            "type_watermark"
-        ){
-
-            if(
-                !document.getElementById(
-                    "watermarkText"
-                )?.value.trim()
-            ){
-
-                alert(
-                    "Please type the watermark text."
-                );
-
-                return false;
-            }
-        }
-    }
-
-
-    if(
-        name === "✨ AI Image Enhancer" ||
-        name === "AI Image Enhancer"
-    ){
-
-        if(
-            !document.getElementById(
-                "enhancerImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload an image."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🖼️ Background / Object Removal" ||
-        name === "Background / Object Removal"
-    ){
-
-        if(
-            !document.getElementById(
-                "objectRemovalImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload an image."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "objectRemovalPrompt"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please describe what should be removed."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "👕 AI Outfit Editor" ||
-        name === "AI Outfit Editor"
-    ){
-
-        if(
-            !document.getElementById(
-                "outfitImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload an image."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "outfitPrompt"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please describe the outfit."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🎨 AI Image Style" ||
-        name === "AI Image Style"
-    ){
-
-        if(
-            !document.getElementById(
-                "styleImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload an image."
-            );
-
-            return false;
-        }
-    }
-
-
-    if(
-        name === "🗣️ Talking Photo" ||
-        name === "Talking Photo"
-    ){
-
-        if(
-            !document.getElementById(
-                "talkingPhotoImage"
-            )?.files.length
-        ){
-
-            alert(
-                "Please upload a photo."
-            );
-
-            return false;
-        }
-
-        if(
-            !document.getElementById(
-                "talkingPhotoText"
-            )?.value.trim()
-        ){
-
-            alert(
-                "Please enter what the photo should say."
-            );
-
-            return false;
-        }
-    }
-
-
-    return true;
-}
-
-
-/* =========================================================
-   GENERATE / PURCHASE
-========================================================= */
-
-async function generateAI(){
-
-    if(!currentUser){
-
-        window.location.href =
-            "login.html";
-
-        return;
-    }
-
-    if(!selectedService){
-        return;
-    }
-
-    if(!validateTool()){
-        return;
-    }
-
-    await loadWallet();
-
-    const price =
-        Number(
-            selectedService.price || 0
-        );
-
-    if(walletBalance < price){
-
-        const difference =
-            price -
-            walletBalance;
-
-        alert(
-            "Insufficient wallet balance.\n\n" +
-
-            "Price: " +
-            formatMoney(price) +
-
-            "\nBalance: " +
-            formatMoney(walletBalance) +
-
-            "\nYou need: " +
-            formatMoney(difference) +
-            " more."
-        );
-
-        return;
-    }
-
-    const button =
-        document.querySelector(
-            ".continue-btn"
-        );
-
-    const loading =
-        document.getElementById(
-            "loadingBox"
-        );
-
-    const result =
-        document.getElementById(
-            "resultBox"
-        );
-
-    if(button){
-        button.disabled = true;
-    }
-
-    loading.classList.add("show");
-
-    result.classList.remove("show");
 
     try{
 
-        let payload = {};
-
-        const name =
-            selectedService.name;
-
-
-        /* =====================================================
-           KYC PAYLOAD
-        ===================================================== */
-
-        if(
-            name === "🪪 KYC / Document Designer" ||
-            name === "KYC / Document Designer"
-        ){
-
-            const photoInput =
-                document.getElementById(
-                    "kycPhoto"
-                );
-
-            let uploadedPhotoUrl = "";
-
-
-            if(
-                photoInput &&
-                photoInput.files.length > 0
-            ){
-
-                const file =
-                    photoInput.files[0];
-
-                const fileExt =
-                    file.name
-                        .split(".")
-                        .pop();
-
-                const fileName =
-                    `${currentUser.id}/${Date.now()}.${fileExt}`;
-
-
-                const {
-                    data: storageData,
-                    error: storageError
-                } =
-                    await supabaseClient.storage
-                        .from("kyc-uploads")
-                        .upload(
-                            fileName,
-                            file
-                        );
-
-
-                if(storageError){
-
-                    console.error(
-                        "Storage Upload Error:",
-                        storageError
-                    );
-
-                    alert(
-                        "Could not upload photo file. Please try again."
-                    );
-
-                    return;
-                }
-
-
-                const {
-                    data: publicUrlData
-                } =
-                    supabaseClient.storage
-                        .from("kyc-uploads")
-                        .getPublicUrl(
-                            fileName
-                        );
-
-
-                uploadedPhotoUrl =
-                    publicUrlData?.publicUrl ||
-                    "";
-            }
-
-
-            const countryId =
-                document.getElementById(
-                    "kycCountry"
-                )?.value ||
-                "";
-
-            const countryName =
-                document.getElementById(
-                    "kycCountrySearch"
-                )?.value.trim() ||
-                "";
-
-            const docId =
-                document.getElementById(
-                    "kycDocument"
-                )?.value ||
-                "";
-
-            const docSearchName =
-                document.getElementById(
-                    "kycDocumentSearch"
-                )?.value.trim() ||
-                "";
-
-            const customDocInput =
-                document.getElementById(
-                    "kycCustomDocument"
-                );
-
-            const customDocumentName =
-                customDocInput
-                    ?.value
-                    ?.trim() ||
-                "";
-
-
-            const isCustom =
-                !docId &&
-                !!customDocumentName;
-
-
-            const finalDocumentName =
-                isCustom
-                ? customDocumentName
-                : (
-                    docSearchName ||
-                    selectedKycDocument?.name ||
-                    ""
-                );
-
-
-            payload = {
-
-                sample_only:true,
-
-                sample_status:
-                    "SAMPLE / NOT VALID",
-
-                country_id:
-                    countryId,
-
-                country_name:
-                    countryName,
-
-                document_type_id:
-                    docId,
-
-                document_name:
-                    finalDocumentName,
-
-                is_custom_document:
-                    isCustom,
-
-                custom_document_name:
-                    isCustom
-                    ? customDocumentName
-                    : "",
-
-                full_name:
-                    document.getElementById(
-                        "kycFullName"
-                    )?.value ||
-                    "",
-
-                dob:
-                    document.getElementById(
-                        "kycDateOfBirth"
-                    )?.value ||
-                    "",
-
-                nationality:
-                    document.getElementById(
-                        "kycNationality"
-                    )?.value ||
-                    "",
-
-                document_number:
-                    document.getElementById(
-                        "kycDocumentNumber"
-                    )?.value ||
-                    "",
-
-                issue_date:
-                    document.getElementById(
-                        "kycIssueDate"
-                    )?.value ||
-                    "",
-
-                expiry_date:
-                    document.getElementById(
-                        "kycExpiryDate"
-                    )?.value ||
-                    "",
-
-                address:
-                    document.getElementById(
-                        "kycAddress"
-                    )?.value ||
-                    "",
-
-                photo_url:
-                    uploadedPhotoUrl
-
-            };
-        }
-
-
-        /* =====================================================
-           WATERMARK REMOVAL PAYLOAD
-           ONLY THIS SECTION WAS ADDED
-        ===================================================== */
-
-        if(
-            name === "🧹 Watermark Removal" ||
-            name === "Watermark Removal"
-        ){
-
-            const watermarkMethod =
-                document.getElementById(
-                    "watermarkMethod"
-                )?.value || "";
-
-
-            const watermarkMethodName = {
-
-                ai_auto_detect:
-                    "AI Auto Detect",
-
-                brush_watermark:
-                    "Brush Watermark",
-
-                type_watermark:
-                    "Type Watermark"
-
-            }[watermarkMethod] || "";
-
-
-            payload = {
-
-                removal_method:
-                    watermarkMethod,
-
-                removal_method_name:
-                    watermarkMethodName,
-
-                watermark_text:
-                    document.getElementById(
-                        "watermarkText"
-                    )?.value.trim() || "",
-
-                watermark_area:
-                    document.getElementById(
-                        "watermarkBrushArea"
-                    )?.value.trim() || ""
-
-            };
-        }
-
+        const data =
+            await api(
+                "wallet",
+                {},
+                "smsbower"
+            );
+
+        const balance =
+            Number(
+                data?.balance ??
+                data?.wallet_balance ??
+                data?.data?.balance ??
+                0
+            );
+
+        wallet.textContent =
+            "₦" +
+            formatMoney(balance);
+
+    }catch(error){
+
+        console.warn(
+            "Wallet:",
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   WATERMARK
+========================================================= */
+
+async function loadWatermark(){
+
+    try{
 
         const {
             data,
             error
         } =
-            await supabaseClient.rpc(
-                "create_ai_purchase",
-                {
-                    p_service_id:
-                        selectedService.id,
-
-                    p_payload:
-                        payload
-                }
-            );
-
+            await supabaseClient
+                .from("store_watermark")
+                .select("*")
+                .limit(1)
+                .maybeSingle();
 
         if(error){
-
-            console.error(
-                "AI purchase error:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "Could not start the AI job."
-            );
-
             return;
         }
 
-
-        if(
-            !data ||
-            data.success !== true
-        ){
-
-            alert(
-                "The AI job could not be created."
-            );
-
-            return;
-        }
-
-
-        walletBalance =
-            Number(
-                data.wallet_balance || 0
-            );
-
-
-        document.getElementById(
-            "walletBalance"
-        ).textContent =
-            formatMoney(
-                walletBalance
-            );
-
-
-        result.innerHTML = `
-
-            <strong>
-                AI job created successfully ✓
-            </strong>
-
-            <br><br>
-
-            Service:
-            ${escapeHtml(
-                data.service_name ||
-                selectedService.name
-            )}
-
-            <br>
-
-            Amount:
-            ${formatMoney(
-                data.price
-            )}
-
-            <br>
-
-            Remaining wallet:
-            ${formatMoney(
-                data.wallet_balance
-            )}
-
-            <br><br>
-
-            Job ID:
-            ${escapeHtml(
-                data.job_id
-            )}
-
-            <br><br>
-
-            Your request has been added to the
-            AI processing queue.
-
-        `;
-
-
-        result.classList.add("show");
-
+        watermarkText =
+            data?.text ??
+            data?.watermark ??
+            "";
 
     }catch(error){
 
-        console.error(error);
-
-        alert(
-            "Something went wrong. Please try again."
+        console.warn(
+            "Watermark:",
+            error.message
         );
-
-    }finally{
-
-        loading.classList.remove("show");
-
-        if(button){
-            button.disabled = false;
-        }
     }
 }
 
 
 /* =========================================================
-   AUTH STATE
+   MENU
 ========================================================= */
 
-supabaseClient.auth.onAuthStateChange(
-    async (
-        event,
-        session
-    ) => {
+function toggleMenu(){
 
-        if(
-            event ===
-            "SIGNED_OUT"
-        ){
+    document
+        .getElementById(
+            "menuPopup"
+        )
+        .style.display =
+        "flex";
+}
 
-            window.location.href =
-                "login.html";
 
-            return;
-        }
+function closeMenu(){
 
-        if(session){
+    document
+        .getElementById(
+            "menuPopup"
+        )
+        .style.display =
+        "none";
+}
 
-            currentUser =
-                session.user;
-        }
+
+function closeVerificationPopup(){
+
+    document
+        .getElementById(
+            "verificationPopup"
+        )
+        .style.display =
+        "none";
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(message){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent =
+        String(message);
+
+    toast.style.display =
+        "block";
+
+    clearTimeout(
+        toastTimer
+    );
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.style.display =
+                    "none";
+
+            },
+            3500
+        );
+}
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function formatMoney(value){
+
+    const n =
+        Number(value);
+
+    if(!Number.isFinite(n)){
+        return "0";
     }
-);
+
+    return Math.round(n)
+        .toLocaleString("en-NG");
+}
+
+
+function orderTime(order){
+
+    const value =
+        order?.created_at ??
+        order?.createdAt ??
+        order?.date ??
+        order?.created ??
+        0;
+
+    const time =
+        Date.parse(value);
+
+    return Number.isFinite(time)
+        ? time
+        : 0;
+}
+
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+function escapeJs(value){
+
+    return String(value ?? "")
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /"/g,
+            '\\"'
+        )
+        .replace(
+            /\n/g,
+            "\\n"
+        )
+        .replace(
+            /\r/g,
+            "\\r"
+        );
+}
 
 
 /* =========================================================
@@ -4799,17 +3289,45 @@ supabaseClient.auth.onAuthStateChange(
 
 async function init(){
 
-    const loggedIn =
-        await checkLogin();
+    document
+        .getElementById(
+            "verificationPopup"
+        )
+        .style.display =
+        "flex";
 
-    if(!loggedIn){
-        return;
-    }
+    /*
+       All Country Number 1 is the
+       default customer-facing selection.
+    */
+
+    provider = "grizzly";
+
+    document
+        .getElementById(
+            "option1Tab"
+        )
+        .classList.add(
+            "active"
+        );
+
+    document
+        .getElementById(
+            "option2Tab"
+        )
+        .classList.remove(
+            "active"
+        );
+
+    await loadWatermark();
+
+    await loadCountries();
 
     await loadWallet();
 
-    await loadServices();
+    await loadAllOrders();
 }
+
 
 init();
 
