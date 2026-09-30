@@ -638,8 +638,6 @@ onclick="toggleMenu()"
 
 <main>
 
-<!-- PROVIDER TABS -->
-
 <div class="provider-tabs">
 
 <button
@@ -664,8 +662,6 @@ All Country Number 2
 id="virtualNumberWatermark"
 class="watermark hidden"
 ></div>
-
-<!-- COUNTRY -->
 
 <section class="card">
 
@@ -703,8 +699,6 @@ class="selected-box hidden"
 
 </section>
 
-<!-- SERVICE -->
-
 <section class="card">
 
 <h2>Service</h2>
@@ -741,8 +735,6 @@ class="selected-box hidden"
 ></div>
 
 </section>
-
-<!-- SERVER -->
 
 <section
 id="serverSection"
@@ -790,8 +782,6 @@ class="message"
 
 </section>
 
-<!-- CURRENT ORDER -->
-
 <section class="card">
 
 <h2>Current / New Order</h2>
@@ -805,8 +795,6 @@ No current order.
 </div>
 
 </section>
-
-<!-- PREVIOUS ORDERS -->
 
 <section class="card">
 
@@ -823,8 +811,6 @@ Loading orders...
 </section>
 
 </main>
-
-<!-- MENU -->
 
 <div
 id="menu"
@@ -893,8 +879,6 @@ onclick="toggleMenu()"
 </div>
 
 </div>
-
-<!-- VERIFICATION POPUP -->
 
 <div
 id="verificationPopup"
@@ -1031,8 +1015,6 @@ I Understand
 
 </div>
 
-<!-- PORTAL NOTICE -->
-
 <div
 id="portalNoticePopup"
 class="popup"
@@ -1141,10 +1123,6 @@ I Understand
 
 <script>
 
-/* ============================================================
-   SUPABASE
-============================================================ */
-
 const SUPABASE_URL =
   "https://hkfhehbhmucymusaytoe.supabase.co";
 
@@ -1157,29 +1135,13 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
-/* ============================================================
-   FUNCTIONS
-============================================================ */
-
 const SMSBOWER_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
 
 const GRIZZLY_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/grizzly-api`;
 
-
-/*
-  Grizzly is the default provider.
-  SMSBower is the second provider.
-*/
-
 let provider = "grizzly";
-
-
-/* ============================================================
-   STATE
-============================================================ */
 
 let countries = [];
 let services = [];
@@ -1196,31 +1158,15 @@ let currentOrderProvider = null;
 
 let watermarkText = "";
 
+function functionURL(providerName){
 
-/* ============================================================
-   GET FUNCTION URL
-============================================================ */
-
-function functionURL(
-  providerName
-){
-
-  if(
-    providerName === "grizzly"
-  ){
-
+  if(providerName === "grizzly"){
     return GRIZZLY_FUNCTION_URL;
-
   }
 
   return SMSBOWER_FUNCTION_URL;
 
 }
-
-
-/* ============================================================
-   AUTH TOKEN
-============================================================ */
 
 async function getAuthToken(){
 
@@ -1270,11 +1216,6 @@ async function getAuthToken(){
   );
 
 }
-
-
-/* ============================================================
-   API
-============================================================ */
 
 async function api(
   action,
@@ -1330,11 +1271,6 @@ async function api(
 
 }
 
-
-/* ============================================================
-   WATERMARK
-============================================================ */
-
 async function loadWatermark(){
 
   const watermark =
@@ -1346,12 +1282,8 @@ async function loadWatermark(){
     return;
   }
 
-  watermark.classList.add(
-    "hidden"
-  );
-
+  watermark.classList.add("hidden");
   watermark.textContent = "";
-
   watermarkText = "";
 
   try{
@@ -1367,14 +1299,11 @@ async function loadWatermark(){
         .maybeSingle();
 
     if(error){
-
       console.error(
         "Watermark error:",
         error
       );
-
       return;
-
     }
 
     const text =
@@ -1384,11 +1313,8 @@ async function loadWatermark(){
 
     if(text){
 
-      watermarkText =
-        text;
-
-      watermark.textContent =
-        text;
+      watermarkText = text;
+      watermark.textContent = text;
 
       watermark.classList.remove(
         "hidden"
@@ -1406,11 +1332,6 @@ async function loadWatermark(){
   }
 
 }
-
-
-/* ============================================================
-   PROVIDER SWITCH
-============================================================ */
 
 async function changeProvider(
   newProvider
@@ -1469,25 +1390,19 @@ async function changeProvider(
     .getElementById(
       "selectedCountryBox"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   document
     .getElementById(
       "selectedServiceBox"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   document
     .getElementById(
       "serverSection"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   document
     .getElementById(
@@ -1500,17 +1415,10 @@ async function changeProvider(
     `;
 
   await loadWatermark();
-
   await loadCountries();
-
   await loadAllOrders();
 
 }
-
-
-/* ============================================================
-   NAIRA
-============================================================ */
 
 function naira(value){
 
@@ -1534,11 +1442,6 @@ function naira(value){
 
 }
 
-
-/* ============================================================
-   ESCAPE
-============================================================ */
-
 function escapeHTML(value){
 
   return String(value ?? "")
@@ -1550,93 +1453,105 @@ function escapeHTML(value){
 
 }
 
-
-/* ============================================================
-   MENU
-============================================================ */
-
 function toggleMenu(){
 
   document
-    .getElementById(
-      "menu"
-    )
-    .classList.toggle(
-      "hidden"
-    );
+    .getElementById("menu")
+    .classList.toggle("hidden");
 
 }
-
-
-/* ============================================================
-   POPUPS
-============================================================ */
 
 function closeVerificationPopup(){
 
   document
-    .getElementById(
-      "verificationPopup"
-    )
-    .style.display =
-      "none";
+    .getElementById("verificationPopup")
+    .style.display = "none";
 
 }
 
 function closePortalNotice(){
 
   document
-    .getElementById(
-      "portalNoticePopup"
-    )
-    .style.display =
-      "none";
+    .getElementById("portalNoticePopup")
+    .style.display = "none";
 
 }
 
 function showPortalNotice(){
 
   document
-    .getElementById(
-      "portalNoticePopup"
-    )
-    .style.display =
-      "flex";
+    .getElementById("portalNoticePopup")
+    .style.display = "flex";
 
 }
 
 
 /* ============================================================
-   COUNTRY HELPERS
+   ONLY FIXED: COUNTRY NAME
 ============================================================ */
 
-function countryName(
-  country
-){
+function countryName(country){
 
-  return String(
-    country?.name ||
-    country?.country_name ||
-    country?.eng ||
-    country?.provider_name ||
-    country?.country ||
-    country?.key ||
-    country?.country_key ||
-    ""
-  ).trim();
+  if(!country){
+    return "";
+  }
+
+  const possibleNames = [
+
+    country.name,
+    country.country_name,
+    country.countryName,
+    country.country_label,
+    country.countryLabel,
+    country.display_name,
+    country.displayName,
+    country.label,
+    country.title,
+    country.eng,
+    country.provider_name,
+    country.providerName,
+
+    country.country?.name,
+    country.country?.country_name,
+    country.country?.countryName,
+    country.country?.label,
+
+    country.data?.name,
+    country.data?.country_name,
+    country.data?.countryName,
+    country.data?.label
+
+  ];
+
+  for(const value of possibleNames){
+
+    if(
+      typeof value === "string" &&
+      value.trim()
+    ){
+
+      return value.trim();
+
+    }
+
+  }
+
+  /*
+    Do NOT display country IDs here.
+  */
+
+  return "";
 
 }
 
-
-function countryKey(
-  country
-){
+function countryKey(country){
 
   return String(
     country?.country_key ||
     country?.key ||
     country?.slug ||
     country?.code ||
+    country?.country_code ||
     country?.country ||
     country?.name ||
     ""
@@ -1646,10 +1561,7 @@ function countryKey(
 
 }
 
-
-function countryId(
-  country
-){
+function countryId(country){
 
   return (
     country?.id ??
@@ -1659,11 +1571,6 @@ function countryId(
   );
 
 }
-
-
-/* ============================================================
-   COUNTRY SEARCH
-============================================================ */
 
 function countryMatches(
   country,
@@ -1704,6 +1611,7 @@ function countryMatches(
     key,
     country?.eng,
     country?.provider_name,
+    country?.providerName,
     country?.code,
     country?.iso,
     country?.iso2,
@@ -1718,9 +1626,6 @@ function countryMatches(
   if(!q){
     return true;
   }
-
-
-  /* UNITED STATES */
 
   if(
     q === "us" ||
@@ -1741,9 +1646,6 @@ function countryMatches(
     );
 
   }
-
-
-  /* UNITED KINGDOM */
 
   if(
     q === "uk" ||
@@ -1769,11 +1671,9 @@ function countryMatches(
 
   }
 
-
   return haystack.includes(q);
 
 }
-
 
 function filterCountries(){
 
@@ -1782,16 +1682,9 @@ function filterCountries(){
       "countrySearch"
     );
 
-  renderCountries(
-    input.value
-  );
+  renderCountries(input.value);
 
 }
-
-
-/* ============================================================
-   LOAD COUNTRIES
-============================================================ */
 
 async function loadCountries(){
 
@@ -1816,9 +1709,7 @@ async function loadCountries(){
       );
 
     countries =
-      Array.isArray(
-        data.countries
-      )
+      Array.isArray(data.countries)
         ? data.countries
         : [];
 
@@ -1828,9 +1719,7 @@ async function loadCountries(){
 
     list.innerHTML = `
       <div class="empty">
-        ${escapeHTML(
-          error.message
-        )}
+        ${escapeHTML(error.message)}
       </div>
     `;
 
@@ -1838,14 +1727,7 @@ async function loadCountries(){
 
 }
 
-
-/* ============================================================
-   RENDER COUNTRIES
-============================================================ */
-
-function renderCountries(
-  query = ""
-){
+function renderCountries(query = ""){
 
   const list =
     document.getElementById(
@@ -1861,9 +1743,7 @@ function renderCountries(
         )
     );
 
-  if(
-    filtered.length === 0
-  ){
+  if(filtered.length === 0){
 
     list.innerHTML = `
       <div class="empty">
@@ -1882,17 +1762,16 @@ function renderCountries(
 
           const selected =
             selectedCountry &&
-            countryKey(
-              selectedCountry
-            ) ===
+            countryKey(selectedCountry) ===
             countryKey(country);
+
+          const displayName =
+            countryName(country);
 
           return `
             <div
               class="choice ${
-                selected
-                  ? "selected"
-                  : ""
+                selected ? "selected" : ""
               }"
               data-country-key="${
                 escapeHTML(
@@ -1901,7 +1780,7 @@ function renderCountries(
               }"
             >
               ${escapeHTML(
-                countryName(country)
+                displayName || "Country"
               )}
             </div>
           `;
@@ -1917,42 +1796,31 @@ function renderCountries(
     .forEach(
       element => {
 
-        element.onclick =
-          () => {
+        element.onclick = () => {
 
-            const key =
-              element.dataset
-                .countryKey;
+          const key =
+            element.dataset.countryKey;
 
-            const country =
-              countries.find(
-                item =>
-                  countryKey(item) ===
-                  key
-              );
+          const country =
+            countries.find(
+              item =>
+                countryKey(item) === key
+            );
 
-            if(country){
-              selectCountry(country);
-            }
+          if(country){
+            selectCountry(country);
+          }
 
-          };
+        };
 
       }
     );
 
 }
 
+async function selectCountry(country){
 
-/* ============================================================
-   SELECT COUNTRY
-============================================================ */
-
-async function selectCountry(
-  country
-){
-
-  selectedCountry =
-    country;
+  selectedCountry = country;
 
   selectedService = null;
   selectedServer = null;
@@ -1964,16 +1832,16 @@ async function selectCountry(
     .getElementById(
       "selectedCountryBox"
     )
-    .classList.remove(
-      "hidden"
-    );
+    .classList.remove("hidden");
 
   document
     .getElementById(
       "selectedCountryBox"
     )
     .textContent =
-      `Selected: ${countryName(country)}`;
+      `Selected: ${
+        countryName(country) || "Country"
+      }`;
 
   document
     .getElementById(
@@ -1988,9 +1856,7 @@ async function selectCountry(
       "serviceSearch"
     );
 
-  serviceSearch.disabled =
-    false;
-
+  serviceSearch.disabled = false;
   serviceSearch.value = "";
 
   document
@@ -2007,9 +1873,7 @@ async function selectCountry(
     .getElementById(
       "serverSection"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   await loadServices();
 
@@ -2017,45 +1881,90 @@ async function selectCountry(
 
 
 /* ============================================================
-   SERVICE HELPERS
+   ONLY FIXED: SERVICE NAME
 ============================================================ */
 
-function serviceCode(
-  service
-){
+function serviceCode(service){
 
   return String(
     service?.service_code ||
     service?.serviceCode ||
-    service?.product ||
+    service?.product_code ||
+    service?.productCode ||
     service?.code ||
+    service?.service_id ||
+    service?.serviceId ||
     service?.id ||
     ""
   );
 
 }
 
+function serviceName(service){
 
-function serviceName(
-  service
-){
+  if(!service){
+    return "";
+  }
 
-  return String(
-    service?.service_name ||
-    service?.serviceName ||
-    service?.name ||
-    service?.title ||
-    service?.product_name ||
-    service?.product ||
-    serviceCode(service)
-  );
+  const possibleNames = [
+
+    service.service_name,
+    service.serviceName,
+    service.service_title,
+    service.serviceTitle,
+    service.name,
+    service.title,
+    service.label,
+    service.display_name,
+    service.displayName,
+    service.product_name,
+    service.productName,
+    service.application_name,
+    service.applicationName,
+    service.app_name,
+    service.appName,
+
+    service.service?.name,
+    service.service?.service_name,
+    service.service?.serviceName,
+    service.service?.title,
+    service.service?.label,
+
+    service.product?.name,
+    service.product?.service_name,
+    service.product?.serviceName,
+    service.product?.title,
+    service.product?.label,
+
+    service.data?.name,
+    service.data?.service_name,
+    service.data?.serviceName,
+    service.data?.title,
+    service.data?.label
+
+  ];
+
+  for(const value of possibleNames){
+
+    if(
+      typeof value === "string" &&
+      value.trim()
+    ){
+
+      return value.trim();
+
+    }
+
+  }
+
+  /*
+    IMPORTANT:
+    Never show the service ID/code as the service name.
+  */
+
+  return "";
 
 }
-
-
-/* ============================================================
-   LOAD SERVICES
-============================================================ */
 
 async function loadServices(){
 
@@ -2094,9 +2003,7 @@ async function loadServices(){
       );
 
     services =
-      Array.isArray(
-        data.services
-      )
+      Array.isArray(data.services)
         ? data.services
         : [];
 
@@ -2110,20 +2017,13 @@ async function loadServices(){
       )
       .innerHTML = `
         <div class="empty">
-          ${escapeHTML(
-            error.message
-          )}
+          ${escapeHTML(error.message)}
         </div>
       `;
 
   }
 
 }
-
-
-/* ============================================================
-   SERVICE SEARCH
-============================================================ */
 
 function filterServices(){
 
@@ -2137,14 +2037,7 @@ function filterServices(){
 
 }
 
-
-/* ============================================================
-   RENDER SERVICES
-============================================================ */
-
-function renderServices(
-  query = ""
-){
+function renderServices(query = ""){
 
   const list =
     document.getElementById(
@@ -2177,9 +2070,7 @@ function renderServices(
       }
     );
 
-  if(
-    filtered.length === 0
-  ){
+  if(filtered.length === 0){
 
     list.innerHTML = `
       <div class="empty">
@@ -2212,17 +2103,13 @@ function renderServices(
 
           const selected =
             selectedService &&
-            serviceCode(
-              selectedService
-            ) ===
+            serviceCode(selectedService) ===
             serviceCode(service);
 
           return `
             <div
               class="choice ${
-                selected
-                  ? "selected"
-                  : ""
+                selected ? "selected" : ""
               }"
               data-service-code="${
                 escapeHTML(
@@ -2233,7 +2120,7 @@ function renderServices(
 
               <strong>
                 ${escapeHTML(
-                  serviceName(service)
+                  serviceName(service) || "Service"
                 )}
               </strong>
 
@@ -2244,9 +2131,7 @@ function renderServices(
                   opacity:.75;
                 "
               >
-                ${escapeHTML(
-                  stockText
-                )}
+                ${escapeHTML(stockText)}
               </div>
 
             </div>
@@ -2263,43 +2148,31 @@ function renderServices(
     .forEach(
       element => {
 
-        element.onclick =
-          () => {
+        element.onclick = () => {
 
-            const code =
-              element.dataset
-                .serviceCode;
+          const code =
+            element.dataset.serviceCode;
 
-            const service =
-              services.find(
-                item =>
-                  serviceCode(item) ===
-                  code
-              );
+          const service =
+            services.find(
+              item =>
+                serviceCode(item) === code
+            );
 
-            if(service){
-              selectService(service);
-            }
+          if(service){
+            selectService(service);
+          }
 
-          };
+        };
 
       }
     );
 
 }
 
+async function selectService(service){
 
-/* ============================================================
-   SELECT SERVICE
-============================================================ */
-
-async function selectService(
-  service
-){
-
-  selectedService =
-    service;
-
+  selectedService = service;
   selectedServer = null;
 
   servers = [];
@@ -2308,16 +2181,16 @@ async function selectService(
     .getElementById(
       "selectedServiceBox"
     )
-    .classList.remove(
-      "hidden"
-    );
+    .classList.remove("hidden");
 
   document
     .getElementById(
       "selectedServiceBox"
     )
     .textContent =
-      `Selected: ${serviceName(service)}`;
+      `Selected: ${
+        serviceName(service) || "Service"
+      }`;
 
   document
     .getElementById(
@@ -2331,9 +2204,7 @@ async function selectService(
     .getElementById(
       "serverSection"
     )
-    .classList.remove(
-      "hidden"
-    );
+    .classList.remove("hidden");
 
   document
     .getElementById(
@@ -2349,9 +2220,7 @@ async function selectService(
     .getElementById(
       "priceBox"
     )
-    .classList.add(
-      "hidden"
-    );
+    .classList.add("hidden");
 
   document
     .getElementById(
@@ -2371,43 +2240,69 @@ async function selectService(
 
 
 /* ============================================================
-   SERVER HELPERS
+   ONLY DISPLAY FIX: SERVER LABEL
 ============================================================ */
 
-function serverId(
-  server
-){
+function serverId(server){
 
   return String(
     server?.server_id ??
-    server?.operator ??
     server?.operator_id ??
     server?.id ??
+    server?.operator ??
     ""
   );
 
 }
 
+function serverLabel(server){
 
-function serverLabel(
-  server
-){
+  if(!server){
+    return "Server";
+  }
 
-  return String(
-    server?.label ||
-    server?.server_name ||
-    server?.operator_name ||
-    server?.operator ||
-    server?.name ||
-    "Server"
-  );
+  const possibleNames = [
+
+    server.label,
+    server.server_name,
+    server.serverName,
+    server.operator_name,
+    server.operatorName,
+    server.operator_label,
+    server.operatorLabel,
+    server.name,
+    server.title,
+    server.display_name,
+    server.displayName,
+
+    server.operator?.name,
+    server.operator?.label,
+    server.operator?.server_name,
+
+    server.data?.name,
+    server.data?.label,
+    server.data?.server_name
+
+  ];
+
+  for(const value of possibleNames){
+
+    if(
+      typeof value === "string" &&
+      value.trim()
+    ){
+
+      return value.trim();
+
+    }
+
+  }
+
+  return "Server";
 
 }
 
-
-function serverStock(
-  server
-){
+function serverStock(server){
 
   return Number(
     server?.stock ??
@@ -2418,10 +2313,7 @@ function serverStock(
 
 }
 
-
-function serverPrice(
-  server
-){
+function serverPrice(server){
 
   return Number(
     server?.customer_price_ngn ??
@@ -2434,20 +2326,13 @@ function serverPrice(
 
 }
 
-
-/* ============================================================
-   LOAD SERVERS
-============================================================ */
-
 async function loadServers(){
 
   try{
 
     let data;
 
-    if(
-      provider === "smsbower"
-    ){
+    if(provider === "smsbower"){
 
       data =
         await api(
@@ -2467,11 +2352,6 @@ async function loadServers(){
         );
 
     }else{
-
-      /*
-        Same country → service → server flow,
-        but the old 5SIM backend is now Grizzly.
-      */
 
       data =
         await api(
@@ -2518,9 +2398,7 @@ async function loadServers(){
     }
 
     servers =
-      Array.isArray(
-        data.servers
-      )
+      Array.isArray(data.servers)
         ? data.servers
         : [];
 
@@ -2534,20 +2412,13 @@ async function loadServers(){
       )
       .innerHTML = `
         <div class="empty">
-          ${escapeHTML(
-            error.message
-          )}
+          ${escapeHTML(error.message)}
         </div>
       `;
 
   }
 
 }
-
-
-/* ============================================================
-   RENDER SERVERS
-============================================================ */
 
 function renderServers(){
 
@@ -2576,9 +2447,7 @@ function renderServers(){
       }
     );
 
-  if(
-    validServers.length === 0
-  ){
+  if(validServers.length === 0){
 
     list.innerHTML = `
       <div class="empty">
@@ -2603,17 +2472,13 @@ function renderServers(){
 
           const selected =
             selectedServer &&
-            serverId(
-              selectedServer
-            ) ===
+            serverId(selectedServer) ===
             serverId(server);
 
           return `
             <div
               class="server ${
-                selected
-                  ? "selected"
-                  : ""
+                selected ? "selected" : ""
               }"
               data-server-index="${index}"
             >
@@ -2651,34 +2516,25 @@ function renderServers(){
     .forEach(
       element => {
 
-        element.onclick =
-          () => {
+        element.onclick = () => {
 
-            const index =
-              Number(
-                element.dataset
-                  .serverIndex
-              );
-
-            selectServer(
-              validServers[index]
+          const index =
+            Number(
+              element.dataset.serverIndex
             );
 
-          };
+          selectServer(
+            validServers[index]
+          );
+
+        };
 
       }
     );
 
 }
 
-
-/* ============================================================
-   SELECT SERVER
-============================================================ */
-
-function selectServer(
-  server
-){
+function selectServer(server){
 
   const price =
     serverPrice(server);
@@ -2705,16 +2561,13 @@ function selectServer(
       .getElementById(
         "priceBox"
       )
-      .classList.add(
-        "hidden"
-      );
+      .classList.add("hidden");
 
     return;
 
   }
 
-  selectedServer =
-    server;
+  selectedServer = server;
 
   renderServers();
 
@@ -2722,9 +2575,7 @@ function selectServer(
     .getElementById(
       "priceBox"
     )
-    .classList.remove(
-      "hidden"
-    );
+    .classList.remove("hidden");
 
   document
     .getElementById(
@@ -2746,11 +2597,6 @@ function selectServer(
     .textContent = "";
 
 }
-
-
-/* ============================================================
-   BUY
-============================================================ */
 
 async function buyNumber(){
 
@@ -2786,9 +2632,7 @@ async function buyNumber(){
 
     let data;
 
-    if(
-      provider === "smsbower"
-    ){
+    if(provider === "smsbower"){
 
       data =
         await api(
@@ -2890,9 +2734,7 @@ async function buyNumber(){
     showPortalNotice();
 
     await loadAllOrders();
-
     await loadWallet();
-
     await loadServers();
 
   }catch(error){
@@ -2906,14 +2748,7 @@ async function buyNumber(){
 
 }
 
-
-/* ============================================================
-   STATUS
-============================================================ */
-
-function statusLabel(
-  status
-){
+function statusLabel(status){
 
   const map = {
     waiting:"Pending",
@@ -2936,22 +2771,14 @@ function statusLabel(
 
 }
 
-
-/* ============================================================
-   ORDER PROVIDER
-============================================================ */
-
-function orderProvider(
-  order
-){
+function orderProvider(order){
 
   const value =
     String(
       order?.provider ||
       order?.server ||
       ""
-    )
-      .toLowerCase();
+    ).toLowerCase();
 
   if(
     value === "grizzly" ||
@@ -2962,46 +2789,23 @@ function orderProvider(
 
   }
 
-  if(
-    value === "fivesim"
-  ){
-
-    /*
-      Old orders created by the previous
-      5SIM implementation remain recognizable.
-    */
-
+  if(value === "fivesim"){
     return "grizzly";
-
   }
 
   return "smsbower";
 
 }
 
-
-/* ============================================================
-   ORDER UNIQUE KEY
-============================================================ */
-
-function orderUniqueKey(
-  order
-){
+function orderUniqueKey(order){
 
   return (
     orderProvider(order) +
     ":" +
-    String(
-      order?.id ?? ""
-    )
+    String(order?.id ?? "")
   );
 
 }
-
-
-/* ============================================================
-   RENDER ORDER
-============================================================ */
 
 function renderOrder(
   order,
@@ -3113,11 +2917,6 @@ function renderOrder(
 
 }
 
-
-/* ============================================================
-   LOAD ALL ORDERS
-============================================================ */
-
 async function loadAllOrders(){
 
   const current =
@@ -3206,10 +3005,7 @@ async function loadAllOrders(){
       );
 
     combined.sort(
-      (
-        a,
-        b
-      ) =>
+      (a,b) =>
         new Date(
           b.created_at ||
           b.purchased_at ||
@@ -3224,8 +3020,7 @@ async function loadAllOrders(){
         )
     );
 
-    orders =
-      combined;
+    orders = combined;
 
     const active =
       orders.length > 0
@@ -3271,9 +3066,7 @@ async function loadAllOrders(){
           activeKey
       );
 
-    if(
-      previousOrders.length === 0
-    ){
+    if(previousOrders.length === 0){
 
       previous.innerHTML = `
         <div class="empty">
@@ -3300,9 +3093,7 @@ async function loadAllOrders(){
 
     current.innerHTML = `
       <div class="empty">
-        ${escapeHTML(
-          error.message
-        )}
+        ${escapeHTML(error.message)}
       </div>
     `;
 
@@ -3315,11 +3106,6 @@ async function loadAllOrders(){
   }
 
 }
-
-
-/* ============================================================
-   CHECK ORDER
-============================================================ */
 
 async function checkOrder(
   orderId,
@@ -3354,20 +3140,13 @@ async function checkOrder(
 
     current.innerHTML = `
       <div class="empty">
-        ${escapeHTML(
-          error.message
-        )}
+        ${escapeHTML(error.message)}
       </div>
     `;
 
   }
 
 }
-
-
-/* ============================================================
-   CANCEL ORDER
-============================================================ */
 
 async function cancelOrder(
   orderId,
@@ -3413,7 +3192,6 @@ async function cancelOrder(
     );
 
     await loadAllOrders();
-
     await loadWallet();
 
   }catch(error){
@@ -3429,19 +3207,9 @@ async function cancelOrder(
 
 }
 
-
-/* ============================================================
-   WALLET
-============================================================ */
-
 async function loadWallet(){
 
   try{
-
-    /*
-      Wallet is shared, so SMSBower's wallet
-      endpoint remains the wallet source.
-    */
 
     const data =
       await api(
@@ -3483,57 +3251,34 @@ async function loadWallet(){
 
 }
 
-
-/* ============================================================
-   INIT
-============================================================ */
-
 async function init(){
 
-  /*
-    Grizzly is selected by default.
-  */
-
-  provider =
-    "grizzly";
+  provider = "grizzly";
 
   document
     .getElementById(
       "grizzlyProviderTab"
     )
-    .classList.add(
-      "active"
-    );
+    .classList.add("active");
 
   document
     .getElementById(
       "smsbowerProviderTab"
     )
-    .classList.remove(
-      "active"
-    );
+    .classList.remove("active");
 
   document
     .getElementById(
       "verificationPopup"
     )
-    .style.display =
-      "flex";
+    .style.display = "flex";
 
   await loadWatermark();
-
   await loadCountries();
-
   await loadWallet();
-
   await loadAllOrders();
 
 }
-
-
-/* ============================================================
-   AUTO CHECK
-============================================================ */
 
 setInterval(
   async () => {
@@ -3582,10 +3327,6 @@ setInterval(
 
       }catch{
 
-        /*
-          Keep UI running.
-        */
-
       }
 
     }
@@ -3593,11 +3334,6 @@ setInterval(
   },
   15000
 );
-
-
-/* ============================================================
-   START
-============================================================ */
 
 init();
 
