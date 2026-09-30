@@ -67,10 +67,6 @@ main{
   padding:15px;
 }
 
-/* ============================================================
-   PROVIDER TABS
-============================================================ */
-
 .provider-tabs{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -79,8 +75,7 @@ main{
 }
 
 .provider-tab{
-  position:relative;
-  border:2px solid #d9d9d9;
+  border:1px solid #ddd;
   background:#fff;
   color:#111;
   padding:13px 9px;
@@ -88,57 +83,13 @@ main{
   font-weight:bold;
   cursor:pointer;
   text-align:center;
-  transition:.18s ease;
-}
-
-.provider-tab:hover{
-  border-color:#999;
-  transform:translateY(-1px);
-}
-
-.provider-tab:active{
-  transform:scale(.98);
 }
 
 .provider-tab.active{
   background:#111;
   color:#fff;
   border-color:#111;
-  box-shadow:0 4px 12px rgba(0,0,0,.16);
 }
-
-.provider-tab .provider-status{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  margin-top:7px;
-  padding:4px 8px;
-  border-radius:999px;
-  background:#f1f1f1;
-  color:#555;
-  font-size:10px;
-  font-weight:800;
-}
-
-.provider-tab.active .provider-status{
-  background:#16a34a;
-  color:#fff;
-}
-
-.provider-tab .provider-status-dot{
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:#777;
-}
-
-.provider-tab.active .provider-status-dot{
-  background:#fff;
-}
-
-/* ============================================================
-   WATERMARK
-============================================================ */
 
 .watermark{
   width:100%;
@@ -422,10 +373,6 @@ input:focus{
   color:#777;
 }
 
-/* ============================================================
-   POPUPS
-============================================================ */
-
 .popup{
   position:fixed;
   inset:0;
@@ -625,10 +572,6 @@ input:focus{
   cursor:pointer;
 }
 
-/* ============================================================
-   MENU
-============================================================ */
-
 .menu{
   position:fixed;
   top:65px;
@@ -665,10 +608,6 @@ input:focus{
     font-size:17px;
   }
 
-  .provider-tab{
-    padding:11px 7px;
-  }
-
 }
 
 </style>
@@ -699,9 +638,7 @@ onclick="toggleMenu()"
 
 <main>
 
-<!-- ============================================================
-     COUNTRY NUMBER OPTIONS
-============================================================ -->
+<!-- PROVIDER TABS -->
 
 <div class="provider-tabs">
 
@@ -711,12 +648,6 @@ class="provider-tab active"
 onclick="changeProvider('grizzly')"
 >
 All Country Number 1
-
-<span class="provider-status">
-<span class="provider-status-dot"></span>
-Selected
-</span>
-
 </button>
 
 <button
@@ -725,12 +656,6 @@ class="provider-tab"
 onclick="changeProvider('smsbower')"
 >
 All Country Number 2
-
-<span class="provider-status">
-<span class="provider-status-dot"></span>
-Tap to select
-</span>
-
 </button>
 
 </div>
@@ -739,6 +664,8 @@ Tap to select
 id="virtualNumberWatermark"
 class="watermark hidden"
 ></div>
+
+<!-- COUNTRY -->
 
 <section class="card">
 
@@ -776,6 +703,8 @@ class="selected-box hidden"
 
 </section>
 
+<!-- SERVICE -->
+
 <section class="card">
 
 <h2>Service</h2>
@@ -812,6 +741,8 @@ class="selected-box hidden"
 ></div>
 
 </section>
+
+<!-- SERVER -->
 
 <section
 id="serverSection"
@@ -859,6 +790,8 @@ class="message"
 
 </section>
 
+<!-- CURRENT ORDER -->
+
 <section class="card">
 
 <h2>Current / New Order</h2>
@@ -872,6 +805,8 @@ No current order.
 </div>
 
 </section>
+
+<!-- PREVIOUS ORDERS -->
 
 <section class="card">
 
@@ -888,6 +823,8 @@ Loading orders...
 </section>
 
 </main>
+
+<!-- MENU -->
 
 <div
 id="menu"
@@ -957,9 +894,7 @@ onclick="toggleMenu()"
 
 </div>
 
-<!-- ============================================================
-     VERIFICATION POPUP
-============================================================ -->
+<!-- VERIFICATION POPUP -->
 
 <div
 id="verificationPopup"
@@ -1075,7 +1010,7 @@ Keep the app open and maintain a stable connection.
 
 <div class="popup-warning-content">
 
-<strong>Tip</strong>
+<strong>Provider Tip</strong>
 
 If a server does not receive a code, please try another server. Each server shows its availability. Cancel when cancellation is available to receive your refund.
 
@@ -1096,9 +1031,7 @@ I Understand
 
 </div>
 
-<!-- ============================================================
-     PORTAL NOTICE
-============================================================ -->
+<!-- PORTAL NOTICE -->
 
 <div
 id="portalNoticePopup"
@@ -1226,7 +1159,7 @@ const supabaseClient =
 
 
 /* ============================================================
-   EDGE FUNCTIONS
+   FUNCTIONS
 ============================================================ */
 
 const SMSBOWER_FUNCTION_URL =
@@ -1236,9 +1169,10 @@ const GRIZZLY_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/grizzly-api`;
 
 
-/* ============================================================
-   DEFAULT
-============================================================ */
+/*
+  Grizzly is the default provider.
+  SMSBower is the second provider.
+*/
 
 let provider = "grizzly";
 
@@ -1264,10 +1198,12 @@ let watermarkText = "";
 
 
 /* ============================================================
-   FUNCTION URL
+   GET FUNCTION URL
 ============================================================ */
 
-function functionURL(providerName){
+function functionURL(
+  providerName
+){
 
   if(
     providerName === "grizzly"
@@ -1473,7 +1409,7 @@ async function loadWatermark(){
 
 
 /* ============================================================
-   SWITCH
+   PROVIDER SWITCH
 ============================================================ */
 
 async function changeProvider(
@@ -1485,30 +1421,23 @@ async function changeProvider(
       ? "smsbower"
       : "grizzly";
 
-  const firstTab =
-    document.getElementById(
+  document
+    .getElementById(
       "grizzlyProviderTab"
+    )
+    .classList.toggle(
+      "active",
+      provider === "grizzly"
     );
 
-  const secondTab =
-    document.getElementById(
+  document
+    .getElementById(
       "smsbowerProviderTab"
+    )
+    .classList.toggle(
+      "active",
+      provider === "smsbower"
     );
-
-  /*
-    Selected = black
-    Unselected = white
-  */
-
-  firstTab.classList.toggle(
-    "active",
-    provider === "grizzly"
-  );
-
-  secondTab.classList.toggle(
-    "active",
-    provider === "smsbower"
-  );
 
   selectedCountry = null;
   selectedService = null;
@@ -1562,26 +1491,6 @@ async function changeProvider(
 
   document
     .getElementById(
-      "priceBox"
-    )
-    .classList.add(
-      "hidden"
-    );
-
-  document
-    .getElementById(
-      "buyButton"
-    )
-    .disabled = true;
-
-  document
-    .getElementById(
-      "buyMessage"
-    )
-    .textContent = "";
-
-  document
-    .getElementById(
       "serviceList"
     )
     .innerHTML = `
@@ -1589,12 +1498,6 @@ async function changeProvider(
         Select a country first.
       </div>
     `;
-
-  document
-    .getElementById(
-      "serverList"
-    )
-    .innerHTML = "";
 
   await loadWatermark();
 
@@ -1644,22 +1547,6 @@ function escapeHTML(value){
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
-
-}
-
-
-/* ============================================================
-   ESCAPE JS
-============================================================ */
-
-function escapeJS(value){
-
-  return String(value ?? "")
-    .replace(/\\/g,"\\\\")
-    .replace(/'/g,"\\'")
-    .replace(/"/g,'\\"')
-    .replace(/\n/g,"\\n")
-    .replace(/\r/g,"\\r");
 
 }
 
@@ -1727,45 +1614,16 @@ function countryName(
   country
 ){
 
-  let name =
-    String(
-      country?.name ||
-      country?.country_name ||
-      country?.eng ||
-      country?.provider_name ||
-      country?.country ||
-      country?.key ||
-      country?.country_key ||
-      ""
-    ).trim();
-
-  const lower =
-    name.toLowerCase();
-
-  if(
-    lower === "us" ||
-    lower === "usa" ||
-    lower === "united states of america" ||
-    lower === "united states"
-  ){
-
-    return "United States";
-
-  }
-
-  if(
-    lower === "uk" ||
-    lower === "gb" ||
-    lower === "great britain" ||
-    lower === "england" ||
-    lower === "united kingdom"
-  ){
-
-    return "United Kingdom";
-
-  }
-
-  return name;
+  return String(
+    country?.name ||
+    country?.country_name ||
+    country?.eng ||
+    country?.provider_name ||
+    country?.country ||
+    country?.key ||
+    country?.country_key ||
+    ""
+  ).trim();
 
 }
 
@@ -1793,7 +1651,12 @@ function countryId(
   country
 ){
 
-  return country?.id;
+  return (
+    country?.id ??
+    country?.country_id ??
+    country?.countryId ??
+    null
+  );
 
 }
 
@@ -1819,18 +1682,6 @@ function countryMatches(
   const key =
     countryKey(country);
 
-  const rawName =
-    String(
-      country?.name ||
-      country?.country_name ||
-      country?.eng ||
-      country?.provider_name ||
-      country?.country ||
-      ""
-    )
-      .trim()
-      .toLowerCase();
-
   const aliases =
     Array.isArray(
       country?.aliases
@@ -1838,16 +1689,26 @@ function countryMatches(
       ? country.aliases
       : [];
 
+  const code =
+    String(
+      country?.code ||
+      country?.iso ||
+      country?.iso2 ||
+      country?.country_code ||
+      ""
+    )
+      .toLowerCase();
+
   const haystack = [
     name,
     key,
-    rawName,
     country?.eng,
     country?.provider_name,
     country?.code,
+    country?.iso,
+    country?.iso2,
+    country?.country_code,
     country?.slug,
-    country?.country_key,
-    country?.key,
     ...aliases
   ]
     .filter(Boolean)
@@ -1858,48 +1719,56 @@ function countryMatches(
     return true;
   }
 
+
+  /* UNITED STATES */
+
   if(
-    q === "united states" ||
-    q === "usa" ||
     q === "us" ||
-    q === "america" ||
+    q === "usa" ||
+    q === "united states" ||
     q === "united states of america"
   ){
 
     return (
       name === "united states" ||
-      rawName === "united states" ||
-      rawName === "usa" ||
-      rawName === "us" ||
+      name === "united states of america" ||
+      name.includes("united states") ||
       key === "us" ||
       key === "usa" ||
-      haystack.includes("united states")
+      code === "us" ||
+      haystack.includes("united states") ||
+      haystack.includes("usa")
     );
 
   }
 
+
+  /* UNITED KINGDOM */
+
   if(
-    q === "united kingdom" ||
     q === "uk" ||
     q === "gb" ||
+    q === "england" ||
     q === "great britain" ||
-    q === "england"
+    q === "united kingdom"
   ){
 
     return (
       name === "united kingdom" ||
-      rawName === "united kingdom" ||
-      rawName === "uk" ||
-      rawName === "gb" ||
-      rawName === "england" ||
+      name.includes("united kingdom") ||
+      name === "great britain" ||
+      name === "england" ||
       key === "uk" ||
       key === "gb" ||
+      code === "uk" ||
+      code === "gb" ||
       haystack.includes("united kingdom") ||
       haystack.includes("great britain") ||
       haystack.includes("england")
     );
 
   }
+
 
   return haystack.includes(q);
 
@@ -2148,7 +2017,7 @@ async function selectCountry(
 
 
 /* ============================================================
-   SERVICE CODE
+   SERVICE HELPERS
 ============================================================ */
 
 function serviceCode(
@@ -2156,268 +2025,30 @@ function serviceCode(
 ){
 
   return String(
-    service?.service_code ??
-    service?.product ??
-    service?.code ??
-    service?.service_id ??
-    service?.id ??
-    service?.key ??
-    service?.service ??
+    service?.service_code ||
+    service?.serviceCode ||
+    service?.product ||
+    service?.code ||
+    service?.id ||
     ""
-  ).trim();
+  );
 
 }
 
-
-/* ============================================================
-   SERVICE NAME
-============================================================ */
 
 function serviceName(
   service
 ){
 
-  const name =
-    service?.service_name ??
-    service?.name ??
-    service?.title ??
-    service?.label ??
-    service?.display_name ??
-    service?.displayName ??
-    service?.description ??
-    service?.service ??
-    "";
-
-  return String(name).trim();
-
-}
-
-
-/* ============================================================
-   NORMALIZE SERVICES
-   FIXES GRIZZLY SERVICE IDS
-============================================================ */
-
-function normalizeServices(
-  raw
-){
-
-  /*
-    Some responses return:
-
-    [
-      {
-        code:"wa",
-        name:"WhatsApp"
-      }
-    ]
-
-    Others return:
-
-    {
-      "wa":"WhatsApp",
-      "tg":"Telegram"
-    }
-
-    Others may return:
-
-    {
-      "wa":{
-        "name":"WhatsApp"
-      }
-    }
-
-    This function keeps the internal code
-    while displaying the human-readable name.
-  */
-
-  if(Array.isArray(raw)){
-
-    return raw
-      .map(
-        (item,index) => {
-
-          if(
-            typeof item === "string"
-          ){
-
-            return {
-              code:item,
-              name:item
-            };
-
-          }
-
-          if(
-            !item ||
-            typeof item !== "object"
-          ){
-
-            return null;
-
-          }
-
-          const code =
-            String(
-              item.service_code ??
-              item.product ??
-              item.code ??
-              item.service_id ??
-              item.id ??
-              item.key ??
-              item.service ??
-              ""
-            ).trim();
-
-          const name =
-            String(
-              item.service_name ??
-              item.name ??
-              item.title ??
-              item.label ??
-              item.display_name ??
-              item.displayName ??
-              item.description ??
-              (
-                typeof item.service === "string"
-                  ? item.service
-                  : ""
-              ) ??
-              ""
-            ).trim();
-
-          return {
-            ...item,
-
-            code:
-              code ||
-              String(index),
-
-            name:
-              name ||
-              code ||
-              `Service ${index + 1}`
-          };
-
-        }
-      )
-      .filter(Boolean);
-
-  }
-
-
-  if(
-    raw &&
-    typeof raw === "object"
-  ){
-
-    return Object.entries(raw)
-      .map(
-        ([key,value]) => {
-
-          /*
-            Example:
-
-            {
-              "wa":"WhatsApp"
-            }
-          */
-
-          if(
-            typeof value === "string"
-          ){
-
-            return {
-              code:String(key),
-              name:value
-            };
-
-          }
-
-          /*
-            Example:
-
-            {
-              "wa":{
-                name:"WhatsApp"
-              }
-            }
-          */
-
-          if(
-            value &&
-            typeof value === "object"
-          ){
-
-            const code =
-              String(
-                value.service_code ??
-                value.product ??
-                value.code ??
-                value.service_id ??
-                value.id ??
-                value.key ??
-                value.service ??
-                key
-              ).trim();
-
-            const name =
-              String(
-                value.service_name ??
-                value.name ??
-                value.title ??
-                value.label ??
-                value.display_name ??
-                value.displayName ??
-                value.description ??
-                (
-                  typeof value.service === "string"
-                    ? value.service
-                    : ""
-                ) ??
-                key
-              ).trim();
-
-            return {
-              ...value,
-
-              code:
-                code || String(key),
-
-              name:
-                name ||
-                String(key)
-            };
-
-          }
-
-          /*
-            Numeric value can be a price/count.
-          */
-
-          if(
-            typeof value === "number"
-          ){
-
-            return {
-              code:String(key),
-              name:String(key),
-              price:value
-            };
-
-          }
-
-          return {
-            code:String(key),
-            name:String(key)
-          };
-
-        }
-      );
-
-  }
-
-  return [];
+  return String(
+    service?.service_name ||
+    service?.serviceName ||
+    service?.name ||
+    service?.title ||
+    service?.product_name ||
+    service?.product ||
+    serviceCode(service)
+  );
 
 }
 
@@ -2442,6 +2073,16 @@ async function loadServices(){
             country:
               countryKey(
                 selectedCountry
+              ),
+
+            country_id:
+              countryId(
+                selectedCountry
+              ),
+
+            country_name:
+              countryName(
+                selectedCountry
               )
           };
 
@@ -2452,51 +2093,12 @@ async function loadServices(){
         provider
       );
 
-    /*
-      Accept all common response shapes.
-    */
-
-    let rawServices =
-      data?.services ??
-      data?.data ??
-      data?.result ??
-      data;
-
-    /*
-      If the API wraps services inside
-      another object, unwrap it.
-    */
-
-    if(
-      rawServices &&
-      !Array.isArray(rawServices) &&
-      typeof rawServices === "object"
-    ){
-
-      if(
-        rawServices.services !== undefined
-      ){
-
-        rawServices =
-          rawServices.services;
-
-      }
-
-      else if(
-        rawServices.data !== undefined
-      ){
-
-        rawServices =
-          rawServices.data;
-
-      }
-
-    }
-
     services =
-      normalizeServices(
-        rawServices
-      );
+      Array.isArray(
+        data.services
+      )
+        ? data.services
+        : [];
 
     renderServices();
 
@@ -2562,17 +2164,14 @@ function renderServices(
           return true;
         }
 
-        const name =
-          serviceName(service)
-            .toLowerCase();
-
-        const code =
-          serviceCode(service)
-            .toLowerCase();
-
         return (
-          name.includes(q) ||
-          code.includes(q)
+          serviceName(service)
+            .toLowerCase()
+            .includes(q)
+          ||
+          serviceCode(service)
+            .toLowerCase()
+            .includes(q)
         );
 
       }
@@ -2600,7 +2199,9 @@ function renderServices(
           const stock =
             Number(
               service?.stock ??
-              service?.count
+              service?.count ??
+              service?.available ??
+              0
             );
 
           const stockText =
@@ -2615,16 +2216,6 @@ function renderServices(
               selectedService
             ) ===
             serviceCode(service);
-
-          /*
-            Display the real service name.
-            Code is NOT displayed unless the
-            backend genuinely provides no name.
-          */
-
-          const displayName =
-            serviceName(service) ||
-            "Service";
 
           return `
             <div
@@ -2642,7 +2233,7 @@ function renderServices(
 
               <strong>
                 ${escapeHTML(
-                  displayName
+                  serviceName(service)
                 )}
               </strong>
 
@@ -2726,10 +2317,7 @@ async function selectService(
       "selectedServiceBox"
     )
     .textContent =
-      `Selected: ${
-        serviceName(service) ||
-        "Service"
-      }`;
+      `Selected: ${serviceName(service)}`;
 
   document
     .getElementById(
@@ -2793,6 +2381,7 @@ function serverId(
   return String(
     server?.server_id ??
     server?.operator ??
+    server?.operator_id ??
     server?.id ??
     ""
   );
@@ -2806,8 +2395,9 @@ function serverLabel(
 
   return String(
     server?.label ||
+    server?.server_name ||
     server?.operator_name ||
-    server?.operator_label ||
+    server?.operator ||
     server?.name ||
     "Server"
   );
@@ -2819,40 +2409,12 @@ function serverStock(
   server
 ){
 
-  const raw =
+  return Number(
     server?.stock ??
-    server?.count;
-
-  const value =
-    Number(raw);
-
-  if(
-    provider === "grizzly" &&
-    !Number.isFinite(value)
-  ){
-
-    return 1;
-
-  }
-
-  if(
-    provider === "grizzly" &&
-    value === 0 &&
-    (
-      server?.customer_price_ngn ||
-      server?.selling_price_ngn ||
-      server?.price_ngn ||
-      server?.price
-    )
-  ){
-
-    return 1;
-
-  }
-
-  return Number.isFinite(value)
-    ? value
-    : 0;
+    server?.count ??
+    server?.available ??
+    0
+  );
 
 }
 
@@ -2865,6 +2427,7 @@ function serverPrice(
     server?.customer_price_ngn ??
     server?.selling_price_ngn ??
     server?.price_ngn ??
+    server?.customer_price ??
     server?.price ??
     0
   );
@@ -2873,102 +2436,7 @@ function serverPrice(
 
 
 /* ============================================================
-   RECOMMENDED SERVER
-============================================================ */
-
-function isRecommendedServer(
-  server
-){
-
-  if(
-    provider !== "smsbower"
-  ){
-
-    return false;
-
-  }
-
-  const preferredId =
-    preferredWhatsappProviderId(
-      selectedCountry,
-      selectedService
-    );
-
-  if(!preferredId){
-    return false;
-  }
-
-  return (
-    serverId(server) ===
-    String(preferredId)
-  );
-
-}
-
-
-/* ============================================================
-   PREFERRED
-============================================================ */
-
-const PREFERRED_WHATSAPP_PROVIDERS = {
-
-  16: "3368",
-
-  12: "3209",
-
-  36: "2462",
-
-  33: "3253",
-
-  6: "1329",
-
-  73: "2933",
-
-  187: "3170"
-
-};
-
-
-function preferredWhatsappProviderId(
-  country,
-  service
-){
-
-  if(
-    provider !== "smsbower"
-  ){
-
-    return null;
-
-  }
-
-  const code =
-    serviceCode(service)
-      .toLowerCase();
-
-  if(
-    code !== "wa"
-  ){
-
-    return null;
-
-  }
-
-  const id =
-    Number(
-      countryId(country)
-    );
-
-  return (
-    PREFERRED_WHATSAPP_PROVIDERS[id] ||
-    null
-  );
-
-}
-
-
-/* ============================================================
-   LOAD SERVERS / PRICES
+   LOAD SERVERS
 ============================================================ */
 
 async function loadServers(){
@@ -3000,6 +2468,11 @@ async function loadServers(){
 
     }else{
 
+      /*
+        Same country → service → server flow,
+        but the old 5SIM backend is now Grizzly.
+      */
+
       data =
         await api(
           "servers",
@@ -3009,8 +2482,28 @@ async function loadServers(){
                 selectedCountry
               ),
 
+            country_id:
+              countryId(
+                selectedCountry
+              ),
+
+            country_name:
+              countryName(
+                selectedCountry
+              ),
+
             service:
               serviceCode(
+                selectedService
+              ),
+
+            service_code:
+              serviceCode(
+                selectedService
+              ),
+
+            service_name:
+              serviceName(
                 selectedService
               ),
 
@@ -3024,73 +2517,12 @@ async function loadServers(){
 
     }
 
-    let rawServers =
-      data?.servers ??
-      data?.data ??
-      data?.result ??
-      [];
-
-    if(
-      rawServers &&
-      !Array.isArray(rawServers) &&
-      typeof rawServers === "object"
-    ){
-
-      if(
-        Array.isArray(
-          rawServers.servers
-        )
-      ){
-
-        rawServers =
-          rawServers.servers;
-
-      }
-
-    }
-
     servers =
       Array.isArray(
-        rawServers
+        data.servers
       )
-        ? rawServers
+        ? data.servers
         : [];
-
-    /*
-      Direct price fallback.
-    */
-
-    if(
-      provider === "grizzly" &&
-      servers.length === 0
-    ){
-
-      const directPrice =
-        Number(
-          data?.customer_price_ngn ??
-          data?.selling_price_ngn ??
-          data?.price_ngn ??
-          data?.price
-        );
-
-      if(
-        Number.isFinite(directPrice) &&
-        directPrice > 0
-      ){
-
-        servers = [
-          {
-            server_id:"default",
-            label:"Available Server",
-            stock:1,
-            customer_price_ngn:
-              directPrice
-          }
-        ];
-
-      }
-
-    }
 
     renderServers();
 
@@ -3124,7 +2556,7 @@ function renderServers(){
       "serverList"
     );
 
-  let validServers =
+  const validServers =
     servers.filter(
       server => {
 
@@ -3164,45 +2596,6 @@ function renderServers(){
 
   }
 
-  if(
-    provider === "smsbower"
-  ){
-
-    const preferredId =
-      preferredWhatsappProviderId(
-        selectedCountry,
-        selectedService
-      );
-
-    if(preferredId){
-
-      const preferredIndex =
-        validServers.findIndex(
-          server =>
-            serverId(server) ===
-            String(preferredId)
-        );
-
-      if(
-        preferredIndex > 0
-      ){
-
-        const preferred =
-          validServers.splice(
-            preferredIndex,
-            1
-          )[0];
-
-        validServers.unshift(
-          preferred
-        );
-
-      }
-
-    }
-
-  }
-
   list.innerHTML =
     validServers
       .map(
@@ -3215,11 +2608,6 @@ function renderServers(){
             ) ===
             serverId(server);
 
-          const recommended =
-            isRecommendedServer(
-              server
-            );
-
           return `
             <div
               class="server ${
@@ -3229,16 +2617,6 @@ function renderServers(){
               }"
               data-server-index="${index}"
             >
-
-              ${
-                recommended
-                  ? `
-                    <div class="server-badge">
-                      ✓ Recommended
-                    </div>
-                  `
-                  : ""
-              }
 
               <div class="server-name">
                 ${escapeHTML(
@@ -3455,17 +2833,17 @@ async function buyNumber(){
                 selectedCountry
               ),
 
+            country_id:
+              countryId(
+                selectedCountry
+              ),
+
             country_name:
               countryName(
                 selectedCountry
               ),
 
             service:
-              serviceCode(
-                selectedService
-              ),
-
-            product:
               serviceCode(
                 selectedService
               ),
@@ -3480,8 +2858,23 @@ async function buyNumber(){
                 selectedService
               ),
 
+            product:
+              serviceCode(
+                selectedService
+              ),
+
             operator:
               serverId(
+                selectedServer
+              ),
+
+            server_id:
+              serverId(
+                selectedServer
+              ),
+
+            server_name:
+              serverLabel(
                 selectedServer
               )
           },
@@ -3523,21 +2916,14 @@ function statusLabel(
 ){
 
   const map = {
-
     waiting:"Pending",
-
     pending:"Pending",
-
     received:"Received",
-
     finished:"Completed",
-
+    completed:"Completed",
     cancelled:"Cancelled",
-
     refunded:"Refunded",
-
     failed:"Failed"
-
   };
 
   return (
@@ -3559,14 +2945,17 @@ function orderProvider(
   order
 ){
 
-  const server =
+  const value =
     String(
-      order?.server || ""
+      order?.provider ||
+      order?.server ||
+      ""
     )
       .toLowerCase();
 
   if(
-    server === "grizzly"
+    value === "grizzly" ||
+    value === "grizzly_sms"
   ){
 
     return "grizzly";
@@ -3574,14 +2963,19 @@ function orderProvider(
   }
 
   if(
-    server === "smsbower"
+    value === "fivesim"
   ){
 
-    return "smsbower";
+    /*
+      Old orders created by the previous
+      5SIM implementation remain recognizable.
+    */
+
+    return "grizzly";
 
   }
 
-  return provider;
+  return "smsbower";
 
 }
 
@@ -3654,7 +3048,7 @@ function renderOrder(
           class="small-button check"
           onclick="checkOrder(
             ${Number(order.id)},
-            '${escapeJS(orderProvider(order))}'
+            '${orderProvider(order)}'
           )"
         >
           Check Code / Get Code
@@ -3664,7 +3058,7 @@ function renderOrder(
           class="small-button cancel"
           onclick="cancelOrder(
             ${Number(order.id)},
-            '${escapeJS(orderProvider(order))}'
+            '${orderProvider(order)}'
           )"
         >
           Cancel
@@ -3744,18 +3138,18 @@ async function loadAllOrders(){
         api(
           "orders",
           {},
-          "smsbower"
+          "grizzly"
         ),
 
         api(
           "orders",
           {},
-          "grizzly"
+          "smsbower"
         )
 
       ]);
 
-    const smsOrders =
+    const grizzlyOrders =
       results[0].status === "fulfilled" &&
       Array.isArray(
         results[0].value?.orders
@@ -3764,14 +3158,14 @@ async function loadAllOrders(){
             .map(
               order => ({
                 ...order,
-                server:
-                  order.server ||
-                  "smsbower"
+                provider:
+                  order.provider ||
+                  "grizzly"
               })
             )
         : [];
 
-    const grizzlyOrders =
+    const smsOrders =
       results[1].status === "fulfilled" &&
       Array.isArray(
         results[1].value?.orders
@@ -3780,16 +3174,16 @@ async function loadAllOrders(){
             .map(
               order => ({
                 ...order,
-                server:
-                  order.server ||
-                  "grizzly"
+                provider:
+                  order.provider ||
+                  "smsbower"
               })
             )
         : [];
 
     const merged = [
-      ...smsOrders,
-      ...grizzlyOrders
+      ...grizzlyOrders,
+      ...smsOrders
     ];
 
     const unique =
@@ -4044,6 +3438,11 @@ async function loadWallet(){
 
   try{
 
+    /*
+      Wallet is shared, so SMSBower's wallet
+      endpoint remains the wallet source.
+    */
+
     const data =
       await api(
         "wallet",
@@ -4092,12 +3491,11 @@ async function loadWallet(){
 async function init(){
 
   /*
-    All Country Number 1 is the default.
-    It is BLACK when selected.
-    All Country Number 2 stays WHITE.
+    Grizzly is selected by default.
   */
 
-  provider = "grizzly";
+  provider =
+    "grizzly";
 
   document
     .getElementById(
