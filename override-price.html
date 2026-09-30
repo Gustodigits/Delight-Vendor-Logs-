@@ -47,10 +47,6 @@
       font-size: 20px;
     }
 
-    /* =====================================================
-       PROVIDER TABS
-    ===================================================== */
-
     .provider-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -226,10 +222,6 @@
       color: #666;
     }
 
-    /* =====================================================
-       SEARCHABLE DROPDOWN
-    ===================================================== */
-
     .search-select {
       position: relative;
       width: 100%;
@@ -358,10 +350,6 @@
 
 <div class="container">
 
-  <!-- =====================================================
-       PROVIDER SWITCH
-  ====================================================== -->
-
   <div class="card">
 
     <div class="provider-tabs">
@@ -376,12 +364,12 @@
       </button>
 
       <button
-        id="fivesimTab"
+        id="grizzlyTab"
         class="provider-tab"
         type="button"
-        onclick="switchProvider('fivesim')"
+        onclick="switchProvider('grizzly')"
       >
-        5SIM
+        Grizzly
       </button>
 
     </div>
@@ -390,17 +378,11 @@
       SMSBower Markup
     </div>
 
-    <!-- ===================================================
-         ADD / EDIT
-    ==================================================== -->
-
     <h2 id="formTitle">
       Add Markup Rule
     </h2>
 
     <div class="grid">
-
-      <!-- COUNTRY -->
 
       <div class="field">
 
@@ -451,8 +433,6 @@
 
       </div>
 
-
-      <!-- SERVICE -->
 
       <div class="field">
 
@@ -549,10 +529,6 @@
   </div>
 
 
-  <!-- =====================================================
-       EXISTING RULES
-  ====================================================== -->
-
   <div class="card">
 
     <h2 id="rulesTitle">
@@ -584,17 +560,17 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
-/*
-  Existing SMSBower / NumPool function.
-*/
+
+/* =========================================================
+   PROVIDER FUNCTIONS
+========================================================= */
+
 const SMSBOWER_FUNCTION_URL =
   `${SUPABASE_URL}/functions/v1/numpool-api`;
 
-/*
-  Separate 5SIM function.
-*/
-const FIVESIM_FUNCTION_URL =
-  `${SUPABASE_URL}/functions/v1/fivesim-api`;
+const GRIZZLY_FUNCTION_URL =
+  `${SUPABASE_URL}/functions/v1/grizzly-api`;
+
 
 const supabaseClient =
   supabase.createClient(
@@ -632,19 +608,15 @@ async function switchProvider(provider) {
 
   if (
     provider !== "smsbower" &&
-    provider !== "fivesim"
+    provider !== "grizzly"
   ) {
     return;
   }
 
-  /*
-    Cancel any edit when changing provider.
-    This prevents an SMSBower rule from accidentally
-    being edited while 5SIM is selected.
-  */
   resetForm();
 
-  currentProvider = provider;
+  currentProvider =
+    provider;
 
   document
     .getElementById("smsbowerTab")
@@ -654,10 +626,10 @@ async function switchProvider(provider) {
     );
 
   document
-    .getElementById("fivesimTab")
+    .getElementById("grizzlyTab")
     .classList.toggle(
       "active",
-      provider === "fivesim"
+      provider === "grizzly"
     );
 
   document
@@ -665,19 +637,14 @@ async function switchProvider(provider) {
     .textContent =
       provider === "smsbower"
         ? "SMSBower Markup"
-        : "5SIM Markup";
+        : "Grizzly Markup";
 
   document
     .getElementById("rulesTitle")
     .textContent =
       provider === "smsbower"
         ? "SMSBower Markup Rules"
-        : "5SIM Markup Rules";
-
-  /*
-    Clear provider-specific data before loading
-    the new provider.
-  */
+        : "Grizzly Markup Rules";
 
   countries = [];
   services = [];
@@ -690,7 +657,11 @@ async function switchProvider(provider) {
     .getElementById("rulesList")
     .innerHTML = `
       <div class="loading">
-        Loading ${provider === "smsbower" ? "SMSBower" : "5SIM"} rules...
+        Loading ${
+          provider === "smsbower"
+            ? "SMSBower"
+            : "Grizzly"
+        } rules...
       </div>
     `;
 
@@ -818,68 +789,30 @@ async function api(
     );
   }
 
+
   const functionUrl =
     currentProvider === "smsbower"
       ? SMSBOWER_FUNCTION_URL
-      : FIVESIM_FUNCTION_URL;
+      : GRIZZLY_FUNCTION_URL;
+
 
   /*
-    SMSBower keeps its existing action names.
+    SMSBower keeps its existing API.
 
-    5SIM uses:
-      action: "markup"
-      markup_action: "list"
-      markup_action: "upsert"
-      markup_action: "delete"
+    Grizzly directly receives:
+      countries
+      services
+      markup_rules
+      save_markup_rule
+      delete_markup_rule
   */
 
-  let finalAction = action;
-
-  if (
-    currentProvider === "fivesim"
-  ) {
-
-    if (
-      action === "markup_rules" ||
-      action === "save_markup_rule" ||
-      action === "delete_markup_rule"
-    ) {
-      finalAction = "markup";
-    }
-  }
-
   const body = {
-    action: finalAction,
+    action,
     version: "1.0.0",
     ...payload
   };
 
-  /*
-    IMPORTANT:
-    fivesim-api expects "markup_action",
-    NOT "operation".
-  */
-
-  if (
-    currentProvider === "fivesim" &&
-    action === "markup_rules"
-  ) {
-    body.markup_action = "list";
-  }
-
-  if (
-    currentProvider === "fivesim" &&
-    action === "save_markup_rule"
-  ) {
-    body.markup_action = "upsert";
-  }
-
-  if (
-    currentProvider === "fivesim" &&
-    action === "delete_markup_rule"
-  ) {
-    body.markup_action = "delete";
-  }
 
   const response =
     await fetch(
@@ -900,6 +833,7 @@ async function api(
       }
     );
 
+
   let result;
 
   try {
@@ -914,6 +848,7 @@ async function api(
     );
   }
 
+
   if (!response.ok) {
 
     throw new Error(
@@ -922,6 +857,7 @@ async function api(
       `API request failed (${response.status}).`
     );
   }
+
 
   if (
     result &&
@@ -934,6 +870,7 @@ async function api(
       "API request failed."
     );
   }
+
 
   return result;
 }
@@ -989,7 +926,7 @@ function normalizeSearch(value) {
 
 
 /* =========================================================
-   COUNTRY NAME / KEY
+   COUNTRY OBJECT
 ========================================================= */
 
 function getCountryObject(idOrKey) {
@@ -1020,13 +957,18 @@ function getCountryObject(idOrKey) {
 }
 
 
+/* =========================================================
+   COUNTRY NAME
+========================================================= */
+
 function getCountryName(idOrKey) {
 
   if (
     idOrKey === null ||
     idOrKey === undefined ||
     idOrKey === "" ||
-    idOrKey === "overall"
+    idOrKey === "overall" ||
+    idOrKey === "*"
   ) {
     return "Overall";
   }
@@ -1042,50 +984,17 @@ function getCountryName(idOrKey) {
 }
 
 
-function getFiveSimCountryKey(country) {
-
-  return (
-    country?.key ??
-    country?.country_key ??
-    country?.code ??
-    country?.country ??
-    country?.id
-  );
-}
-
-
 /* =========================================================
-   SERVICE NAME
+   COUNTRY KEY
 ========================================================= */
 
-function getServiceName(code) {
-
-  if (
-    code === null ||
-    code === undefined ||
-    code === "" ||
-    code === "overall"
-  ) {
-    return "Overall";
-  }
-
-  const service =
-    services.find(
-      s =>
-        String(
-          s.service_code ??
-          s.code ??
-          s.name ??
-          ""
-        ).toLowerCase() ===
-        String(code).toLowerCase()
-    );
+function getGrizzlyCountryValue(country) {
 
   return (
-    service?.service_name ||
-    service?.name ||
-    service?.title ||
-    code
+    country?.country_key ??
+    country?.country_id ??
+    country?.id ??
+    country?.code
   );
 }
 
@@ -1138,12 +1047,62 @@ function getCountrySearchText(country) {
     name,
     ...aliases,
     country?.id,
-    country?.key,
+    country?.country_id,
     country?.country_key,
     country?.code
   ]
     .join(" ")
     .toLowerCase();
+}
+
+
+/* =========================================================
+   SERVICE NAME
+========================================================= */
+
+function getServiceName(code) {
+
+  if (
+    code === null ||
+    code === undefined ||
+    code === "" ||
+    code === "overall" ||
+    code === "*"
+  ) {
+    return "Overall";
+  }
+
+  const service =
+    services.find(
+      s => {
+
+        const serviceCode =
+          s?.service_code ??
+          s?.code ??
+          s?.service ??
+          s?.product ??
+          s?.name;
+
+        return (
+          String(
+            serviceCode ?? ""
+          ).toLowerCase() ===
+          String(
+            code
+          ).toLowerCase()
+        );
+
+      }
+    );
+
+  return (
+    service?.service_name ||
+    service?.name ||
+    service?.title ||
+    service?.service ||
+    service?.product_name ||
+    code
+  );
 }
 
 
@@ -1162,34 +1121,49 @@ function buildCountryDropdown() {
       "overall all countries"
   });
 
+
   countries.forEach(
     country => {
 
-      const value =
-        currentProvider === "fivesim"
-          ? String(
-              getFiveSimCountryKey(
-                country
-              )
-            )
-          : String(
-              country?.id ??
-              country?.country_id ??
-              ""
-            );
+      let value;
 
-      if (!value) {
+      if (
+        currentProvider ===
+        "grizzly"
+      ) {
+
+        value =
+          getGrizzlyCountryValue(
+            country
+          );
+
+      } else {
+
+        value =
+          country?.id ??
+          country?.country_id;
+      }
+
+
+      if (
+        value === undefined ||
+        value === null ||
+        value === ""
+      ) {
         return;
       }
+
 
       const label =
         country?.name ||
         country?.country_name ||
         `Country ${value}`;
 
+
       countryDropdownItems.push({
 
-        value,
+        value:
+          String(value),
 
         label,
 
@@ -1202,6 +1176,7 @@ function buildCountryDropdown() {
 
     }
   );
+
 
   renderCountryOptions("");
 }
@@ -1225,6 +1200,7 @@ function renderCountryOptions(
       searchTerm
     );
 
+
   const filtered =
     countryDropdownItems.filter(
       item =>
@@ -1234,8 +1210,10 @@ function renderCountryOptions(
         )
     );
 
+
   container.innerHTML =
     "";
+
 
   if (!filtered.length) {
 
@@ -1248,6 +1226,7 @@ function renderCountryOptions(
     return;
   }
 
+
   filtered.forEach(
     item => {
 
@@ -1259,10 +1238,12 @@ function renderCountryOptions(
       option.className =
         "search-option";
 
+
       const currentValue =
         document.getElementById(
           "countrySelect"
         ).value;
+
 
       if (
         currentValue ===
@@ -1274,8 +1255,10 @@ function renderCountryOptions(
         );
       }
 
+
       option.textContent =
         item.label;
+
 
       option.addEventListener(
         "click",
@@ -1287,6 +1270,7 @@ function renderCountryOptions(
 
         }
       );
+
 
       container.appendChild(
         option
@@ -1311,6 +1295,7 @@ function selectCountry(value) {
   select.value =
     value;
 
+
   const item =
     countryDropdownItems.find(
       x =>
@@ -1318,22 +1303,27 @@ function selectCountry(value) {
         value
     );
 
+
   document.getElementById(
     "countrySearchButton"
   ).textContent =
     item?.label ||
     "Select country";
 
+
   document.getElementById(
     "countrySearchInput"
   ).value =
     "";
 
+
   closeDropdown(
     "countrySearchSelect"
   );
 
+
   renderCountryOptions("");
+
 
   select.dispatchEvent(
     new Event(
@@ -1354,6 +1344,7 @@ function buildServiceDropdown() {
 
   serviceDropdownItems = [];
 
+
   serviceDropdownItems.push({
     value: "overall",
     label: "Overall",
@@ -1361,23 +1352,31 @@ function buildServiceDropdown() {
       "overall all services"
   });
 
+
   services.forEach(
     service => {
 
       const code =
         service?.service_code ??
         service?.code ??
+        service?.service ??
+        service?.product ??
         service?.name;
+
 
       if (!code) {
         return;
       }
 
+
       const label =
         service?.service_name ||
         service?.name ||
         service?.title ||
+        service?.service ||
+        service?.product_name ||
         code;
+
 
       serviceDropdownItems.push({
 
@@ -1389,8 +1388,12 @@ function buildServiceDropdown() {
         searchText:
           [
             label,
-            code
+            code,
+            service?.service_name,
+            service?.service_code,
+            service?.product_name
           ]
+            .filter(Boolean)
             .join(" ")
             .toLowerCase()
 
@@ -1398,6 +1401,7 @@ function buildServiceDropdown() {
 
     }
   );
+
 
   renderServiceOptions("");
 }
@@ -1421,6 +1425,7 @@ function renderServiceOptions(
       searchTerm
     );
 
+
   const filtered =
     serviceDropdownItems.filter(
       item =>
@@ -1430,8 +1435,10 @@ function renderServiceOptions(
         )
     );
 
+
   container.innerHTML =
     "";
+
 
   if (!filtered.length) {
 
@@ -1444,6 +1451,7 @@ function renderServiceOptions(
     return;
   }
 
+
   filtered.forEach(
     item => {
 
@@ -1455,10 +1463,12 @@ function renderServiceOptions(
       option.className =
         "search-option";
 
+
       const currentValue =
         document.getElementById(
           "serviceSelect"
         ).value;
+
 
       if (
         currentValue ===
@@ -1470,8 +1480,10 @@ function renderServiceOptions(
         );
       }
 
+
       option.textContent =
         item.label;
+
 
       option.addEventListener(
         "click",
@@ -1483,6 +1495,7 @@ function renderServiceOptions(
 
         }
       );
+
 
       container.appendChild(
         option
@@ -1507,6 +1520,7 @@ function selectService(value) {
   select.value =
     value;
 
+
   const item =
     serviceDropdownItems.find(
       x =>
@@ -1514,20 +1528,24 @@ function selectService(value) {
         value
     );
 
+
   document.getElementById(
     "serviceSearchButton"
   ).textContent =
     item?.label ||
     "Select service";
 
+
   document.getElementById(
     "serviceSearchInput"
   ).value =
     "";
 
+
   closeDropdown(
     "serviceSearchSelect"
   );
+
 
   renderServiceOptions("");
 }
@@ -1544,6 +1562,7 @@ function syncCountryDropdown() {
       "countrySelect"
     ).value;
 
+
   const item =
     countryDropdownItems.find(
       x =>
@@ -1551,11 +1570,13 @@ function syncCountryDropdown() {
         value
     );
 
+
   document.getElementById(
     "countrySearchButton"
   ).textContent =
     item?.label ||
     "Select country";
+
 
   renderCountryOptions("");
 }
@@ -1568,6 +1589,7 @@ function syncServiceDropdown() {
       "serviceSelect"
     ).value;
 
+
   const item =
     serviceDropdownItems.find(
       x =>
@@ -1575,11 +1597,13 @@ function syncServiceDropdown() {
         value
     );
 
+
   document.getElementById(
     "serviceSearchButton"
   ).textContent =
     item?.label ||
     "Select service";
+
 
   renderServiceOptions("");
 }
@@ -1595,6 +1619,7 @@ function openDropdown(id) {
     document.getElementById(
       id
     );
+
 
   document
     .querySelectorAll(
@@ -1616,14 +1641,17 @@ function openDropdown(id) {
       }
     );
 
+
   dropdown.classList.add(
     "open"
   );
+
 
   const input =
     dropdown.querySelector(
       ".search-select-search"
     );
+
 
   if (input) {
 
@@ -1643,6 +1671,7 @@ function closeDropdown(id) {
     document.getElementById(
       id
     );
+
 
   if (dropdown) {
 
@@ -1669,6 +1698,7 @@ document
         document.getElementById(
           "countrySearchSelect"
         );
+
 
       if (
         dropdown.classList.contains(
@@ -1703,6 +1733,7 @@ document
         document.getElementById(
           "serviceSearchSelect"
         );
+
 
       if (
         dropdown.classList.contains(
@@ -1797,16 +1828,19 @@ async function loadCountries() {
       "countrySelect"
     );
 
+
   select.innerHTML = `
     <option value="">
       Loading countries...
     </option>
   `;
 
+
   document.getElementById(
     "countrySearchButton"
   ).textContent =
     "Loading countries...";
+
 
   try {
 
@@ -1815,12 +1849,14 @@ async function loadCountries() {
         "countries"
       );
 
+
     countries =
       Array.isArray(
         data?.countries
       )
         ? data.countries
         : [];
+
 
     select.innerHTML = `
       <option value="">
@@ -1832,18 +1868,30 @@ async function loadCountries() {
       </option>
     `;
 
+
     countries.forEach(
       country => {
 
-        const value =
-          currentProvider === "fivesim"
-            ? getFiveSimCountryKey(
-                country
-              )
-            : (
-                country?.id ??
-                country?.country_id
-              );
+        let value;
+
+
+        if (
+          currentProvider ===
+          "grizzly"
+        ) {
+
+          value =
+            getGrizzlyCountryValue(
+              country
+            );
+
+        } else {
+
+          value =
+            country?.id ??
+            country?.country_id;
+        }
+
 
         if (
           value === undefined ||
@@ -1853,18 +1901,22 @@ async function loadCountries() {
           return;
         }
 
+
         const option =
           document.createElement(
             "option"
           );
 
+
         option.value =
           String(value);
+
 
         option.textContent =
           country?.name ||
           country?.country_name ||
           `Country ${value}`;
+
 
         select.appendChild(
           option
@@ -1873,9 +1925,11 @@ async function loadCountries() {
       }
     );
 
+
     buildCountryDropdown();
 
     syncCountryDropdown();
+
 
   } catch (error) {
 
@@ -1884,16 +1938,19 @@ async function loadCountries() {
       error
     );
 
+
     select.innerHTML = `
       <option value="">
         Unable to load countries
       </option>
     `;
 
+
     document.getElementById(
       "countrySearchButton"
     ).textContent =
       "Unable to load countries";
+
 
     document.getElementById(
       "countryOptions"
@@ -1902,6 +1959,7 @@ async function loadCountries() {
         Unable to load countries
       </div>
     `;
+
 
     showStatus(
       error.message ||
@@ -1925,14 +1983,17 @@ async function loadServices(
       "serviceSelect"
     );
 
+
   services = [];
 
   serviceDropdownItems = [];
+
 
   document.getElementById(
     "serviceOptions"
   ).innerHTML =
     "";
+
 
   if (!countryId) {
 
@@ -1942,13 +2003,16 @@ async function loadServices(
       </option>
     `;
 
+
     document.getElementById(
       "serviceSearchButton"
     ).textContent =
       "Select country first";
 
+
     return;
   }
+
 
   select.innerHTML = `
     <option value="">
@@ -1956,15 +2020,26 @@ async function loadServices(
     </option>
   `;
 
+
   document.getElementById(
     "serviceSearchButton"
   ).textContent =
     "Loading services...";
 
+
   try {
 
     let requestCountryId =
       countryId;
+
+
+    /*
+      The Grizzly API needs a real country
+      when requesting services.
+
+      For Overall we use the first available
+      country only to obtain the service list.
+    */
 
     if (
       countryId ===
@@ -1976,8 +2051,8 @@ async function loadServices(
           country => {
 
             const value =
-              currentProvider === "fivesim"
-                ? getFiveSimCountryKey(
+              currentProvider === "grizzly"
+                ? getGrizzlyCountryValue(
                     country
                   )
                 : (
@@ -1985,13 +2060,16 @@ async function loadServices(
                     country?.country_id
                   );
 
+
             return (
               value !== undefined &&
               value !== null &&
               value !== ""
             );
+
           }
         );
+
 
       if (!firstCountry) {
 
@@ -2005,19 +2083,23 @@ async function loadServices(
           </option>
         `;
 
+
         buildServiceDropdown();
+
 
         document.getElementById(
           "serviceSearchButton"
         ).textContent =
           "Overall";
 
+
         return;
       }
 
+
       requestCountryId =
-        currentProvider === "fivesim"
-          ? getFiveSimCountryKey(
+        currentProvider === "grizzly"
+          ? getGrizzlyCountryValue(
               firstCountry
             )
           : (
@@ -2026,26 +2108,37 @@ async function loadServices(
             );
     }
 
-    /*
-      IMPORTANT:
 
-      SMSBower expects:
-        country_id
+    let servicePayload;
 
-      5SIM expects:
-        country
-    */
 
-    const servicePayload =
-      currentProvider === "fivesim"
-        ? {
-            country:
-              requestCountryId
-          }
-        : {
-            country_id:
-              requestCountryId
-          };
+    if (
+      currentProvider ===
+      "smsbower"
+    ) {
+
+      /*
+        SMSBower keeps its existing
+        country_id payload.
+      */
+
+      servicePayload = {
+        country_id:
+          requestCountryId
+      };
+
+    } else {
+
+      /*
+        Grizzly uses country.
+      */
+
+      servicePayload = {
+        country:
+          requestCountryId
+      };
+    }
+
 
     const data =
       await api(
@@ -2053,12 +2146,14 @@ async function loadServices(
         servicePayload
       );
 
+
     services =
       Array.isArray(
         data?.services
       )
         ? data.services
         : [];
+
 
     select.innerHTML = `
       <option value="">
@@ -2070,31 +2165,41 @@ async function loadServices(
       </option>
     `;
 
+
     services.forEach(
       service => {
 
         const code =
           service?.service_code ??
           service?.code ??
+          service?.service ??
+          service?.product ??
           service?.name;
+
 
         if (!code) {
           return;
         }
+
 
         const option =
           document.createElement(
             "option"
           );
 
+
         option.value =
           String(code);
+
 
         option.textContent =
           service?.service_name ||
           service?.name ||
           service?.title ||
+          service?.service ||
+          service?.product_name ||
           code;
+
 
         select.appendChild(
           option
@@ -2103,9 +2208,11 @@ async function loadServices(
       }
     );
 
+
     buildServiceDropdown();
 
     syncServiceDropdown();
+
 
   } catch (error) {
 
@@ -2114,16 +2221,19 @@ async function loadServices(
       error
     );
 
+
     select.innerHTML = `
       <option value="">
         Unable to load services
       </option>
     `;
 
+
     document.getElementById(
       "serviceSearchButton"
     ).textContent =
       "Unable to load services";
+
 
     document.getElementById(
       "serviceOptions"
@@ -2132,6 +2242,7 @@ async function loadServices(
         Unable to load services
       </div>
     `;
+
 
     showStatus(
       error.message ||
@@ -2173,11 +2284,19 @@ async function loadRules() {
       "rulesList"
     );
 
+
+  const providerName =
+    currentProvider === "smsbower"
+      ? "SMSBower"
+      : "Grizzly";
+
+
   container.innerHTML = `
     <div class="loading">
-      Loading ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} rules...
+      Loading ${providerName} rules...
     </div>
   `;
+
 
   try {
 
@@ -2186,6 +2305,7 @@ async function loadRules() {
         "markup_rules"
       );
 
+
     rules =
       Array.isArray(
         data?.rules
@@ -2193,28 +2313,47 @@ async function loadRules() {
         ? data.rules
         : [];
 
+
     if (!rules.length) {
+
+      const defaultMarkup =
+        Number.isFinite(
+          Number(
+            data?.default_markup_percent
+          )
+        )
+          ? Number(
+              data.default_markup_percent
+            )
+          : (
+              currentProvider ===
+              "grizzly"
+                ? 100
+                : null
+            );
+
 
       container.innerHTML = `
         <div class="empty">
 
-          No custom ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} markup rules yet.
+          No custom ${providerName} markup rules yet.
 
           <br>
 
           The system is currently using
-          the default markup.
+          ${
+            defaultMarkup !== null
+              ? `${defaultMarkup}% default markup.`
+              : "the default markup."
+          }
 
         </div>
       `;
 
+
       return;
     }
 
-    /*
-      Sort so the most specific rules appear
-      before the Overall rule.
-    */
 
     rules.sort(
       (a, b) => {
@@ -2229,26 +2368,36 @@ async function loadRules() {
       }
     );
 
+
     container.innerHTML =
       "";
+
 
     rules.forEach(
       rule => {
 
-        const isFiveSim =
-          currentProvider ===
-          "fivesim";
+        let countryValue;
 
-        const countryValue =
-          isFiveSim
-            ? (
-                rule.country_key ??
-                rule.country_id
-              )
-            : rule.country_id;
+
+        if (
+          currentProvider ===
+          "grizzly"
+        ) {
+
+          countryValue =
+            rule.country_key ??
+            rule.country_id;
+
+        } else {
+
+          countryValue =
+            rule.country_id;
+        }
+
 
         const serviceValue =
           rule.service_code;
+
 
         const countryLabel =
           isOverallValue(
@@ -2259,6 +2408,7 @@ async function loadRules() {
                 countryValue
               );
 
+
         const serviceLabel =
           isOverallValue(
             serviceValue
@@ -2268,12 +2418,14 @@ async function loadRules() {
                 serviceValue
               );
 
+
         const countryMeta =
           isOverallValue(
             countryValue
           )
             ? "All countries"
             : "Specific country";
+
 
         const serviceMeta =
           isOverallValue(
@@ -2282,13 +2434,16 @@ async function loadRules() {
             ? "All services"
             : "Specific service";
 
+
         const div =
           document.createElement(
             "div"
           );
 
+
         div.className =
           "rule";
+
 
         div.innerHTML = `
 
@@ -2357,12 +2512,14 @@ async function loadRules() {
 
         `;
 
+
         container.appendChild(
           div
         );
 
       }
     );
+
 
   } catch (error) {
 
@@ -2371,14 +2528,16 @@ async function loadRules() {
       error
     );
 
+
     rules = [];
+
 
     container.innerHTML = `
 
       <div class="empty">
 
         Unable to load
-        ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"}
+        ${escapeHtml(providerName)}
         markup rules.
 
         <br>
@@ -2395,6 +2554,7 @@ async function loadRules() {
       </div>
 
     `;
+
 
     showStatus(
       error.message ||
@@ -2426,17 +2586,20 @@ function isOverallValue(value) {
 function getSpecificity(rule) {
 
   const country =
-    currentProvider === "fivesim"
+    currentProvider === "grizzly"
       ? (
           rule.country_key ??
           rule.country_id
         )
       : rule.country_id;
 
+
   const service =
     rule.service_code;
 
+
   let score = 0;
+
 
   if (
     !isOverallValue(country)
@@ -2444,11 +2607,13 @@ function getSpecificity(rule) {
     score += 2;
   }
 
+
   if (
     !isOverallValue(service)
   ) {
     score += 2;
   }
+
 
   return score;
 }
@@ -2465,20 +2630,24 @@ async function saveRule() {
       "saveBtn"
     );
 
+
   const countryValue =
     document.getElementById(
       "countrySelect"
     ).value;
+
 
   const serviceValue =
     document.getElementById(
       "serviceSelect"
     ).value;
 
+
   const markupValue =
     document.getElementById(
       "markupInput"
     ).value.trim();
+
 
   if (!countryValue) {
 
@@ -2490,6 +2659,7 @@ async function saveRule() {
     return;
   }
 
+
   if (!serviceValue) {
 
     showStatus(
@@ -2499,6 +2669,7 @@ async function saveRule() {
 
     return;
   }
+
 
   if (
     markupValue === "" ||
@@ -2516,18 +2687,22 @@ async function saveRule() {
     return;
   }
 
+
   const markup =
     Number(
       markupValue
     );
 
+
   saveBtn.disabled =
     true;
+
 
   saveBtn.textContent =
     editingId !== null
       ? "Updating..."
       : "Saving...";
+
 
   try {
 
@@ -2537,12 +2712,9 @@ async function saveRule() {
     ) {
 
       /*
-        IMPORTANT:
-
-        SMSBower keeps its existing
-        country_id / service_code system.
-
-        NULL means Overall.
+        ==================================================
+        SMSBOWER — EXISTING BEHAVIOUR
+        ==================================================
       */
 
       const countryId =
@@ -2552,10 +2724,12 @@ async function saveRule() {
               countryValue
             );
 
+
       const serviceCode =
         serviceValue === "overall"
           ? null
           : serviceValue;
+
 
       const data =
         await api(
@@ -2577,6 +2751,7 @@ async function saveRule() {
           }
         );
 
+
       showStatus(
         data?.message ||
         (
@@ -2587,27 +2762,41 @@ async function saveRule() {
         "success"
       );
 
+
     } else {
 
       /*
         ==================================================
-        5SIM IS COMPLETELY SEPARATE
+        GRIZZLY
         ==================================================
+
+        Grizzly API accepts:
+          null = Overall
+
+        country_key:
+          null for Overall
+          country key/id for specific country
+
+        service_code:
+          null for Overall
+          service code for specific service
       */
 
       const countryKey =
         countryValue === "overall"
-          ? "*"
+          ? null
           : String(
               countryValue
-            );
+            ).toLowerCase();
+
 
       const serviceCode =
         serviceValue === "overall"
-          ? "*"
+          ? null
           : String(
               serviceValue
-            );
+            ).toLowerCase();
+
 
       const data =
         await api(
@@ -2629,20 +2818,23 @@ async function saveRule() {
           }
         );
 
+
       showStatus(
         data?.message ||
         (
           editingId !== null
-            ? "5SIM markup rule updated."
-            : "5SIM markup rule saved."
+            ? "Grizzly markup rule updated."
+            : "Grizzly markup rule saved."
         ),
         "success"
       );
     }
 
+
     resetForm();
 
     await loadRules();
+
 
   } catch (error) {
 
@@ -2651,16 +2843,19 @@ async function saveRule() {
       error
     );
 
+
     showStatus(
       error.message ||
       "Could not save markup.",
       "error"
     );
 
+
   } finally {
 
     saveBtn.disabled =
       false;
+
 
     saveBtn.textContent =
       "Save Markup";
@@ -2681,35 +2876,52 @@ async function editRule(id) {
         Number(id)
     );
 
+
   if (!rule) {
     return;
   }
+
 
   editingId =
     Number(
       rule.id
     );
 
+
   const countrySelect =
     document.getElementById(
       "countrySelect"
     );
+
 
   const serviceSelect =
     document.getElementById(
       "serviceSelect"
     );
 
-  const countryValue =
-    currentProvider === "fivesim"
-      ? (
-          rule.country_key ??
-          rule.country_id
-        )
-      : rule.country_id;
+
+  let countryValue;
+
+
+  if (
+    currentProvider ===
+    "grizzly"
+  ) {
+
+    countryValue =
+      rule.country_key ??
+      rule.country_id;
+
+  } else {
+
+    countryValue =
+      rule.country_id;
+  }
+
 
   const serviceValue =
     rule.service_code;
+
 
   countrySelect.value =
     isOverallValue(
@@ -2720,11 +2932,14 @@ async function editRule(id) {
           countryValue
         );
 
+
   syncCountryDropdown();
+
 
   await loadServices(
     countrySelect.value
   );
+
 
   serviceSelect.value =
     isOverallValue(
@@ -2735,27 +2950,39 @@ async function editRule(id) {
           serviceValue
         );
 
+
   syncServiceDropdown();
+
 
   document.getElementById(
     "markupInput"
   ).value =
     rule.markup_percent;
 
+
+  const providerName =
+    currentProvider === "smsbower"
+      ? "SMSBower"
+      : "Grizzly";
+
+
   document.getElementById(
     "formTitle"
   ).textContent =
-    `Edit ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} Markup Rule`;
+    `Edit ${providerName} Markup Rule`;
+
 
   document.getElementById(
     "saveBtn"
   ).textContent =
     "Update Markup";
 
+
   document.getElementById(
     "cancelBtn"
   ).style.display =
     "block";
+
 
   window.scrollTo({
     top: 0,
@@ -2777,17 +3004,30 @@ async function deleteRule(id) {
         Number(id)
     );
 
+
   if (!rule) {
     return;
   }
 
-  const countryValue =
-    currentProvider === "fivesim"
-      ? (
-          rule.country_key ??
-          rule.country_id
-        )
-      : rule.country_id;
+
+  let countryValue;
+
+
+  if (
+    currentProvider ===
+    "grizzly"
+  ) {
+
+    countryValue =
+      rule.country_key ??
+      rule.country_id;
+
+  } else {
+
+    countryValue =
+      rule.country_id;
+  }
+
 
   const countryName =
     isOverallValue(
@@ -2798,6 +3038,7 @@ async function deleteRule(id) {
           countryValue
         );
 
+
   const serviceName =
     isOverallValue(
       rule.service_code
@@ -2807,16 +3048,25 @@ async function deleteRule(id) {
           rule.service_code
         );
 
+
+  const providerName =
+    currentProvider === "smsbower"
+      ? "SMSBower"
+      : "Grizzly";
+
+
   const confirmed =
     confirm(
-      `Delete ${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} markup rule:\n\n` +
+      `Delete ${providerName} markup rule:\n\n` +
       `${countryName} + ${serviceName}\n` +
       `${rule.markup_percent}%`
     );
 
+
   if (!confirmed) {
     return;
   }
+
 
   try {
 
@@ -2828,10 +3078,12 @@ async function deleteRule(id) {
       }
     );
 
+
     showStatus(
-      `${currentProvider === "smsbower" ? "SMSBower" : "5SIM"} markup rule deleted.`,
+      `${providerName} markup rule deleted.`,
       "success"
     );
+
 
     if (
       editingId !== null &&
@@ -2842,7 +3094,9 @@ async function deleteRule(id) {
       resetForm();
     }
 
+
     await loadRules();
+
 
   } catch (error) {
 
@@ -2850,6 +3104,7 @@ async function deleteRule(id) {
       "deleteRule:",
       error
     );
+
 
     showStatus(
       error.message ||
@@ -2869,22 +3124,27 @@ function resetForm() {
   editingId =
     null;
 
+
   document.getElementById(
     "countrySelect"
   ).value =
     "";
+
 
   document.getElementById(
     "countrySearchButton"
   ).textContent =
     "Select country";
 
+
   document.getElementById(
     "countrySearchInput"
   ).value =
     "";
 
+
   renderCountryOptions("");
+
 
   document.getElementById(
     "serviceSelect"
@@ -2894,46 +3154,56 @@ function resetForm() {
     </option>
   `;
 
+
   serviceDropdownItems = [];
+
 
   document.getElementById(
     "serviceSearchButton"
   ).textContent =
     "Select country first";
 
+
   document.getElementById(
     "serviceSearchInput"
   ).value =
     "";
+
 
   document.getElementById(
     "serviceOptions"
   ).innerHTML =
     "";
 
+
   document.getElementById(
     "markupInput"
   ).value =
     "";
+
 
   document.getElementById(
     "formTitle"
   ).textContent =
     "Add Markup Rule";
 
+
   document.getElementById(
     "saveBtn"
   ).textContent =
     "Save Markup";
+
 
   document.getElementById(
     "cancelBtn"
   ).style.display =
     "none";
 
+
   closeDropdown(
     "countrySearchSelect"
   );
+
 
   closeDropdown(
     "serviceSearchSelect"
@@ -2988,9 +3258,11 @@ function escapeHtml(value) {
   const isLoggedIn =
     await checkAdmin();
 
+
   if (!isLoggedIn) {
     return;
   }
+
 
   /*
     SMSBower is ALWAYS the default tab.
@@ -2999,17 +3271,20 @@ function escapeHtml(value) {
   currentProvider =
     "smsbower";
 
+
   document.getElementById(
     "smsbowerTab"
   ).classList.add(
     "active"
   );
 
+
   document.getElementById(
-    "fivesimTab"
+    "grizzlyTab"
   ).classList.remove(
     "active"
   );
+
 
   await loadCountries();
 
