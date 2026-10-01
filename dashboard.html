@@ -1054,172 +1054,6 @@ main{
 
 
 /* =========================================================
-   SERVICE CATEGORY CARDS
-========================================================= */
-
-.service-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:14px;
-}
-
-.service-card{
-
-    background:#fff;
-
-    border:
-        1px solid
-        #e2e6f0;
-
-    border-radius:20px;
-
-    min-height:145px;
-
-    padding:18px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    text-align:center;
-
-    gap:9px;
-
-    box-shadow:
-        0 3px 12px
-        #00000008;
-
-    color:#27304d;
-}
-
-.service-card:active{
-
-    transform:scale(.98);
-}
-
-.service-card-icon{
-
-    width:54px;
-    height:54px;
-
-    border-radius:16px;
-
-    background:#edf1ff;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:26px;
-}
-
-.service-card-name{
-
-    font-size:14px;
-
-    font-weight:800;
-
-    line-height:1.3;
-}
-
-.service-card-count{
-
-    font-size:11px;
-
-    color:#8991aa;
-}
-
-
-/* =========================================================
-   SMALL POPUP
-========================================================= */
-
-.toast{
-
-    position:fixed;
-
-    left:50%;
-
-    bottom:24px;
-
-    transform:
-        translate(-50%,120px);
-
-    width:
-        calc(100% - 36px);
-
-    max-width:430px;
-
-    background:#18203a;
-
-    color:#fff;
-
-    padding:
-        15px
-        17px;
-
-    border-radius:15px;
-
-    box-shadow:
-        0 12px 35px
-        #00000030;
-
-    z-index:1000;
-
-    font-size:14px;
-
-    line-height:1.45;
-
-    opacity:0;
-
-    transition:
-        .22s ease;
-
-    pointer-events:none;
-}
-
-.toast.show{
-
-    transform:
-        translate(-50%,0);
-
-    opacity:1;
-}
-
-.toast.error{
-
-    background:#b4232d;
-}
-
-.toast.success{
-
-    background:#087b5d;
-}
-
-
-/* =========================================================
-   PURCHASE LOADING
-========================================================= */
-
-.buy.processing{
-
-    opacity:.7;
-
-    pointer-events:none;
-}
-
-
-/* =========================================================
    CONTACT ICONS
 ========================================================= */
 
@@ -1639,12 +1473,6 @@ main{
 
         flex-basis:39px;
     }
-
-    .service-grid{
-
-        grid-template-columns:
-            repeat(2,1fr);
-    }
 }
 
 @media(max-width:380px){
@@ -1665,11 +1493,6 @@ main{
         height:43px;
 
         font-size:21px;
-    }
-
-    .service-grid{
-
-        grid-template-columns:1fr;
     }
 }
 
@@ -1874,7 +1697,7 @@ main{
             <button
                 class="back"
                 type="button"
-                onclick="backServices()"
+                onclick="backHome()"
             >
                 ←
             </button>
@@ -1900,7 +1723,7 @@ main{
             class="search"
             type="search"
             placeholder="🔍 Search service..."
-            oninput="handleSearch()"
+            oninput="renderServices()"
         >
 
 
@@ -1914,14 +1737,6 @@ main{
 
 
 </main>
-
-
-<!-- SMALL MESSAGE -->
-
-<div
-    id="toast"
-    class="toast"
-></div>
 
 
 <!-- CONTACT ICONS -->
@@ -1958,7 +1773,7 @@ main{
             viewBox="0 0 24 24"
             aria-hidden="true"
         >
-            <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+            <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
         </svg>
 
     </a>
@@ -2039,7 +1854,7 @@ main{
 
                 <svg viewBox="0 0 24 24">
 
-                    <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.1.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+                    <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6-.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.1.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
 
                 </svg>
 
@@ -2192,31 +2007,14 @@ const supabaseClient =
 
 
 /* =========================================================
-   YOUNGPG
-========================================================= */
-
-const YOUNGPG_FUNCTION_URL =
-    SUPABASE_URL +
-    "/functions/v1/youngpg-api";
-
-
-/* =========================================================
    VARIABLES
 ========================================================= */
 
 let allServices = [];
 
-let manualProducts = [];
-
-let youngpgProducts = [];
-
 let categories = [];
 
 let selectedCategory = "Home";
-
-let selectedService = null;
-
-let viewLevel = "home";
 
 let realBalance = 0;
 
@@ -2224,21 +2022,10 @@ let balanceHidden = false;
 
 let productsLoading = true;
 
-let youngpgLoading = false;
-
 let productsLoaded = false;
-
-let toastTimer = null;
 
 const PRODUCTS_CACHE_KEY =
     "delight_vendor_products_cache_v2";
-
-const YOUNGPG_CATEGORY_CACHE_KEY =
-    "delight_vendor_youngpg_category_cache_v3";
-
-const youngpgCategoryCache = {};
-
-const youngpgCategoryLoading = {};
 
 
 /* =========================================================
@@ -2287,150 +2074,6 @@ const existingIcons = {
 
 
 /* =========================================================
-   SERVICE ICONS
-========================================================= */
-
-const serviceIcons = {
-
-    "Facebook":
-        "📘",
-
-    "Instagram":
-        "📸",
-
-    "TikTok":
-        "🎵",
-
-    "Reddit":
-        "👽",
-
-    "LinkedIn":
-        "💼",
-
-    "Dating Sites":
-        "❤️",
-
-    "Twitter/X":
-        "𝕏",
-
-    "Threads":
-        "🧵",
-
-    "Discord":
-        "💬",
-
-    "Apple ID/iCloud":
-        "",
-
-    "Snapchat":
-        "👻",
-
-    "Texting Apps":
-        "💬",
-
-    "Google Voice":
-        "📞",
-
-    "Netflix":
-        "🎬",
-
-    "Spotify":
-        "🎧",
-
-    "Prime Video":
-        "▶️",
-
-    "Apple Music":
-        "🎵",
-
-    "Disney+":
-        "🏰",
-
-    "YouTube Premium":
-        "▶️",
-
-    "Crunchyroll":
-        "🍥",
-
-    "Betting Apps":
-        "🎯",
-
-    "NordVPN":
-        "🔐",
-
-    "ExpressVPN":
-        "🔐",
-
-    "Surfshark":
-        "🦈",
-
-    "Surfshark VPN":
-        "🦈",
-
-    "PIA VPN":
-        "🔐",
-
-    "IPVanish":
-        "🔐",
-
-    "HMA VPN":
-        "🔐",
-
-    "VPN":
-        "🔐",
-
-    "Other":
-        "📦"
-
-};
-
-
-/* =========================================================
-   SERVICE GROUPS
-========================================================= */
-
-const socialServices = [
-
-    "Facebook",
-    "Instagram",
-    "TikTok",
-    "Reddit",
-    "LinkedIn",
-    "Dating Sites",
-    "Twitter/X",
-    "Threads",
-    "Discord",
-    "Apple ID/iCloud",
-    "Snapchat",
-    "Texting Apps"
-];
-
-
-const streamingServices = [
-
-    "Netflix",
-    "Spotify",
-    "Prime Video",
-    "Apple Music",
-    "Disney+",
-    "YouTube Premium",
-    "Crunchyroll",
-    "Betting Apps"
-];
-
-
-const vpnServices = [
-
-    "NordVPN",
-    "ExpressVPN",
-    "Surfshark VPN",
-    "PIA VPN",
-    "IPVanish",
-    "HMA VPN"
-];
-
-
-/* =========================================================
    ESCAPE HTML
 ========================================================= */
 
@@ -2442,19 +2085,6 @@ function escapeHTML(value){
         .replace(/>/g,"&gt;")
         .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
-}
-
-
-/* =========================================================
-   NORMALIZE
-========================================================= */
-
-function normalize(value){
-
-    return String(value ?? "")
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g,"");
 }
 
 
@@ -2516,56 +2146,6 @@ function closeContactSupport(event){
     document
         .getElementById("contactSupportModal")
         .classList.remove("open");
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function showToast(
-    message,
-    type="error"
-){
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    if(!toast){
-
-        return;
-    }
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.className =
-        "toast " +
-        type +
-        " show";
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            3500
-        );
 }
 
 
@@ -3016,17 +2596,6 @@ function categoryMatches(
         "workinglinks":[
             "workinglinks",
             "workinglink"
-        ],
-
-        "vpn":[
-            "vpn",
-            "premiumvpn"
-        ],
-
-        "gmail":[
-            "gmail",
-            "email",
-            "emails"
         ]
 
     };
@@ -3111,7 +2680,8 @@ function renderCategories(){
 
     categories.forEach(
         (
-            category
+            category,
+            index
         ) => {
 
             const button =
@@ -3184,7 +2754,6 @@ function renderCategories(){
             grid.appendChild(
                 button
             );
-
         }
     );
 }
@@ -3215,14 +2784,22 @@ function loadProductsFromCache(){
 
 
         if(
-            !Array.isArray(parsed)
+            !Array.isArray(parsed) ||
+            !parsed.length
         ){
 
             return false;
         }
 
 
-        manualProducts =
+        /*
+           Cache may contain products that
+           have since been deleted.
+
+           Filter them out here too.
+        */
+
+        allServices =
             parsed.filter(
                 product =>
                     product &&
@@ -3233,6 +2810,14 @@ function loadProductsFromCache(){
         productsLoaded = true;
 
         productsLoading = false;
+
+
+        if(
+            selectedCategory !== "Home"
+        ){
+
+            renderServices();
+        }
 
 
         return true;
@@ -3278,7 +2863,7 @@ function saveProductsToCache(
 
 
 /* =========================================================
-   LOAD MANUAL PRODUCTS
+   LOAD PRODUCTS
 ========================================================= */
 
 async function loadProducts(){
@@ -3290,6 +2875,15 @@ async function loadProducts(){
     productsLoading = true;
 
 
+    if(
+        hasCache &&
+        selectedCategory !== "Home"
+    ){
+
+        renderServices();
+    }
+
+
     try{
 
         const {
@@ -3299,7 +2893,7 @@ async function loadProducts(){
             await supabaseClient
                 .from("Product")
                 .select(
-                    "id,name,price,category,description,image_url,stock,status,track_stock,is_active"
+                    "id,name,price,category,description,image_url,stock,status,track_stock"
                 )
                 .eq(
                     "is_active",
@@ -3321,40 +2915,61 @@ async function loadProducts(){
             );
 
 
-            if(!hasCache){
+            if(hasCache){
 
-                manualProducts = [];
+                productsLoaded = true;
+
+                productsLoading = false;
+
+
+                if(
+                    selectedCategory !== "Home"
+                ){
+
+                    renderServices();
+                }
+
+                return;
             }
 
 
-            productsLoading = false;
+            allServices = [];
 
             productsLoaded = true;
+
+            productsLoading = false;
+
+
+            if(
+                selectedCategory !== "Home"
+            ){
+
+                renderServices();
+            }
 
             return;
         }
 
 
-        manualProducts =
+        allServices =
             data || [];
 
 
         saveProductsToCache(
-            manualProducts
+            allServices
         );
 
 
-        productsLoading = false;
-
         productsLoaded = true;
+
+        productsLoading = false;
 
 
         if(
-            selectedCategory !== "Home" &&
-            viewLevel !== "home"
+            selectedCategory !== "Home"
         ){
 
-            renderCurrentView();
+            renderServices();
         }
 
 
@@ -3373,1980 +2988,104 @@ async function loadProducts(){
 
         if(!hasCache){
 
-            manualProducts = [];
+            allServices = [];
         }
-    }
-}
-
-
-/* =========================================================
-   YOUNGPG REQUEST
-========================================================= */
-
-async function youngpgRequest(
-    action,
-    options={}
-){
-
-    const user =
-        await getUserFast();
-
-
-    if(!user){
-
-        throw new Error(
-            "Login session not found."
-        );
-    }
-
-
-    const tokenResult =
-        await supabaseClient
-            .auth
-            .getSession();
-
-
-    const token =
-        tokenResult
-            ?.data
-            ?.session
-            ?.access_token;
-
-
-    if(!token){
-
-        throw new Error(
-            "Login session expired."
-        );
-    }
-
-
-    let url =
-        YOUNGPG_FUNCTION_URL +
-        "?action=" +
-        encodeURIComponent(
-            action
-        );
-
-
-    if(options.query){
-
-        Object.entries(
-            options.query
-        ).forEach(
-            (
-                [
-                    key,
-                    value
-                ]
-            ) => {
-
-                if(
-                    value !== undefined &&
-                    value !== null &&
-                    String(value).trim() !== ""
-                ){
-
-                    url +=
-                        "&" +
-                        encodeURIComponent(key) +
-                        "=" +
-                        encodeURIComponent(value);
-                }
-            }
-        );
-    }
-
-
-    const response =
-        await fetch(
-            url,
-            {
-                method:
-                    options.method ||
-                    "GET",
-
-                headers:{
-                    "Authorization":
-                        "Bearer " +
-                        token,
-
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    options.body
-                    ?
-                    JSON.stringify(
-                        options.body
-                    )
-                    :
-                    undefined
-            }
-        );
-
-
-    let result = null;
-
-
-    try{
-
-        result =
-            await response.json();
-
-    }catch(error){
-
-        throw new Error(
-            "Unable to read service response."
-        );
-    }
-
-
-    if(!response.ok){
-
-        const errorMessage =
-            result?.error ||
-            result?.message ||
-            result?.errors?.message ||
-            "YoungPG service request failed.";
-
-        const error =
-            new Error(
-                errorMessage
-            );
-
-        error.code =
-            result?.code ||
-            result?.error_code ||
-            null;
-
-        error.payload =
-            result;
-
-        throw error;
-    }
-
-
-    if(
-        result?.success === false
-    ){
-
-        const errorMessage =
-            result?.error ||
-            result?.message ||
-            result?.errors?.message ||
-            "YoungPG service request failed.";
-
-        const error =
-            new Error(
-                errorMessage
-            );
-
-        error.code =
-            result?.code ||
-            result?.error_code ||
-            null;
-
-        error.payload =
-            result;
-
-        throw error;
-    }
-
-
-    return result;
-}
-
-
-/* =========================================================
-   READ YOUNGPG CACHE
-========================================================= */
-
-function loadYoungPGCategoryCache(){
-
-    try{
-
-        const saved =
-            localStorage.getItem(
-                YOUNGPG_CATEGORY_CACHE_KEY
-            );
-
-
-        if(!saved){
-
-            return;
-        }
-
-
-        const parsed =
-            JSON.parse(saved);
 
 
         if(
-            !parsed ||
-            typeof parsed !== "object"
+            selectedCategory !== "Home"
         ){
 
-            return;
+            renderServices();
         }
-
-
-        Object.keys(parsed).forEach(
-            category => {
-
-                if(
-                    Array.isArray(
-                        parsed[category]
-                    )
-                ){
-
-                    youngpgCategoryCache[
-                        category
-                    ] =
-                        parsed[
-                            category
-                        ];
-                }
-
-            }
-        );
-
-    }catch(error){
-
-        console.error(
-            "YoungPG cache error:",
-            error
-        );
     }
 }
-
-
-/* =========================================================
-   SAVE YOUNGPG CACHE
-========================================================= */
-
-function saveYoungPGCategoryCache(){
-
-    try{
-
-        localStorage.setItem(
-            YOUNGPG_CATEGORY_CACHE_KEY,
-            JSON.stringify(
-                youngpgCategoryCache
-            )
-        );
-
-    }catch(error){
-
-        console.error(
-            "YoungPG cache save error:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   NORMALIZE YOUNGPG PRODUCT
-========================================================= */
-
-function normalizeYoungPGProduct(
-    item,
-    category,
-    service
-){
-
-    const title =
-        item?.title ||
-        item?.name ||
-        "YoungPG Service";
-
-
-    /*
-       Always detect the service on the
-       dashboard too.
-
-       This is important because a provider
-       title can contain words such as
-       "Nord VPN" inside a Facebook listing.
-       Social/service detection therefore has
-       priority over incidental VPN words.
-    */
-
-    const detectedService =
-        detectServiceCategory(
-            title,
-            item?.provider_category ||
-            item?.category ||
-            service ||
-            ""
-        );
-
-
-    const finalService =
-        detectedService !== "Other"
-        ?
-        detectedService
-        :
-        (
-            item?.service_category ||
-            service ||
-            "Other"
-        );
-
-
-    return {
-
-        ...item,
-
-        id:
-            item?.id ??
-            item?.slug,
-
-        name:
-            title,
-
-        title:
-            title,
-
-        slug:
-            item?.slug,
-
-        price:
-            Number(
-                item?.selling_price_ngn ??
-                item?.customer_price_ngn ??
-                item?.price_ngn ??
-                0
-            ),
-
-        selling_price_ngn:
-            Number(
-                item?.selling_price_ngn ??
-                item?.customer_price_ngn ??
-                item?.price_ngn ??
-                0
-            ),
-
-        provider_price_ngn:
-            Number(
-                item?.provider_price_ngn ??
-                item?.price_ngn ??
-                0
-            ),
-
-        category:
-            item?.site_category ||
-            category,
-
-        service_category:
-            finalService,
-
-        description:
-            item?.description ||
-            "",
-
-        stock:
-            Number(
-                item?.available_stock ??
-                item?.stock ??
-                0
-            ),
-
-        available_stock:
-            Number(
-                item?.available_stock ??
-                item?.stock ??
-                0
-            ),
-
-        is_active:
-            true,
-
-        source:
-            "youngpg"
-    };
-}
-
-
-/* =========================================================
-   LOAD ONE YOUNGPG PAGE
-========================================================= */
-
-async function loadYoungPGPage(
-    category,
-    page
-){
-
-    return youngpgRequest(
-        "listings",
-        {
-            query:{
-                category:
-                    category,
-
-                page:
-                    page,
-
-                per_page:
-                    100
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   LOAD ALL YOUNGPG PRODUCTS FOR CATEGORY
-========================================================= */
-
-async function loadYoungPGCategory(
-    category
-){
-
-    if(
-        !category ||
-        category === "Home"
-    ){
-
-        return [];
-    }
-
-
-    if(
-        Array.isArray(
-            youngpgCategoryCache[
-                category
-            ]
-        )
-    ){
-
-        return youngpgCategoryCache[
-            category
-        ];
-    }
-
-
-    if(
-        youngpgCategoryLoading[
-            category
-        ]
-    ){
-
-        return youngpgCategoryLoading[
-            category
-        ];
-    }
-
-
-    youngpgCategoryLoading[
-        category
-    ] =
-        (async () => {
-
-            try{
-
-                const first =
-                    await loadYoungPGPage(
-                        category,
-                        1
-                    );
-
-
-                let firstItems =
-                    first?.data ||
-                    first?.listings ||
-                    [];
-
-
-                if(
-                    !Array.isArray(
-                        firstItems
-                    )
-                ){
-
-                    firstItems = [];
-                }
-
-
-                const meta =
-                    first?.meta ||
-                    {};
-
-
-                const lastPage =
-                    Math.max(
-                        1,
-                        Number(
-                            meta?.last_page ||
-                            meta?.total_pages ||
-                            1
-                        )
-                    );
-
-
-                let allItems =
-                    [
-                        ...firstItems
-                    ];
-
-
-                /*
-                   If the Edge Function already
-                   returned the complete category,
-                   there is nothing else to fetch.
-                */
-
-                const expectedTotal =
-                    Number(
-                        meta?.total ||
-                        0
-                    );
-
-
-                /*
-                   The youngpg-api Edge Function already fetches
-                   the provider catalogue in batches and returns the
-                   complete selected category. Do not fire another
-                   request for every provider page from the browser.
-                   That was the main cause of the slow category load.
-                */
-                if(
-                    allItems.length === 0 &&
-                    lastPage > 1 &&
-                    expectedTotal > 0
-                ){
-                    /* Leave the result empty rather than creating
-                       dozens of duplicate Edge Function requests. */
-                    allItems = [];
-                }
-
-
-                const seen =
-                    new Set();
-
-
-                const normalized =
-                    allItems
-                        .filter(
-                            item =>
-                                Number(
-                                    item?.available_stock ??
-                                    item?.stock ??
-                                    0
-                                ) > 0
-                        )
-                        .map(
-                            item =>
-                                normalizeYoungPGProduct(
-                                    item,
-                                    category,
-                                    null
-                                )
-                        )
-                        .filter(
-                            item => {
-
-                                const key =
-                                    String(
-                                        item?.slug ||
-                                        item?.id ||
-                                        ""
-                                    );
-
-
-                                if(!key){
-
-                                    return false;
-                                }
-
-
-                                if(
-                                    seen.has(
-                                        key
-                                    )
-                                ){
-
-                                    return false;
-                                }
-
-
-                                seen.add(
-                                    key
-                                );
-
-
-                                return true;
-                            }
-                        );
-
-
-                youngpgCategoryCache[
-                    category
-                ] =
-                    normalized;
-
-
-                saveYoungPGCategoryCache();
-
-
-                return normalized;
-
-
-            }catch(error){
-
-                console.error(
-                    "YoungPG category error:",
-                    category,
-                    error
-                );
-
-
-                /*
-                   Do not replace an existing
-                   cached result with an empty
-                   result when a temporary API
-                   request fails.
-                */
-
-                if(
-                    Array.isArray(
-                        youngpgCategoryCache[
-                            category
-                        ]
-                    )
-                ){
-
-                    return youngpgCategoryCache[
-                        category
-                    ];
-                }
-
-
-                youngpgCategoryCache[
-                    category
-                ] =
-                    [];
-
-
-                return [];
-            }
-
-        })();
-
-
-    try{
-
-        return await youngpgCategoryLoading[
-            category
-        ];
-
-    }finally{
-
-        delete youngpgCategoryLoading[
-            category
-        ];
-    }
-}
-
-
-/* =========================================================
-   LOAD YOUNGPG PRODUCTS
-========================================================= */
-
-async function loadYoungPGProducts(
-    category,
-    service=null,
-    search=""
-){
-
-    youngpgLoading = true;
-
-
-    try{
-
-        const categoryProducts =
-            await loadYoungPGCategory(
-                category
-            );
-
-
-        let products =
-            Array.isArray(
-                categoryProducts
-            )
-            ?
-            [...categoryProducts]
-            :
-            [];
-
-
-        /*
-           Service and search filtering happen
-           locally after the complete category
-           has been loaded.
-
-           This prevents a provider-side service
-           filter from accidentally hiding
-           Spotify, YouTube, VPN, Facebook,
-           etc.
-        */
-
-        if(service){
-
-            products =
-                products.filter(
-                    item =>
-                        item?.service_category ===
-                        service
-                );
-        }
-
-
-        if(search){
-
-            const needle =
-                String(
-                    search
-                )
-                .trim()
-                .toLowerCase();
-
-
-            if(needle){
-
-                products =
-                    products.filter(
-                        item => {
-
-                            const text =
-                                (
-                                    String(
-                                        item?.name ||
-                                        ""
-                                    ) +
-                                    " " +
-                                    String(
-                                        item?.description ||
-                                        ""
-                                    )
-                                )
-                                .toLowerCase();
-
-
-                            return text.includes(
-                                needle
-                            );
-                        }
-                    );
-            }
-        }
-
-
-        youngpgProducts =
-            products
-                .filter(
-                    item =>
-                        Number(
-                            item?.available_stock ??
-                            item?.stock ??
-                            0
-                        ) > 0
-                );
-
-
-        youngpgLoading = false;
-
-
-        return youngpgProducts;
-
-
-    }catch(error){
-
-        console.error(
-            "YoungPG listings error:",
-            error
-        );
-
-
-        youngpgProducts = [];
-
-        youngpgLoading = false;
-
-
-        return [];
-    }
-}
-
-
-/* =========================================================
-   SERVICE DETECTION
-========================================================= */
-
-function detectServiceCategory(
-    name,
-    category
-){
-
-    const rawName =
-        String(
-            name || ""
-        )
-        .toLowerCase();
-
-
-    const rawCategory =
-        String(
-            category || ""
-        )
-        .toLowerCase();
-
-
-    const text =
-        (
-            rawName +
-            " " +
-            rawCategory
-        );
-
-
-    /*
-       SOCIAL SERVICES FIRST.
-
-       This prevents a Facebook listing
-       mentioning "Nord VPN" from becoming
-       a VPN listing.
-    */
-
-    if(
-        rawName.includes("facebook") ||
-        rawName.includes("fb account") ||
-        rawName.startsWith("fb ") ||
-        rawCategory.includes("facebook")
-    ){
-
-        return "Facebook";
-    }
-
-
-    if(
-        rawName.includes("instagram") ||
-        rawName.includes("ig account") ||
-        rawCategory.includes("instagram")
-    ){
-
-        return "Instagram";
-    }
-
-
-    if(
-        rawName.includes("tiktok") ||
-        rawName.includes("tik tok") ||
-        rawCategory.includes("tiktok")
-    ){
-
-        return "TikTok";
-    }
-
-
-    if(
-        rawName.includes("reddit") ||
-        rawCategory.includes("reddit")
-    ){
-
-        return "Reddit";
-    }
-
-
-    if(
-        rawName.includes("linkedin") ||
-        rawCategory.includes("linkedin")
-    ){
-
-        return "LinkedIn";
-    }
-
-
-    if(
-        rawName.includes("dating") ||
-        rawName.includes("tinder") ||
-        rawName.includes("bumble") ||
-        rawName.includes("hinge") ||
-        rawName.includes("match.com") ||
-        rawName.includes("badoo") ||
-        rawCategory.includes("dating")
-    ){
-
-        return "Dating Sites";
-    }
-
-
-    if(
-        rawName.includes("twitter") ||
-        rawName.includes(" x account") ||
-        rawName.startsWith("x account") ||
-        rawCategory.includes("twitter") ||
-        rawCategory === "x"
-    ){
-
-        return "Twitter/X";
-    }
-
-
-    if(
-        rawName.includes("threads") ||
-        rawCategory.includes("threads")
-    ){
-
-        return "Threads";
-    }
-
-
-    if(
-        rawName.includes("discord") ||
-        rawCategory.includes("discord")
-    ){
-
-        return "Discord";
-    }
-
-
-    if(
-        rawName.includes("apple id") ||
-        rawName.includes("icloud") ||
-        rawName.includes("apple account") ||
-        rawCategory.includes("apple id") ||
-        rawCategory.includes("icloud")
-    ){
-
-        return "Apple ID/iCloud";
-    }
-
-
-    if(
-        rawName.includes("snapchat") ||
-        rawCategory.includes("snapchat")
-    ){
-
-        return "Snapchat";
-    }
-
-
-    /*
-       TEXTING APPS.
-
-       Google Voice intentionally belongs
-       here together with TextPlus, TextNow,
-       Nextplus, etc.
-    */
-
-    if(
-        rawName.includes("google voice") ||
-        rawName.includes("textnow") ||
-        rawName.includes("textplus") ||
-        rawName.includes("nextplus") ||
-        rawName.includes("texting app") ||
-        rawName.includes("texting apps") ||
-        rawCategory.includes("google voice") ||
-        rawCategory.includes("textplus") ||
-        rawCategory.includes("textnow") ||
-        rawCategory.includes("nextplus") ||
-        rawCategory.includes("texting")
-    ){
-
-        return "Texting Apps";
-    }
-
-
-    /* =====================================================
-       STREAMING / SUBSCRIPTIONS
-    ===================================================== */
-
-    if(
-        rawName.includes("netflix") ||
-        rawCategory.includes("netflix")
-    ){
-
-        return "Netflix";
-    }
-
-
-    if(
-        rawName.includes("spotify") ||
-        rawCategory.includes("spotify")
-    ){
-
-        return "Spotify";
-    }
-
-
-    if(
-        rawName.includes("prime video") ||
-        rawName.includes("amazon prime") ||
-        rawCategory.includes("prime video") ||
-        rawCategory.includes("amazon prime")
-    ){
-
-        return "Prime Video";
-    }
-
-
-    if(
-        rawName.includes("apple music") ||
-        rawCategory.includes("apple music")
-    ){
-
-        return "Apple Music";
-    }
-
-
-    if(
-        rawName.includes("disney") ||
-        rawCategory.includes("disney")
-    ){
-
-        return "Disney+";
-    }
-
-
-    if(
-        rawName.includes("youtube premium") ||
-        rawName.includes("youtube") ||
-        rawCategory.includes("youtube")
-    ){
-
-        return "YouTube Premium";
-    }
-
-
-    if(
-        rawName.includes("crunchyroll") ||
-        rawCategory.includes("crunchyroll")
-    ){
-
-        return "Crunchyroll";
-    }
-
-
-    if(
-        rawName.includes("betting") ||
-        rawName.includes("betway") ||
-        rawName.includes("sportybet") ||
-        rawName.includes("1xbet") ||
-        rawName.includes("1x bet") ||
-        rawName.includes("bet9ja") ||
-        rawName.includes("22bet") ||
-        rawName.includes("bet365") ||
-        rawCategory.includes("betting")
-    ){
-
-        return "Betting Apps";
-    }
-
-
-    /* =====================================================
-       VPN SERVICES
-    ===================================================== */
-
-    if(
-        rawName.includes("nordvpn") ||
-        rawName.includes("nord vpn") ||
-        rawCategory.includes("nordvpn") ||
-        rawCategory.includes("nord vpn")
-    ){
-
-        return "NordVPN";
-    }
-
-
-    if(
-        rawName.includes("expressvpn") ||
-        rawName.includes("express vpn") ||
-        rawCategory.includes("expressvpn") ||
-        rawCategory.includes("express vpn")
-    ){
-
-        return "ExpressVPN";
-    }
-
-
-    if(
-        rawName.includes("surfshark") ||
-        rawCategory.includes("surfshark")
-    ){
-
-        return "Surfshark VPN";
-    }
-
-
-    if(
-        rawName.includes("private internet access") ||
-        rawName.includes("pia vpn") ||
-        rawCategory.includes("private internet access") ||
-        rawCategory.includes("pia vpn")
-    ){
-
-        return "PIA VPN";
-    }
-
-
-    if(
-        rawName.includes("ipvanish") ||
-        rawCategory.includes("ipvanish")
-    ){
-
-        return "IPVanish";
-    }
-
-
-    if(
-        rawName.includes("hma vpn") ||
-        rawName.includes("hidemyass") ||
-        rawCategory.includes("hma vpn") ||
-        rawCategory.includes("hidemyass")
-    ){
-
-        return "HMA VPN";
-    }
-
-
-    /*
-       If the provider category itself is
-       clearly VPN, use the generic VPN
-       service only as a fallback.
-    */
-
-    if(
-        rawCategory === "vpn" ||
-        rawCategory.includes("premium vpn")
-    ){
-
-        return "VPN";
-    }
-
-
-    return "Other";
-}
-
-
-/* =========================================================
-   SERVICE GROUP CHECK
-========================================================= */
-
-function serviceBelongsToGroup(
-    service,
-    category
-){
-
-    if(category === "All Social Logs"){
-
-        return socialServices.includes(
-            service
-        );
-    }
-
-
-    if(category === "Streaming & More"){
-
-        return streamingServices.includes(
-            service
-        );
-    }
-
-
-    if(category === "VPN"){
-
-        return vpnServices.includes(
-            service
-        );
-    }
-
-
-    return false;
-}
-
-
-/* =========================================================
-   GET MANUAL SERVICE
-========================================================= */
-
-function getManualService(
-    product
-){
-
-    const category =
-        String(
-            product?.category || ""
-        );
-
-
-    const name =
-        String(
-            product?.name || ""
-        );
-
-
-    const detected =
-        detectServiceCategory(
-            name,
-            category
-        );
-
-
-    if(
-        detected !== "Other"
-    ){
-
-        return detected;
-    }
-
-
-    const normalizedCategory =
-        normalize(
-            category
-        );
-
-
-    if(
-        normalizedCategory ===
-        "facebook"
-    ){
-
-        return "Facebook";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "instagram"
-    ){
-
-        return "Instagram";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "tiktok"
-    ){
-
-        return "TikTok";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "reddit"
-    ){
-
-        return "Reddit";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "linkedin"
-    ){
-
-        return "LinkedIn";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "datingsites"
-    ){
-
-        return "Dating Sites";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "twitter" ||
-        normalizedCategory ===
-        "x"
-    ){
-
-        return "Twitter/X";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "threads"
-    ){
-
-        return "Threads";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "discord"
-    ){
-
-        return "Discord";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "appleid" ||
-        normalizedCategory ===
-        "icloud"
-    ){
-
-        return "Apple ID/iCloud";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "snapchat"
-    ){
-
-        return "Snapchat";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "textingapps" ||
-        normalizedCategory ===
-        "googlevoice" ||
-        normalizedCategory ===
-        "textplus" ||
-        normalizedCategory ===
-        "textnow" ||
-        normalizedCategory ===
-        "nextplus"
-    ){
-
-        return "Texting Apps";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "netflix"
-    ){
-
-        return "Netflix";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "spotify"
-    ){
-
-        return "Spotify";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "primevideo"
-    ){
-
-        return "Prime Video";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "applemusic"
-    ){
-
-        return "Apple Music";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "disney"
-    ){
-
-        return "Disney+";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "youtube" ||
-        normalizedCategory ===
-        "youtubepremium"
-    ){
-
-        return "YouTube Premium";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "crunchyroll"
-    ){
-
-        return "Crunchyroll";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "bettingapps" ||
-        normalizedCategory ===
-        "betting"
-    ){
-
-        return "Betting Apps";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "nordvpn"
-    ){
-
-        return "NordVPN";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "expressvpn"
-    ){
-
-        return "ExpressVPN";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "surfshark" ||
-        normalizedCategory ===
-        "surfsharkvpn"
-    ){
-
-        return "Surfshark VPN";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "piavpn"
-    ){
-
-        return "PIA VPN";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "ipvanish"
-    ){
-
-        return "IPVanish";
-    }
-
-
-    if(
-        normalizedCategory ===
-        "hmavpn"
-    ){
-
-        return "HMA VPN";
-    }
-
-
-    return null;
-}
-
-
-/* =========================================================
-   GET MANUAL PRODUCTS FOR SERVICE
-========================================================= */
-
-function getManualProductsForService(
-    category,
-    service
-){
-
-    return manualProducts.filter(
-        product => {
-
-            if(
-                !product ||
-                product.is_active === false
-            ){
-                return false;
-            }
-
-            const detectedService =
-                getManualService(product);
-
-            /*
-               The PRODUCT NAME is the important part here.
-               If the admin adds a product named Facebook,
-               it belongs to Facebook even when the stored
-               top-level category is All Social Logs.
-            */
-            if(
-                detectedService === service
-            ){
-                return serviceBelongsToGroup(
-                    service,
-                    category
-                );
-            }
-
-            /*
-               Also support products whose category itself
-               is the exact service name.
-            */
-            if(
-                categoryMatches(
-                    product.category,
-                    service
-                )
-            ){
-                return serviceBelongsToGroup(
-                    service,
-                    category
-                );
-            }
-
-            return false;
-        }
-    );
-}
-
-
-
-
-/* =========================================================
-   SERVICE CARD DATA
-========================================================= */
-
-function getServiceCards(
-    category
-){
-
-    let services = [];
-
-    if(
-        category === "All Social Logs"
-    ){
-        services = [...socialServices];
-    }
-    else if(
-        category === "Streaming & More"
-    ){
-        services = [...streamingServices];
-    }
-    else if(
-        category === "VPN"
-    ){
-        services = [...vpnServices];
-    }
-
-    const addService = service => {
-        if(
-            service &&
-            service !== "Other" &&
-            serviceBelongsToGroup(
-                service,
-                category
-            ) &&
-            !services.includes(service)
-        ){
-            services.push(service);
-        }
-    };
-
-    /*
-       Manual products are classified from their NAME.
-       This means a newly-added Facebook product is
-       automatically included in Facebook, and a new
-       TextPlus/Google Voice product goes into Texting Apps.
-    */
-    manualProducts.forEach(product => {
-        if(
-            !product ||
-            product.is_active === false
-        ){
-            return;
-        }
-
-        addService(
-            getManualService(product)
-        );
-    });
-
-    /*
-       YoungPG services are discovered from the cached
-       catalogue. No provider name is exposed to customers.
-    */
-    const cached =
-        youngpgCategoryCache[category];
-
-    if(
-        Array.isArray(cached)
-    ){
-        cached.forEach(product => {
-            addService(
-                product?.service_category ||
-                detectServiceCategory(
-                    product?.name ||
-                    product?.title ||
-                    "",
-                    product?.provider_category ||
-                    product?.category ||
-                    category
-                )
-            );
-        });
-    }
-
-    return services;
-}
-
-
-
-
-/* =========================================================
-   SERVICE CARD COUNT
-========================================================= */
-
-function getServiceCount(
-    category,
-    service
-){
-
-    const manual =
-        getManualProductsForService(
-            category,
-            service
-        ).filter(product => {
-            const stock = Number(
-                product?.available_stock ??
-                product?.stock ??
-                1
-            );
-            return stock > 0;
-        }).length;
-
-    const cached =
-        Array.isArray(
-            youngpgCategoryCache[category]
-        )
-        ?
-        youngpgCategoryCache[category]
-        :
-        [];
-
-    const youngpg =
-        cached.filter(product =>
-            Number(
-                product?.available_stock ??
-                product?.stock ??
-                0
-            ) > 0 &&
-            serviceBelongsToGroup(
-                product?.service_category ||
-                detectServiceCategory(
-                    product?.name ||
-                    product?.title ||
-                    "",
-                    product?.provider_category ||
-                    product?.category ||
-                    category
-                ),
-                category
-            ) &&
-            (
-                product?.service_category ||
-                detectServiceCategory(
-                    product?.name ||
-                    product?.title ||
-                    "",
-                    product?.provider_category ||
-                    product?.category ||
-                    category
-                )
-            ) === service
-        ).length;
-
-    return manual + youngpg;
-}
-
-
 
 
 /* =========================================================
    SELECT CATEGORY
 ========================================================= */
 
-async function selectCategory(
+function selectCategory(
     category
 ){
 
     if(
         category === "Gmail"
     ){
-        location.href = "gmail.html";
+
+        location.href =
+            "gmail.html";
+
         return;
     }
+
 
     if(
-        category === "All Countries Number"
+        category ===
+        "All Countries Number"
     ){
-        location.href = "virtualnumber.html";
+
+        location.href =
+            "virtualnumber.html";
+
         return;
     }
 
-    selectedCategory = category;
-    selectedService = null;
-    viewLevel = "services";
+
+    selectedCategory =
+        category;
+
 
     document
-        .getElementById("homeView")
-        .style.display = "none";
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "none";
+
 
     document
-        .getElementById("servicesView")
-        .classList.add("active");
+        .getElementById(
+            "servicesView"
+        )
+        .classList.add(
+            "active"
+        );
+
 
     document
-        .getElementById("categoryTitle")
-        .textContent = category;
+        .getElementById(
+            "categoryTitle"
+        )
+        .textContent =
+            category;
+
 
     document
-        .getElementById("categoryDescription")
-        .textContent = getCategoryDescription(category);
+        .getElementById(
+            "categoryDescription"
+        )
+        .textContent =
+            "Services available under " +
+            category +
+            ".";
+
 
     document
-        .getElementById("serviceSearch")
+        .getElementById(
+            "serviceSearch"
+        )
         .value = "";
 
-    /*
-       Manual products are loaded at the same time as the
-       provider catalogue. Cached provider data makes this
-       screen open immediately on later visits.
-    */
-    if(
-        category === "All Social Logs" ||
-        category === "Streaming & More" ||
-        category === "VPN"
-    ){
 
-        const cached =
-            youngpgCategoryCache[category];
+    renderServices();
 
-        if(
-            Array.isArray(cached)
-        ){
-            youngpgProducts = [...cached];
-            youngpgLoading = false;
-            renderCurrentView();
-
-            /* Refresh provider data in the background. */
-            Promise.all([
-                loadProducts(),
-                loadYoungPGProducts(
-                    category,
-                    null,
-                    ""
-                )
-            ]).then(() => {
-                if(
-                    selectedCategory === category &&
-                    viewLevel === "services"
-                ){
-                    renderCurrentView();
-                }
-            });
-
-        }else{
-
-            youngpgLoading = true;
-            renderLoadingView("Loading services...");
-
-            await Promise.all([
-                loadProducts(),
-                loadYoungPGProducts(
-                    category,
-                    null,
-                    ""
-                )
-            ]);
-
-            youngpgLoading = false;
-            renderCurrentView();
-        }
-
-    }else{
-        await loadProducts();
-        renderCurrentView();
-    }
 
     window.scrollTo({
         top:0,
         behavior:"auto"
     });
-}
-
-
-
-
-/* =========================================================
-   CATEGORY DESCRIPTION
-========================================================= */
-
-function getCategoryDescription(
-    category
-){
-
-    if(
-        category ===
-        "All Social Logs"
-    ){
-
-        return "Choose a social service to view available logs.";
-    }
-
-
-    if(
-        category ===
-        "Streaming & More"
-    ){
-
-        return "Choose a streaming service to view available subscriptions.";
-    }
-
-
-    if(
-        category ===
-        "VPN"
-    ){
-
-        return "Choose a VPN service to view available plans.";
-    }
-
-
-    return (
-        "Services available under " +
-        category +
-        "."
-    );
-}
-
-
-/* =========================================================
-   LOADING VIEW
-========================================================= */
-
-function renderLoadingView(
-    message
-){
-
-    const box =
-        document.getElementById(
-            "products"
-        );
-
-
-    if(!box){
-
-        return;
-    }
-
-
-    box.className =
-        "products";
-
-
-    box.innerHTML =
-
-        '<div class="msg">' +
-
-            '<div style="font-size:40px">' +
-                '⏳' +
-            '</div>' +
-
-            '<br>' +
-
-            '<strong>' +
-
-                escapeHTML(
-                    message ||
-                    "Loading services..."
-                ) +
-
-            '</strong>' +
-
-            '<p>' +
-
-                'Please wait while we load the available services.' +
-
-            '</p>' +
-
-        '</div>';
-}
-
-
-/* =========================================================
-   BACK SERVICES
-========================================================= */
-
-function backServices(){
-
-    if(
-        viewLevel === "listings"
-    ){
-
-        selectedService = null;
-        viewLevel = "services";
-
-        document
-            .getElementById("serviceSearch")
-            .value = "";
-
-        document
-            .getElementById("categoryTitle")
-            .textContent = selectedCategory;
-
-        document
-            .getElementById("categoryDescription")
-            .textContent = getCategoryDescription(
-                selectedCategory
-            );
-
-        /*
-           Restore the complete category catalogue instead of
-           leaving only the service that was just opened.
-        */
-        const cached =
-            youngpgCategoryCache[selectedCategory];
-
-        if(
-            Array.isArray(cached)
-        ){
-            youngpgProducts = [...cached];
-        }
-
-        renderCurrentView();
-
-        window.scrollTo({
-            top:0,
-            behavior:"auto"
-        });
-
-        return;
-    }
-
-    backHome();
 }
 
 
@@ -5356,22 +3095,33 @@ function backServices(){
 
 function backHome(){
 
-    selectedCategory = "Home";
-    selectedService = null;
-    viewLevel = "home";
-    youngpgProducts = [];
+    selectedCategory =
+        "Home";
+
 
     document
-        .getElementById("servicesView")
-        .classList.remove("active");
+        .getElementById(
+            "servicesView"
+        )
+        .classList.remove(
+            "active"
+        );
+
 
     document
-        .getElementById("homeView")
-        .style.display = "block";
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "block";
+
 
     document
-        .getElementById("serviceSearch")
+        .getElementById(
+            "serviceSearch"
+        )
         .value = "";
+
 
     window.scrollTo({
         top:0,
@@ -5380,52 +3130,11 @@ function backHome(){
 }
 
 
-
-
 /* =========================================================
-   HANDLE SEARCH
+   RENDER SERVICES
 ========================================================= */
 
-function handleSearch(){
-
-    clearTimeout(searchTimer);
-
-    searchTimer =
-        setTimeout(() => {
-
-            renderCurrentView();
-
-        }, 80);
-}
-
-
-
-
-/* =========================================================
-   RENDER CURRENT VIEW
-========================================================= */
-
-function renderCurrentView(){
-
-    if(
-        viewLevel === "services"
-    ){
-
-        renderServiceCategories();
-
-        return;
-    }
-
-
-    if(
-        viewLevel === "listings"
-    ){
-
-        renderListings();
-
-        return;
-    }
-
+function renderServices(){
 
     const box =
         document.getElementById(
@@ -5433,26 +3142,12 @@ function renderCurrentView(){
         );
 
 
-    if(box){
+    if(
+        selectedCategory ===
+        "Home"
+    ){
 
         box.innerHTML = "";
-    }
-}
-
-
-/* =========================================================
-   RENDER SERVICE CATEGORIES
-========================================================= */
-
-function renderServiceCategories(){
-
-    const box =
-        document.getElementById(
-            "products"
-        );
-
-
-    if(!box){
 
         return;
     }
@@ -5468,30 +3163,99 @@ function renderServiceCategories(){
             .toLowerCase();
 
 
-    let services =
-        getServiceCards(
-            selectedCategory
+    let list =
+        allServices.filter(
+            product =>
+
+                product &&
+                product.is_active !== false &&
+
+                categoryMatches(
+                    product.category,
+                    selectedCategory
+                )
         );
 
 
     if(search){
 
-        services =
-            services.filter(
-                service =>
-                    service
-                        .toLowerCase()
-                        .includes(
-                            search
-                        )
+        list =
+            list.filter(
+                product =>
+
+                    String(
+                        product.name || ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        product.description ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
             );
     }
 
 
-    if(!services.length){
+    if(
+        !allServices.length &&
+        productsLoading
+    ){
 
-        box.className =
-            "products";
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '⏳' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'Loading services...' +
+                '</strong>' +
+
+                '<p>' +
+                    'Please wait while we load the available services.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    if(!list.length){
+
+        if(productsLoading){
+
+            box.innerHTML =
+
+                '<div class="msg">' +
+
+                    '<div style="font-size:40px">' +
+                        '⏳' +
+                    '</div>' +
+
+                    '<br>' +
+
+                    '<strong>' +
+                        'Loading services...' +
+                    '</strong>' +
+
+                    '<p>' +
+                        'Please wait while we load the available services.' +
+                    '</p>' +
+
+                '</div>';
+
+            return;
+        }
 
 
         box.innerHTML =
@@ -5509,7 +3273,7 @@ function renderServiceCategories(){
                 '</strong>' +
 
                 '<p>' +
-                    'There are currently no services matching your search.' +
+                    'There are currently no services in this category.' +
                 '</p>' +
 
             '</div>';
@@ -5518,86 +3282,181 @@ function renderServiceCategories(){
     }
 
 
-    box.className =
-        "service-grid";
-
-
     box.innerHTML = "";
 
 
-    services.forEach(
-        service => {
+    list.forEach(
+        product => {
 
-            const card =
-                document.createElement(
-                    "button"
+            const stock =
+                Number(
+                    product.stock || 0
                 );
 
 
-            card.type =
-                "button";
+            const track =
+                product.track_stock !== false;
 
 
-            card.className =
-                "service-card";
+            const status =
+                String(
+                    product.status ||
+                    "Available"
+                )
+                .trim()
+                .toLowerCase();
 
 
-            card.onclick =
-                () =>
-                    openService(
-                        service
-                    );
+            const soldOut =
+                track
+                ?
+                (
+                    stock <= 0 ||
+
+                    status === "sold" ||
+
+                    status === "sold out" ||
+
+                    status === "unavailable"
+                )
+                :
+                status === "unavailable";
 
 
-            const icon =
-                serviceIcons[
-                    service
-                ] ||
-                "📦";
+            let imageHTML =
+                "";
 
 
             /*
-               Count all currently loaded
-               manual + YoungPG listings.
+               IMPORTANT:
+
+               If there is no image, absolutely
+               no image container is created.
             */
 
-            const count =
-                getServiceCount(
-                    selectedCategory,
-                    service
+            if(
+                product.image_url &&
+                String(
+                    product.image_url
+                ).trim()
+            ){
+
+                imageHTML =
+
+                    '<img ' +
+
+                        'src="' +
+                        escapeHTML(
+                            product.image_url
+                        ) +
+                        '" ' +
+
+                        'alt="" ' +
+
+                        'onerror="' +
+                            "this.style.display='none'" +
+                        '"' +
+
+                    '>';
+            }
+
+
+            const card =
+                document.createElement(
+                    "div"
                 );
+
+
+            card.className =
+                "product";
 
 
             card.innerHTML =
 
-                '<div class="service-card-icon">' +
+                imageHTML +
+
+                '<h3>' +
 
                     escapeHTML(
-                        icon
+                        product.name ||
+                        "Unnamed Service"
                     ) +
 
-                '</div>' +
+                '</h3>' +
 
-                '<div class="service-card-name">' +
+                '<span class="badge">' +
 
                     escapeHTML(
-                        service
+                        product.category ||
+                        "Service"
                     ) +
 
-                '</div>' +
+                '</span>' +
 
-                '<div class="service-card-count">' +
+                '<p class="desc">' +
+
+                    escapeHTML(
+                        product.description ||
+                        ""
+                    ) +
+
+                '</p>' +
+
+                '<p class="price">' +
+
+                    '₦' +
+
+                    Number(
+                        product.price || 0
+                    ).toLocaleString(
+                        "en-NG",
+                        {
+                            minimumFractionDigits:0,
+                            maximumFractionDigits:2
+                        }
+                    ) +
+
+                '</p>' +
+
+                '<p class="stock">' +
 
                     (
-                        count
+                        soldOut
                         ?
-                        count +
-                        " available"
+                        "❌ Sold Out / Unavailable"
                         :
-                        "View services"
+                        "✅ Available"
                     ) +
 
-                '</div>';
+                '</p>' +
+
+                '<button ' +
+
+                    'class="buy" ' +
+
+                    (
+                        soldOut
+                        ? "disabled"
+                        : ""
+                    ) +
+
+                    ' onclick="buyProduct(' +
+
+                        Number(
+                            product.id
+                        ) +
+
+                    ')"' +
+
+                '>' +
+
+                    (
+                        soldOut
+                        ? "Sold Out"
+                        : "Buy Now"
+                    ) +
+
+                '</button>';
 
 
             box.appendChild(
@@ -5610,837 +3469,14 @@ function renderServiceCategories(){
 
 
 /* =========================================================
-   OPEN SERVICE
+   BUY PRODUCT
 ========================================================= */
 
-async function openService(
-    service
-){
-
-    selectedService = service;
-    viewLevel = "listings";
-
-    document
-        .getElementById("categoryTitle")
-        .textContent = service;
-
-    document
-        .getElementById("categoryDescription")
-        .textContent =
-            "Available " +
-            service +
-            " services.";
-
-    document
-        .getElementById("serviceSearch")
-        .value = "";
-
-    const needsYoungPG =
-        selectedCategory === "All Social Logs" ||
-        selectedCategory === "Streaming & More" ||
-        selectedCategory === "VPN";
-
-    if(needsYoungPG){
-
-        const cached =
-            youngpgCategoryCache[selectedCategory];
-
-        if(
-            Array.isArray(cached)
-        ){
-            youngpgProducts = cached.filter(
-                product =>
-                    product?.service_category === service
-            );
-            youngpgLoading = false;
-            renderCurrentView();
-
-            /*
-               Refresh both sources together in the background.
-               The customer never sees a provider label.
-            */
-            Promise.all([
-                loadProducts(),
-                loadYoungPGProducts(
-                    selectedCategory,
-                    service,
-                    ""
-                )
-            ]).then(() => {
-                if(
-                    viewLevel === "listings" &&
-                    selectedService === service
-                ){
-                    renderCurrentView();
-                }
-            });
-
-        }else{
-
-            youngpgLoading = true;
-            renderLoadingView(
-                "Loading " +
-                service +
-                "..."
-            );
-
-            await Promise.all([
-                loadProducts(),
-                loadYoungPGProducts(
-                    selectedCategory,
-                    service,
-                    ""
-                )
-            ]);
-
-            youngpgLoading = false;
-            renderCurrentView();
-        }
-
-    }else{
-        await loadProducts();
-        renderCurrentView();
-    }
-
-    window.scrollTo({
-        top:0,
-        behavior:"auto"
-    });
-}
-
-
-
-
-/* =========================================================
-   RENDER LISTINGS
-========================================================= */
-
-function renderListings(){
-
-    const box =
-        document.getElementById(
-            "products"
-        );
-
-
-    if(!box){
-
-        return;
-    }
-
-
-    box.className =
-        "products";
-
-
-    const search =
-        document
-            .getElementById(
-                "serviceSearch"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    let manual =
-        getManualProductsForService(
-            selectedCategory,
-            selectedService
-        );
-
-
-    let youngpg =
-        youngpgProducts.filter(
-            product => {
-
-                if(
-                    product.service_category !==
-                    selectedService
-                ){
-
-                    return false;
-                }
-
-
-                if(
-                    search
-                ){
-
-                    const text =
-                        (
-                            String(
-                                product.name ||
-                                ""
-                            ) +
-                            " " +
-                            String(
-                                product.description ||
-                                ""
-                            )
-                        )
-                        .toLowerCase();
-
-
-                    if(
-                        !text.includes(
-                            search
-                        )
-                    ){
-
-                        return false;
-                    }
-                }
-
-
-                return true;
-            }
-        );
-
-
-    if(search){
-
-        manual =
-            manual.filter(
-                product => {
-
-                    const text =
-                        (
-                            String(
-                                product.name || ""
-                            ) +
-                            " " +
-                            String(
-                                product.description ||
-                                ""
-                            )
-                        )
-                        .toLowerCase();
-
-
-                    return text.includes(
-                        search
-                    );
-                }
-            );
-    }
-
-
-    const combined = [];
-
-
-    manual.forEach(
-        product => {
-
-            combined.push({
-
-                ...product,
-
-                source:
-                    "manual"
-            });
-
-        }
-    );
-
-
-    youngpg.forEach(
-        product => {
-
-            combined.push({
-
-                ...product,
-
-                source:
-                    "youngpg"
-            });
-
-        }
-    );
-
-
-    if(
-        !combined.length
-    ){
-
-        if(
-            youngpgLoading
-        ){
-
-            renderLoadingView(
-                "Loading " +
-                selectedService +
-                "..."
-            );
-
-            return;
-        }
-
-
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">' +
-                    '🔍' +
-                '</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-
-                    (
-                        search
-                        ?
-                        "Nothing found"
-                        :
-                        "Service not available right now"
-                    ) +
-
-                '</strong>' +
-
-                '<p>' +
-
-                    (
-                        search
-                        ?
-                        'Nothing matches your search.'
-                        :
-                        'There are currently no available ' +
-                        escapeHTML(
-                            selectedService
-                        ) +
-                        ' services.'
-                    ) +
-
-                '</p>' +
-
-            '</div>';
-
-        return;
-    }
-
-
-    box.innerHTML = "";
-
-
-    combined.forEach(
-        product => {
-
-            renderProductCard(
-                box,
-                product
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   RENDER PRODUCT CARD
-========================================================= */
-
-function renderProductCard(
-    box,
-    product
-){
-
-    const isYoungPG =
-        product.source === "youngpg";
-
-    const stock =
-        Number(
-            product.available_stock ??
-            product.stock ??
-            0
-        );
-
-    const track =
-        product.track_stock !== false;
-
-    const status =
-        String(
-            product.status ||
-            "Available"
-        )
-        .trim()
-        .toLowerCase();
-
-    const soldOut =
-        track
-        ?
-        (
-            stock <= 0 ||
-            status === "sold" ||
-            status === "sold out" ||
-            status === "unavailable"
-        )
-        :
-        status === "unavailable";
-
-    let imageHTML = "";
-
-    if(
-        product.image_url &&
-        String(product.image_url).trim()
-    ){
-        imageHTML =
-            '<img ' +
-                'src="' +
-                escapeHTML(product.image_url) +
-                '" ' +
-                'alt="" ' +
-                'onerror="this.style.display=\'none\'"' +
-            '>';
-    }
-
-    const price =
-        Number(
-            product.selling_price_ngn ??
-            product.price ??
-            0
-        );
-
-    const card =
-        document.createElement("div");
-
-    card.className = "product";
-
-    const buyId =
-        isYoungPG
-        ?
-        "youngpg_" +
-        encodeURIComponent(product.slug)
-        :
-        "manual_" +
-        Number(product.id);
-
-    /*
-       Provider/source information is intentionally NOT shown.
-       Customers only see the actual service/listing.
-    */
-    card.innerHTML =
-        imageHTML +
-        '<h3>' +
-            escapeHTML(
-                product.name ||
-                product.title ||
-                "Unnamed Service"
-            ) +
-        '</h3>' +
-        (
-            product.description
-            ?
-            '<p class="desc">' +
-                escapeHTML(product.description) +
-            '</p>'
-            :
-            ""
-        ) +
-        '<p class="price">' +
-            '₦' +
-            price.toLocaleString(
-                "en-NG",
-                {
-                    minimumFractionDigits:0,
-                    maximumFractionDigits:2
-                }
-            ) +
-        '</p>' +
-        '<p class="stock">' +
-            (
-                soldOut
-                ?
-                "❌ Sold Out / Unavailable"
-                :
-                "✅ Available"
-            ) +
-        '</p>' +
-        '<button ' +
-            'class="buy" ' +
-            'data-buy-id="' +
-            escapeHTML(buyId) +
-            '" ' +
-            (soldOut ? "disabled" : "") +
-            '>' +
-            (soldOut ? "Sold Out" : "Buy Now") +
-        '</button>';
-
-    const buyButton =
-        card.querySelector(".buy");
-
-    if(
-        buyButton &&
-        !soldOut
-    ){
-        buyButton.addEventListener(
-            "click",
-            () => {
-                if(isYoungPG){
-                    buyYoungPG(
-                        product,
-                        buyButton
-                    );
-                }else{
-                    buyManualProduct(
-                        product.id,
-                        buyButton
-                    );
-                }
-            }
-        );
-    }
-
-    box.appendChild(card);
-}
-
-
-
-
-/* =========================================================
-   SEARCH TIMER
-========================================================= */
-
-let searchTimer = null;
-
-
-/* =========================================================
-   MANUAL PRODUCT PURCHASE
-========================================================= */
-
-function buyManualProduct(
-    id,
-    button
-){
-
-    /*
-       Existing manual products continue
-       using the existing products.html
-       purchase flow.
-    */
+function buyProduct(id){
 
     location.href =
         "products.html?id=" +
-        encodeURIComponent(
-            id
-        );
-}
-
-
-/* =========================================================
-   YOUNGPG PURCHASE
-========================================================= */
-
-async function buyYoungPG(
-    product,
-    button
-){
-
-    if(
-        !product ||
-        !product.slug
-    ){
-
-        showToast(
-            "This service is unavailable right now.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if(
-        button.dataset.processing ===
-        "true"
-    ){
-
-        return;
-    }
-
-
-    button.dataset.processing =
-        "true";
-
-
-    button.classList.add(
-        "processing"
-    );
-
-
-    button.disabled =
-        true;
-
-
-    try{
-
-        const result =
-            await youngpgRequest(
-                "purchase",
-                {
-                    method:
-                        "POST",
-
-                    body:{
-                        slug:
-                            product.slug,
-
-                        quantity:
-                            1
-                    }
-                }
-            );
-
-
-        /*
-           Provider purchase and Delight
-           wallet finalization are handled
-           by the Edge Function.
-
-           No confirmation popup is used.
-        */
-
-        if(
-            result?.code ===
-            "INSUFFICIENT_FUNDS"
-        ){
-
-            const balance =
-                Number(
-                    result?.balance ??
-                    result?.current_balance ??
-                    realBalance ??
-                    0
-                );
-
-
-            const required =
-                Number(
-                    result?.required ??
-                    result?.amount ??
-                    product?.selling_price_ngn ??
-                    product?.price ??
-                    0
-                );
-
-
-            const shortfall =
-                Math.max(
-                    0,
-                    required -
-                    balance
-                );
-
-
-            const message =
-                shortfall > 0
-                ?
-                "Insufficient wallet balance. You need ₦" +
-                shortfall.toLocaleString(
-                    "en-NG",
-                    {
-                        minimumFractionDigits:0,
-                        maximumFractionDigits:2
-                    }
-                ) +
-                " more."
-                :
-                (
-                    result?.error ||
-                    result?.message ||
-                    "Insufficient wallet balance."
-                );
-
-
-            showToast(
-                message,
-                "error"
-            );
-
-
-            button.disabled =
-                false;
-
-            button.dataset.processing =
-                "false";
-
-            button.classList.remove(
-                "processing"
-            );
-
-            return;
-        }
-
-
-        if(
-            result?.code ===
-            "PROVIDER_SUCCESS_FINALIZATION_FAILED"
-        ){
-
-            showToast(
-                "Purchase reached the provider but could not be finalized. Please contact support. Do not retry this purchase.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        if(
-            result?.success === false
-        ){
-
-            throw new Error(
-                result?.error ||
-                result?.message ||
-                "Purchase failed."
-            );
-        }
-
-
-        /*
-           Refresh wallet locally.
-        */
-
-        await loadWallet();
-
-
-        /*
-           Remove purchased YoungPG item from
-           current cached category immediately.
-        */
-
-        if(
-            Array.isArray(
-                youngpgCategoryCache[
-                    selectedCategory
-                ]
-            )
-        ){
-
-            youngpgCategoryCache[
-                selectedCategory
-            ] =
-                youngpgCategoryCache[
-                    selectedCategory
-                ].filter(
-                    item =>
-                        item.slug !==
-                        product.slug
-                );
-
-
-            saveYoungPGCategoryCache();
-        }
-
-
-        youngpgProducts =
-            youngpgProducts.filter(
-                item =>
-                    item.slug !==
-                    product.slug
-            );
-
-
-        /*
-           Purchase is already inserted into
-           purchases + transactions by the
-           Edge Function.
-
-           Send the customer to their existing
-           purchases page so the delivered
-           account/content can be seen there.
-        */
-
-        location.href =
-            "purchases.html";
-
-
-    }catch(error){
-
-        console.error(
-            "YoungPG purchase error:",
-            error
-        );
-
-        const message =
-            String(
-                error?.message ||
-                ""
-            );
-
-        const lower =
-            message.toLowerCase();
-
-        const providerWalletError =
-            lower.includes("youngpg") &&
-            lower.includes("insufficient") &&
-            lower.includes("balance");
-
-        if(providerWalletError){
-
-            showToast(
-                "This service is temporarily unavailable right now.",
-                "error"
-            );
-
-        }else if(lower.includes("insufficient")){
-
-            const required =
-                Number(
-                    error?.payload?.required ??
-                    error?.payload?.amount ??
-                    product?.selling_price_ngn ??
-                    product?.price ??
-                    0
-                );
-
-            const balance =
-                Number(
-                    error?.payload?.balance ??
-                    error?.payload?.current_balance ??
-                    realBalance ??
-                    0
-                );
-
-            const shortfall =
-                Math.max(
-                    0,
-                    required - balance
-                );
-
-            showToast(
-                shortfall > 0
-                    ?
-                    "Insufficient wallet balance. You need ₦" +
-                    shortfall.toLocaleString("en-NG",{maximumFractionDigits:2}) +
-                    " more."
-                    :
-                    "Insufficient wallet balance.",
-                "error"
-            );
-
-        }else{
-
-            showToast(
-                message ||
-                "Purchase failed. Please try again.",
-                "error"
-            );
-        }
-
-
-        button.disabled =
-            false;
-
-        button.dataset.processing =
-            "false";
-
-        button.classList.remove(
-            "processing"
-        );
-    }
+        encodeURIComponent(id);
 }
 
 
@@ -6825,11 +3861,21 @@ async function loadTransactions(){
 
 async function startDashboard(){
 
-    loadYoungPGCategoryCache();
-
     updateGreeting();
 
+    /*
+       Categories are loaded directly from
+       service_categories.
+
+       This means categories added from
+       admin automatically appear here.
+    */
+
     loadCategories();
+
+    /*
+       Product loading remains independent.
+    */
 
     loadProducts();
 
@@ -6847,53 +3893,15 @@ async function startDashboard(){
 
 startDashboard();
 
+    setInterval(() => {
+    loadCategories();
+}, 5000);
 
-/*
-   Only refresh the dashboard's actual
-   service categories.
-
-   We do NOT continuously reset the current
-   service/listing screen, which prevents
-   Facebook/Spotify/VPN screens from
-   suddenly replacing the user's current
-   page.
-*/
-
-setInterval(
-    () => {
-
-        if(
-            viewLevel === "home"
-        ){
-
-            loadCategories();
-        }
-
-    },
-    5000
-);
-
-
-document.addEventListener(
-    "visibilitychange",
-    () => {
-
-        if(
-            !document.hidden &&
-            viewLevel === "home"
-        ){
-
-            loadCategories();
-
-            loadProducts();
-
-            loadWallet();
-
-            loadTransactions();
-        }
-
+    document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        loadCategories();
     }
-);
+});
 
 </script>
 
