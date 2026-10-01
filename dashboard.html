@@ -1054,10 +1054,10 @@ main{
 
 
 /* =========================================================
-   YOUNGPG SERVICE CATEGORIES
+   SERVICE CATEGORY CARDS
 ========================================================= */
 
-.youngpg-services{
+.service-grid{
 
     display:grid;
 
@@ -1067,19 +1067,19 @@ main{
     gap:14px;
 }
 
-.youngpg-service{
+.service-card{
 
-    min-height:120px;
+    background:#fff;
 
     border:
         1px solid
         #e2e6f0;
 
-    background:#fff;
-
     border-radius:20px;
 
-    padding:18px 14px;
+    min-height:145px;
+
+    padding:18px;
 
     display:flex;
 
@@ -1089,30 +1089,26 @@ main{
 
     justify-content:center;
 
-    gap:10px;
-
     text-align:center;
 
-    color:#303951;
+    gap:9px;
 
     box-shadow:
         0 3px 12px
         #00000008;
 
-    transition:
-        transform .12s ease,
-        border-color .12s ease;
+    color:#27304d;
 }
 
-.youngpg-service:active{
+.service-card:active{
 
     transform:scale(.98);
 }
 
-.youngpg-service-icon{
+.service-card-icon{
 
-    width:52px;
-    height:52px;
+    width:54px;
+    height:54px;
 
     border-radius:16px;
 
@@ -1124,79 +1120,102 @@ main{
 
     justify-content:center;
 
-    font-size:25px;
+    font-size:26px;
 }
 
-.youngpg-service-name{
+.service-card-name{
 
     font-size:14px;
 
     font-weight:800;
 
-    line-height:1.25;
+    line-height:1.3;
+}
+
+.service-card-count{
+
+    font-size:11px;
+
+    color:#8991aa;
 }
 
 
 /* =========================================================
-   YOUNGPG LISTING
+   SMALL POPUP
 ========================================================= */
 
-.youngpg-listing h3{
+.toast{
 
-    word-break:break-word;
+    position:fixed;
 
-    line-height:1.35;
-}
+    left:50%;
 
-.youngpg-price-row{
+    bottom:24px;
 
-    display:flex;
+    transform:
+        translate(-50%,120px);
 
-    align-items:center;
+    width:
+        calc(100% - 36px);
 
-    justify-content:space-between;
+    max-width:430px;
 
-    gap:10px;
+    background:#18203a;
 
-    margin:
-        13px
-        0
-        7px;
-}
-
-.youngpg-price-row .price{
-
-    margin:0;
-}
-
-.youngpg-provider{
-
-    color:#9098b0;
-
-    font-size:11px;
-
-    text-align:right;
-}
-
-.youngpg-duration{
-
-    display:inline-block;
-
-    background:#eef8f5;
-
-    color:#087b60;
+    color:#fff;
 
     padding:
-        5px
-        8px;
+        15px
+        17px;
 
-    border-radius:8px;
+    border-radius:15px;
 
-    font-size:11px;
+    box-shadow:
+        0 12px 35px
+        #00000030;
 
-    font-weight:bold;
+    z-index:1000;
 
-    margin-top:8px;
+    font-size:14px;
+
+    line-height:1.45;
+
+    opacity:0;
+
+    transition:
+        .22s ease;
+
+    pointer-events:none;
+}
+
+.toast.show{
+
+    transform:
+        translate(-50%,0);
+
+    opacity:1;
+}
+
+.toast.error{
+
+    background:#b4232d;
+}
+
+.toast.success{
+
+    background:#087b5d;
+}
+
+
+/* =========================================================
+   PURCHASE LOADING
+========================================================= */
+
+.buy.processing{
+
+    opacity:.7;
+
+    pointer-events:none;
 }
 
 
@@ -1621,7 +1640,7 @@ main{
         flex-basis:39px;
     }
 
-    .youngpg-services{
+    .service-grid{
 
         grid-template-columns:
             repeat(2,1fr);
@@ -1648,7 +1667,7 @@ main{
         font-size:21px;
     }
 
-    .youngpg-services{
+    .service-grid{
 
         grid-template-columns:1fr;
     }
@@ -1855,7 +1874,7 @@ main{
             <button
                 class="back"
                 type="button"
-                onclick="backHome()"
+                onclick="backServices()"
             >
                 ←
             </button>
@@ -1881,7 +1900,7 @@ main{
             class="search"
             type="search"
             placeholder="🔍 Search service..."
-            oninput="renderServices()"
+            oninput="handleSearch()"
         >
 
 
@@ -1895,6 +1914,14 @@ main{
 
 
 </main>
+
+
+<!-- SMALL MESSAGE -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
 
 
 <!-- CONTACT ICONS -->
@@ -1931,7 +1958,7 @@ main{
             viewBox="0 0 24 24"
             aria-hidden="true"
         >
-            <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+            <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.2.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
         </svg>
 
     </a>
@@ -2012,7 +2039,7 @@ main{
 
                 <svg viewBox="0 0 24 24">
 
-                    <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2-.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6-.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.1.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
+                    <path d="M12 2a9.8 9.8 0 0 0-8.5 14.7L2 22l5.5-1.4A9.8 9.8 0 1 0 12 2Zm0 17.8c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.3.9.9-3.2.2-.3A7.9 7.9 0 1 1 12 19.8Zm4.3-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6-.1-.2.2-.6.8-.7 1-.1.2-.3.2-.5.1-1.3-.6-2.3-1.2-3.2-2.4-.2-.3-.4-.6-.6-.9-.1-.2 0-.3.1-.4.1-.1.2-.3.3-.4.1-.1.1-.2.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-1-.5-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.5.3-.2.2-.8.8-.8 2 0 1.2.8 2.3.9 2.5.1.2 1.6 2.5 3.9 3.5 2.3 1 2.3.7 2.7.7.4 0 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2-.1-.1-.3-.2-.5-.3Z"/>
 
                 </svg>
 
@@ -2179,17 +2206,17 @@ const YOUNGPG_FUNCTION_URL =
 
 let allServices = [];
 
+let manualProducts = [];
+
+let youngpgProducts = [];
+
 let categories = [];
 
 let selectedCategory = "Home";
 
-let selectedYoungPGService = "";
+let selectedService = null;
 
-let youngPGListings = [];
-
-let youngPGServices = [];
-
-let youngPGLoading = false;
+let viewLevel = "home";
 
 let realBalance = 0;
 
@@ -2197,17 +2224,14 @@ let balanceHidden = false;
 
 let productsLoading = true;
 
+let youngpgLoading = false;
+
 let productsLoaded = false;
+
+let toastTimer = null;
 
 const PRODUCTS_CACHE_KEY =
     "delight_vendor_products_cache_v2";
-
-
-const YOUNGPG_CATEGORIES = [
-    "All Social Logs",
-    "Streaming & More",
-    "VPN"
-];
 
 
 /* =========================================================
@@ -2256,101 +2280,144 @@ const existingIcons = {
 
 
 /* =========================================================
-   YOUNGPG SERVICE ICONS
+   SERVICE ICONS
 ========================================================= */
 
-const youngPGServiceIcons = {
+const serviceIcons = {
 
-    "facebook":
+    "Facebook":
         "📘",
 
-    "instagram":
+    "Instagram":
         "📸",
 
-    "tiktok":
+    "TikTok":
         "🎵",
 
-    "reddit":
+    "Reddit":
         "👽",
 
-    "linkedin":
+    "LinkedIn":
         "💼",
 
-    "dating sites":
+    "Dating Sites":
         "❤️",
 
-    "twitter/x":
+    "Twitter/X":
         "𝕏",
 
-    "twitter":
-        "𝕏",
-
-    "threads":
+    "Threads":
         "🧵",
 
-    "discord":
-        "🎮",
-
-    "apple id/icloud":
-        "",
-
-    "apple id":
-        "",
-
-    "icloud":
-        "☁️",
-
-    "snapchat":
-        "👻",
-
-    "texting apps":
+    "Discord":
         "💬",
 
-    "google voice":
+    "Apple ID/iCloud":
+        "",
+
+    "Snapchat":
+        "👻",
+
+    "Texting Apps":
+        "💬",
+
+    "Google Voice":
         "📞",
 
-    "netflix":
+    "Netflix":
         "🎬",
 
-    "spotify":
+    "Spotify":
         "🎧",
 
-    "prime video":
+    "Prime Video":
         "▶️",
 
-    "apple music":
+    "Apple Music":
         "🎵",
 
-    "disney+":
+    "Disney+":
         "🏰",
 
-    "youtube premium":
+    "YouTube Premium":
         "▶️",
 
-    "crunchyroll":
+    "Crunchyroll":
         "🍥",
 
-    "nordvpn":
+    "NordVPN":
         "🔐",
 
-    "expressvpn":
-        "🔒",
+    "ExpressVPN":
+        "🔐",
 
-    "surfshark":
+    "Surfshark":
         "🦈",
 
-    "ipvanish":
+    "Surfshark VPN":
+        "🦈",
+
+    "PIA VPN":
         "🔐",
 
-    "hma vpn":
-        "🛡️",
+    "IPVanish":
+        "🔐",
 
-    "pia vpn":
-        "🛡️",
+    "HMA VPN":
+        "🔐",
 
-    "gmail":
-        "📧"
+    "VPN":
+        "🔐",
+
+    "Other":
+        "📦"
+
 };
+
+
+/* =========================================================
+   SERVICE GROUPS
+========================================================= */
+
+const socialServices = [
+
+    "Facebook",
+    "Instagram",
+    "TikTok",
+    "Reddit",
+    "LinkedIn",
+    "Dating Sites",
+    "Twitter/X",
+    "Threads",
+    "Discord",
+    "Apple ID/iCloud",
+    "Snapchat",
+    "Texting Apps",
+    "Google Voice"
+];
+
+
+const streamingServices = [
+
+    "Netflix",
+    "Spotify",
+    "Prime Video",
+    "Apple Music",
+    "Disney+",
+    "YouTube Premium",
+    "Crunchyroll"
+];
+
+
+const vpnServices = [
+
+    "NordVPN",
+    "ExpressVPN",
+    "Surfshark VPN",
+    "PIA VPN",
+    "IPVanish",
+    "HMA VPN"
+];
 
 
 /* =========================================================
@@ -2365,6 +2432,19 @@ function escapeHTML(value){
         .replace(/>/g,"&gt;")
         .replace(/"/g,"&quot;")
         .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   NORMALIZE
+========================================================= */
+
+function normalize(value){
+
+    return String(value ?? "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,"");
 }
 
 
@@ -2424,10 +2504,58 @@ function closeContactSupport(event){
     }
 
     document
-        .getElementById(
-            "contactSupportModal"
-        )
+        .getElementById("contactSupportModal")
         .classList.remove("open");
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(
+    message,
+    type="error"
+){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    if(!toast){
+
+        return;
+    }
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.className =
+        "toast " +
+        type +
+        " show";
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            3500
+        );
 }
 
 
@@ -2878,6 +3006,17 @@ function categoryMatches(
         "workinglinks":[
             "workinglinks",
             "workinglink"
+        ],
+
+        "vpn":[
+            "vpn",
+            "premiumvpn"
+        ],
+
+        "gmail":[
+            "gmail",
+            "email",
+            "emails"
         ]
 
     };
@@ -2962,8 +3101,7 @@ function renderCategories(){
 
     categories.forEach(
         (
-            category,
-            index
+            category
         ) => {
 
             const button =
@@ -3036,6 +3174,7 @@ function renderCategories(){
             grid.appendChild(
                 button
             );
+
         }
     );
 }
@@ -3066,15 +3205,14 @@ function loadProductsFromCache(){
 
 
         if(
-            !Array.isArray(parsed) ||
-            !parsed.length
+            !Array.isArray(parsed)
         ){
 
             return false;
         }
 
 
-        allServices =
+        manualProducts =
             parsed.filter(
                 product =>
                     product &&
@@ -3085,14 +3223,6 @@ function loadProductsFromCache(){
         productsLoaded = true;
 
         productsLoading = false;
-
-
-        if(
-            selectedCategory !== "Home"
-        ){
-
-            renderServices();
-        }
 
 
         return true;
@@ -3138,7 +3268,7 @@ function saveProductsToCache(
 
 
 /* =========================================================
-   LOAD PRODUCTS
+   LOAD MANUAL PRODUCTS
 ========================================================= */
 
 async function loadProducts(){
@@ -3150,15 +3280,6 @@ async function loadProducts(){
     productsLoading = true;
 
 
-    if(
-        hasCache &&
-        selectedCategory !== "Home"
-    ){
-
-        renderServices();
-    }
-
-
     try{
 
         const {
@@ -3168,7 +3289,7 @@ async function loadProducts(){
             await supabaseClient
                 .from("Product")
                 .select(
-                    "id,name,price,category,description,image_url,stock,status,track_stock"
+                    "id,name,price,category,description,image_url,stock,status,track_stock,is_active"
                 )
                 .eq(
                     "is_active",
@@ -3190,61 +3311,39 @@ async function loadProducts(){
             );
 
 
-            if(hasCache){
+            if(!hasCache){
 
-                productsLoaded = true;
-
-                productsLoading = false;
-
-
-                if(
-                    selectedCategory !== "Home"
-                ){
-
-                    renderServices();
-                }
-
-                return;
+                manualProducts = [];
             }
 
-
-            allServices = [];
-
-            productsLoaded = true;
 
             productsLoading = false;
 
-
-            if(
-                selectedCategory !== "Home"
-            ){
-
-                renderServices();
-            }
+            productsLoaded = true;
 
             return;
         }
 
 
-        allServices =
+        manualProducts =
             data || [];
 
 
         saveProductsToCache(
-            allServices
+            manualProducts
         );
 
 
-        productsLoaded = true;
-
         productsLoading = false;
+
+        productsLoaded = true;
 
 
         if(
             selectedCategory !== "Home"
         ){
 
-            renderServices();
+            renderCurrentView();
         }
 
 
@@ -3263,46 +3362,19 @@ async function loadProducts(){
 
         if(!hasCache){
 
-            allServices = [];
-        }
-
-
-        if(
-            selectedCategory !== "Home"
-        ){
-
-            renderServices();
+            manualProducts = [];
         }
     }
 }
 
 
 /* =========================================================
-   YOUNGPG CATEGORY CHECK
+   YOUNGPG REQUEST
 ========================================================= */
 
-function isYoungPGCategory(
-    category
-){
-
-    return YOUNGPG_CATEGORIES
-        .some(
-            item =>
-                categoryMatches(
-                    category,
-                    item
-                )
-        );
-}
-
-
-/* =========================================================
-   YOUNGPG API REQUEST
-========================================================= */
-
-async function youngPGRequest(
+async function youngpgRequest(
     action,
-    options = {}
+    options={}
 ){
 
     const user =
@@ -3311,32 +3383,29 @@ async function youngPGRequest(
 
     if(!user){
 
-        location.href =
-            "login.html";
-
         throw new Error(
             "Login session not found."
         );
     }
 
 
-    const sessionResult =
+    const tokenResult =
         await supabaseClient
             .auth
             .getSession();
 
 
-    const accessToken =
-        sessionResult
+    const token =
+        tokenResult
             ?.data
             ?.session
             ?.access_token;
 
 
-    if(!accessToken){
+    if(!token){
 
         throw new Error(
-            "Authentication session expired. Please login again."
+            "Login session expired."
         );
     }
 
@@ -3349,19 +3418,22 @@ async function youngPGRequest(
         );
 
 
-    if(options.params){
+    if(options.query){
 
         Object.entries(
-            options.params
+            options.query
         ).forEach(
             (
-                [key,value]
+                [
+                    key,
+                    value
+                ]
             ) => {
 
                 if(
                     value !== undefined &&
                     value !== null &&
-                    String(value) !== ""
+                    String(value).trim() !== ""
                 ){
 
                     url +=
@@ -3386,7 +3458,7 @@ async function youngPGRequest(
                 headers:{
                     "Authorization":
                         "Bearer " +
-                        accessToken,
+                        token,
 
                     "Content-Type":
                         "application/json"
@@ -3415,7 +3487,7 @@ async function youngPGRequest(
     }catch(error){
 
         throw new Error(
-            "YoungPG returned an invalid response."
+            "Unable to read service response."
         );
     }
 
@@ -3425,20 +3497,19 @@ async function youngPGRequest(
         throw new Error(
             result?.error ||
             result?.message ||
-            "YoungPG request failed."
+            "YoungPG service request failed."
         );
     }
 
 
     if(
-        result &&
-        result.success === false
+        result?.success === false
     ){
 
         throw new Error(
-            result.message ||
-            result.error ||
-            "YoungPG request failed."
+            result?.error ||
+            result?.message ||
+            "YoungPG service request failed."
         );
     }
 
@@ -3448,71 +3519,41 @@ async function youngPGRequest(
 
 
 /* =========================================================
-   YOUNGPG SERVICE NAME
+   LOAD YOUNGPG PRODUCTS
 ========================================================= */
 
-function normalizeYoungPGService(
-    value
-){
-
-    return String(
-        value || ""
-    )
-    .trim()
-    .toLowerCase();
-}
-
-
-function getYoungPGServiceIcon(
-    service
-){
-
-    const key =
-        normalizeYoungPGService(
-            service
-        );
-
-
-    return (
-        youngPGServiceIcons[key] ||
-        "📦"
-    );
-}
-
-
-/* =========================================================
-   LOAD YOUNGPG LISTINGS
-========================================================= */
-
-async function loadYoungPGListings(
+async function loadYoungPGProducts(
     category,
-    service = "",
-    search = ""
+    service=null,
+    search=""
 ){
 
-    youngPGLoading = true;
-
-    youngPGListings = [];
+    youngpgLoading = true;
 
 
-    renderYoungPGLoading();
+    if(
+        selectedCategory !== "Home"
+    ){
+
+        renderCurrentView();
+    }
 
 
     try{
 
         const result =
-            await youngPGRequest(
+            await youngpgRequest(
                 "listings",
                 {
-                    params:{
+                    query:{
                         category:
                             category,
 
                         service:
-                            service,
+                            service || "",
 
                         search:
-                            search,
+                            search || "",
 
                         per_page:
                             100
@@ -3521,38 +3562,44 @@ async function loadYoungPGListings(
             );
 
 
-        const listings =
-            Array.isArray(
-                result?.data
-            )
-            ?
-            result.data
-            :
+        let products =
+            result?.data ||
+            result?.listings ||
             [];
 
 
-        youngPGListings =
-            listings.filter(
-                item =>
-                    item &&
-                    Number(
-                        item.available_stock || 0
-                    ) > 0
-            );
+        if(
+            !Array.isArray(products)
+        ){
 
-
-        youngPGLoading = false;
-
-
-        if(!service){
-
-            buildYoungPGServices(
-                youngPGListings
-            );
+            products = [];
         }
 
 
-        renderServices();
+        youngpgProducts =
+            products
+                .filter(
+                    item =>
+                        Number(
+                            item?.available_stock ??
+                            item?.stock ??
+                            0
+                        ) > 0
+                )
+                .map(
+                    item =>
+                        normalizeYoungPGProduct(
+                            item,
+                            category,
+                            service
+                        )
+                );
+
+
+        youngpgLoading = false;
+
+
+        renderCurrentView();
 
 
     }catch(error){
@@ -3563,160 +3610,984 @@ async function loadYoungPGListings(
         );
 
 
-        youngPGLoading = false;
+        youngpgProducts = [];
 
-        youngPGListings = [];
-
-
-        const box =
-            document.getElementById(
-                "products"
-            );
+        youngpgLoading = false;
 
 
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">⚠️</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-
-                    escapeHTML(
-                        error.message ||
-                        "Unable to load YoungPG services."
-                    ) +
-
-                '</strong>' +
-
-                '<p>' +
-
-                    'Please try again.' +
-
-                '</p>' +
-
-            '</div>';
+        renderCurrentView();
     }
 }
 
 
 /* =========================================================
-   BUILD YOUNGPG SERVICE CATEGORIES
+   NORMALIZE YOUNGPG PRODUCT
 ========================================================= */
 
-function buildYoungPGServices(
-    listings
+function normalizeYoungPGProduct(
+    item,
+    category,
+    service
 ){
 
-    const map =
-        new Map();
+    const title =
+        item?.title ||
+        item?.name ||
+        "YoungPG Service";
 
 
-    listings.forEach(
-        listing => {
+    const detectedService =
+        item?.service_category ||
+        service ||
+        detectServiceCategory(
+            title,
+            item?.provider_category ||
+            item?.category ||
+            ""
+        );
 
-            let service =
-                String(
-                    listing.service_category ||
-                    ""
-                ).trim();
+
+    return {
+
+        ...item,
+
+        id:
+            item?.id ??
+            item?.slug,
+
+        name:
+            title,
+
+        title:
+            title,
+
+        slug:
+            item?.slug,
+
+        price:
+            Number(
+                item?.selling_price_ngn ??
+                item?.customer_price_ngn ??
+                item?.price_ngn ??
+                0
+            ),
+
+        selling_price_ngn:
+            Number(
+                item?.selling_price_ngn ??
+                item?.customer_price_ngn ??
+                item?.price_ngn ??
+                0
+            ),
+
+        provider_price_ngn:
+            Number(
+                item?.provider_price_ngn ??
+                item?.price_ngn ??
+                0
+            ),
+
+        category:
+            item?.site_category ||
+            category,
+
+        service_category:
+            detectedService,
+
+        description:
+            item?.description ||
+            "",
+
+        stock:
+            Number(
+                item?.available_stock ??
+                item?.stock ??
+                0
+            ),
+
+        available_stock:
+            Number(
+                item?.available_stock ??
+                item?.stock ??
+                0
+            ),
+
+        is_active:
+            true,
+
+        source:
+            "youngpg"
+    };
+}
 
 
-            if(!service){
+/* =========================================================
+   SERVICE DETECTION
+========================================================= */
 
-                service =
-                    String(
-                        listing.title ||
-                        listing.name ||
-                        "Other"
-                    )
-                    .trim();
+function detectServiceCategory(
+    name,
+    category
+){
+
+    const text =
+        (
+            String(name || "") +
+            " " +
+            String(category || "")
+        )
+        .toLowerCase();
+
+
+    /* FACEBOOK */
+
+    if(
+        text.includes("facebook") ||
+        text.includes("fb account") ||
+        text.includes("fb ")
+    ){
+
+        return "Facebook";
+    }
+
+
+    /* INSTAGRAM */
+
+    if(
+        text.includes("instagram") ||
+        text.includes("ig account")
+    ){
+
+        return "Instagram";
+    }
+
+
+    /* TIKTOK */
+
+    if(
+        text.includes("tiktok") ||
+        text.includes("tik tok")
+    ){
+
+        return "TikTok";
+    }
+
+
+    /* REDDIT */
+
+    if(
+        text.includes("reddit")
+    ){
+
+        return "Reddit";
+    }
+
+
+    /* LINKEDIN */
+
+    if(
+        text.includes("linkedin")
+    ){
+
+        return "LinkedIn";
+    }
+
+
+    /* DATING */
+
+    if(
+        text.includes("dating") ||
+        text.includes("tinder") ||
+        text.includes("bumble") ||
+        text.includes("hinge") ||
+        text.includes("match.com")
+    ){
+
+        return "Dating Sites";
+    }
+
+
+    /* TWITTER / X */
+
+    if(
+        text.includes("twitter") ||
+        text.includes(" x account") ||
+        text.includes("x account")
+    ){
+
+        return "Twitter/X";
+    }
+
+
+    /* THREADS */
+
+    if(
+        text.includes("threads")
+    ){
+
+        return "Threads";
+    }
+
+
+    /* DISCORD */
+
+    if(
+        text.includes("discord")
+    ){
+
+        return "Discord";
+    }
+
+
+    /* APPLE ID */
+
+    if(
+        text.includes("apple id") ||
+        text.includes("icloud") ||
+        text.includes("apple account")
+    ){
+
+        return "Apple ID/iCloud";
+    }
+
+
+    /* SNAPCHAT */
+
+    if(
+        text.includes("snapchat")
+    ){
+
+        return "Snapchat";
+    }
+
+
+    /* GOOGLE VOICE */
+
+    if(
+        text.includes("google voice")
+    ){
+
+        return "Google Voice";
+    }
+
+
+    /* TEXTING APPS */
+
+    if(
+        text.includes("textnow") ||
+        text.includes("textplus") ||
+        text.includes("nextplus") ||
+        text.includes("texting app") ||
+        text.includes("texting apps")
+    ){
+
+        return "Texting Apps";
+    }
+
+
+    /* NETFLIX */
+
+    if(
+        text.includes("netflix")
+    ){
+
+        return "Netflix";
+    }
+
+
+    /* SPOTIFY */
+
+    if(
+        text.includes("spotify")
+    ){
+
+        return "Spotify";
+    }
+
+
+    /* PRIME VIDEO */
+
+    if(
+        text.includes("prime video") ||
+        text.includes("amazon prime")
+    ){
+
+        return "Prime Video";
+    }
+
+
+    /* APPLE MUSIC */
+
+    if(
+        text.includes("apple music")
+    ){
+
+        return "Apple Music";
+    }
+
+
+    /* DISNEY */
+
+    if(
+        text.includes("disney")
+    ){
+
+        return "Disney+";
+    }
+
+
+    /* YOUTUBE */
+
+    if(
+        text.includes("youtube premium") ||
+        text.includes("youtube")
+    ){
+
+        return "YouTube Premium";
+    }
+
+
+    /* CRUNCHYROLL */
+
+    if(
+        text.includes("crunchyroll")
+    ){
+
+        return "Crunchyroll";
+    }
+
+
+    /* NORDVPN */
+
+    if(
+        text.includes("nordvpn") ||
+        text.includes("nord vpn")
+    ){
+
+        return "NordVPN";
+    }
+
+
+    /* EXPRESSVPN */
+
+    if(
+        text.includes("expressvpn") ||
+        text.includes("express vpn")
+    ){
+
+        return "ExpressVPN";
+    }
+
+
+    /* SURFSHARK */
+
+    if(
+        text.includes("surfshark")
+    ){
+
+        return "Surfshark VPN";
+    }
+
+
+    /* PIA */
+
+    if(
+        text.includes("private internet access") ||
+        text.includes("pia vpn") ||
+        text.includes("pia ")
+    ){
+
+        return "PIA VPN";
+    }
+
+
+    /* IPVANISH */
+
+    if(
+        text.includes("ipvanish")
+    ){
+
+        return "IPVanish";
+    }
+
+
+    /* HMA */
+
+    if(
+        text.includes("hma vpn") ||
+        text.includes("hidemyass")
+    ){
+
+        return "HMA VPN";
+    }
+
+
+    return "Other";
+}
+
+
+/* =========================================================
+   SERVICE GROUP CHECK
+========================================================= */
+
+function serviceBelongsToGroup(
+    service,
+    category
+){
+
+    if(category === "All Social Logs"){
+
+        return socialServices.includes(
+            service
+        );
+    }
+
+
+    if(category === "Streaming & More"){
+
+        return streamingServices.includes(
+            service
+        );
+    }
+
+
+    if(category === "VPN"){
+
+        return vpnServices.includes(
+            service
+        );
+    }
+
+
+    return false;
+}
+
+
+/* =========================================================
+   GET MANUAL SERVICE
+========================================================= */
+
+function getManualService(
+    product
+){
+
+    const category =
+        String(
+            product?.category || ""
+        );
+
+
+    const name =
+        String(
+            product?.name || ""
+        );
+
+
+    const detected =
+        detectServiceCategory(
+            name,
+            category
+        );
+
+
+    if(
+        detected !== "Other"
+    ){
+
+        return detected;
+    }
+
+
+    const normalizedCategory =
+        normalize(
+            category
+        );
+
+
+    if(
+        normalizedCategory ===
+        "facebook"
+    ){
+
+        return "Facebook";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "instagram"
+    ){
+
+        return "Instagram";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "tiktok"
+    ){
+
+        return "TikTok";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "reddit"
+    ){
+
+        return "Reddit";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "linkedin"
+    ){
+
+        return "LinkedIn";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "datingsites"
+    ){
+
+        return "Dating Sites";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "twitter" ||
+        normalizedCategory ===
+        "x"
+    ){
+
+        return "Twitter/X";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "threads"
+    ){
+
+        return "Threads";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "discord"
+    ){
+
+        return "Discord";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "appleid" ||
+        normalizedCategory ===
+        "icloud"
+    ){
+
+        return "Apple ID/iCloud";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "snapchat"
+    ){
+
+        return "Snapchat";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "textingapps"
+    ){
+
+        return "Texting Apps";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "googlevoice"
+    ){
+
+        return "Google Voice";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "netflix"
+    ){
+
+        return "Netflix";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "spotify"
+    ){
+
+        return "Spotify";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "primevideo"
+    ){
+
+        return "Prime Video";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "applemusic"
+    ){
+
+        return "Apple Music";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "disney"
+    ){
+
+        return "Disney+";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "youtube" ||
+        normalizedCategory ===
+        "youtubepremium"
+    ){
+
+        return "YouTube Premium";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "crunchyroll"
+    ){
+
+        return "Crunchyroll";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "nordvpn"
+    ){
+
+        return "NordVPN";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "expressvpn"
+    ){
+
+        return "ExpressVPN";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "surfshark" ||
+        normalizedCategory ===
+        "surfsharkvpn"
+    ){
+
+        return "Surfshark VPN";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "piavpn"
+    ){
+
+        return "PIA VPN";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "ipvanish"
+    ){
+
+        return "IPVanish";
+    }
+
+
+    if(
+        normalizedCategory ===
+        "hmavpn"
+    ){
+
+        return "HMA VPN";
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   GET MANUAL PRODUCTS FOR SERVICE
+========================================================= */
+
+function getManualProductsForService(
+    category,
+    service
+){
+
+    return manualProducts.filter(
+        product => {
+
+            if(
+                !product ||
+                product.is_active === false
+            ){
+
+                return false;
             }
 
 
-            if(!service){
+            const serviceName =
+                getManualService(
+                    product
+                );
+
+
+            if(
+                serviceName === service
+            ){
+
+                return true;
+            }
+
+
+            /*
+               Preserve manually added products
+               that use the service itself as
+               their Product category.
+            */
+
+            return (
+                categoryMatches(
+                    product.category,
+                    service
+                )
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   SERVICE CARD DATA
+========================================================= */
+
+function getServiceCards(
+    category
+){
+
+    let services = [];
+
+
+    if(
+        category ===
+        "All Social Logs"
+    ){
+
+        services =
+            [...socialServices];
+
+    }else if(
+        category ===
+        "Streaming & More"
+    ){
+
+        services =
+            [...streamingServices];
+
+    }else if(
+        category ===
+        "VPN"
+    ){
+
+        services =
+            [...vpnServices];
+    }
+
+
+    /*
+       Add manually created services even
+       if they were not already in the
+       standard YoungPG list.
+    */
+
+    manualProducts.forEach(
+        product => {
+
+            if(
+                !categoryMatches(
+                    product.category,
+                    category
+                )
+            ){
 
                 return;
             }
 
 
-            const key =
-                normalizeYoungPGService(
-                    service
+            const service =
+                getManualService(
+                    product
                 );
 
 
-            if(!map.has(key)){
+            if(
+                service &&
+                service !== "Other" &&
+                !services.includes(service)
+            ){
 
-                map.set(
-                    key,
+                services.push(
                     service
                 );
             }
+
         }
     );
 
 
-    youngPGServices =
-        Array.from(
-            map.values()
-        )
-        .sort(
-            (
-                a,
-                b
-            ) =>
-                a.localeCompare(
-                    b
-                )
-        );
+    return services;
 }
 
 
 /* =========================================================
-   YOUNGPG LOADING DISPLAY
+   SERVICE CARD COUNT
 ========================================================= */
 
-function renderYoungPGLoading(){
-
-    const box =
-        document.getElementById(
-            "products"
-        );
-
-
-    box.innerHTML =
-
-        '<div class="msg">' +
-
-            '<div style="font-size:40px">⏳</div>' +
-
-            '<br>' +
-
-            '<strong>' +
-                'Loading services...' +
-            '</strong>' +
-
-            '<p>' +
-                'Please wait while we load the available services.' +
-            '</p>' +
-
-        '</div>';
-}
-
-
-/* =========================================================
-   SELECT YOUNGPG SERVICE
-========================================================= */
-
-async function selectYoungPGService(
+function getServiceCount(
+    category,
     service
 ){
 
-    selectedYoungPGService =
-        service;
+    const manual =
+        getManualProductsForService(
+            category,
+            service
+        ).length;
+
+
+    const youngpg =
+        youngpgProducts.filter(
+            product =>
+                product.service_category ===
+                service
+        ).length;
+
+
+    return manual + youngpg;
+}
+
+
+/* =========================================================
+   SELECT CATEGORY
+========================================================= */
+
+function selectCategory(
+    category
+){
+
+    /*
+       Gmail remains exactly on the
+       existing Gmail page.
+    */
+
+    if(
+        category === "Gmail"
+    ){
+
+        location.href =
+            "gmail.html";
+
+        return;
+    }
+
+
+    /*
+       All Countries Number remains
+       on the existing page.
+    */
+
+    if(
+        category ===
+        "All Countries Number"
+    ){
+
+        location.href =
+            "virtualnumber.html";
+
+        return;
+    }
+
+
+    selectedCategory =
+        category;
+
+
+    selectedService =
+        null;
+
+
+    viewLevel =
+        "services";
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "none";
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.add(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "categoryTitle"
+        )
+        .textContent =
+            category;
 
 
     document
@@ -3724,10 +4595,9 @@ async function selectYoungPGService(
             "categoryDescription"
         )
         .textContent =
-            service +
-            " services available under " +
-            selectedCategory +
-            ".";
+            getCategoryDescription(
+                category
+            );
 
 
     document
@@ -3737,10 +4607,7 @@ async function selectYoungPGService(
         .value = "";
 
 
-    await loadYoungPGListings(
-        selectedCategory,
-        service
-    );
+    renderCurrentView();
 
 
     window.scrollTo({
@@ -3751,20 +4618,68 @@ async function selectYoungPGService(
 
 
 /* =========================================================
-   BACK
+   CATEGORY DESCRIPTION
 ========================================================= */
 
-function backHome(){
+function getCategoryDescription(
+    category
+){
 
     if(
-        isYoungPGCategory(
-            selectedCategory
-        ) &&
-        selectedYoungPGService
+        category ===
+        "All Social Logs"
     ){
 
-        selectedYoungPGService =
-            "";
+        return "Choose a social service to view available logs.";
+    }
+
+
+    if(
+        category ===
+        "Streaming & More"
+    ){
+
+        return "Choose a streaming service to view available subscriptions.";
+    }
+
+
+    if(
+        category ===
+        "VPN"
+    ){
+
+        return "Choose a VPN service to view available plans.";
+    }
+
+
+    return (
+        "Services available under " +
+        category +
+        "."
+    );
+}
+
+
+/* =========================================================
+   BACK SERVICES
+========================================================= */
+
+function backServices(){
+
+    /*
+       From actual listings:
+       return to full service categories.
+    */
+
+    if(
+        viewLevel === "listings"
+    ){
+
+        selectedService =
+            null;
+
+        viewLevel =
+            "services";
 
 
         document
@@ -3776,20 +4691,26 @@ function backHome(){
 
         document
             .getElementById(
+                "categoryTitle"
+            )
+            .textContent =
+                selectedCategory;
+
+
+        document
+            .getElementById(
                 "categoryDescription"
             )
             .textContent =
-                "Services available under " +
-                selectedCategory +
-                ".";
+                getCategoryDescription(
+                    selectedCategory
+                );
 
 
-        buildYoungPGServices(
-            youngPGListings
-        );
+        youngpgProducts = [];
 
 
-        renderServices();
+        renderCurrentView();
 
 
         window.scrollTo({
@@ -3802,17 +4723,31 @@ function backHome(){
     }
 
 
+    /*
+       From service categories:
+       return to dashboard.
+    */
+
+    backHome();
+}
+
+
+/* =========================================================
+   BACK HOME
+========================================================= */
+
+function backHome(){
+
     selectedCategory =
         "Home";
 
+    selectedService =
+        null;
 
-    selectedYoungPGService =
-        "";
+    viewLevel =
+        "home";
 
-
-    youngPGListings = [];
-
-    youngPGServices = [];
+    youngpgProducts = [];
 
 
     document
@@ -3847,119 +4782,40 @@ function backHome(){
 
 
 /* =========================================================
-   SELECT CATEGORY
+   HANDLE SEARCH
 ========================================================= */
 
-async function selectCategory(
-    category
-){
+function handleSearch(){
 
-    if(
-        category === "Gmail"
-    ){
-
-        location.href =
-            "gmail.html";
-
-        return;
-    }
-
-
-    if(
-        category ===
-        "All Countries Number"
-    ){
-
-        location.href =
-            "virtualnumber.html";
-
-        return;
-    }
-
-
-    selectedCategory =
-        category;
-
-
-    selectedYoungPGService =
-        "";
-
-
-    youngPGListings = [];
-
-    youngPGServices = [];
-
-
-    document
-        .getElementById(
-            "homeView"
-        )
-        .style.display =
-            "none";
-
-
-    document
-        .getElementById(
-            "servicesView"
-        )
-        .classList.add(
-            "active"
-        );
-
-
-    document
-        .getElementById(
-            "categoryTitle"
-        )
-        .textContent =
-            category;
-
-
-    document
-        .getElementById(
-            "categoryDescription"
-        )
-        .textContent =
-            "Services available under " +
-            category +
-            ".";
-
-
-    document
-        .getElementById(
-            "serviceSearch"
-        )
-        .value = "";
-
-
-    if(
-        isYoungPGCategory(
-            category
-        )
-    ){
-
-        await loadYoungPGListings(
-            category
-        );
-
-    }else{
-
-        renderServices();
-    }
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"auto"
-    });
+    renderCurrentView();
 }
 
 
 /* =========================================================
-   RENDER SERVICES
+   RENDER CURRENT VIEW
 ========================================================= */
 
-function renderServices(){
+function renderCurrentView(){
+
+    if(
+        viewLevel === "services"
+    ){
+
+        renderServiceCategories();
+
+        return;
+    }
+
+
+    if(
+        viewLevel === "listings"
+    ){
+
+        renderListings();
+
+        return;
+    }
+
 
     const box =
         document.getElementById(
@@ -3967,24 +4823,26 @@ function renderServices(){
         );
 
 
-    if(
-        selectedCategory ===
-        "Home"
-    ){
+    if(box){
 
         box.innerHTML = "";
-
-        return;
     }
+}
 
 
-    if(
-        isYoungPGCategory(
-            selectedCategory
-        )
-    ){
+/* =========================================================
+   RENDER SERVICE CATEGORIES
+========================================================= */
 
-        renderYoungPGServicesOrListings();
+function renderServiceCategories(){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+
+    if(!box){
 
         return;
     }
@@ -4000,24 +4858,283 @@ function renderServices(){
             .toLowerCase();
 
 
-    let list =
-        allServices.filter(
-            product =>
-
-                product &&
-                product.is_active !== false &&
-
-                categoryMatches(
-                    product.category,
-                    selectedCategory
-                )
+    let services =
+        getServiceCards(
+            selectedCategory
         );
 
 
     if(search){
 
-        list =
-            list.filter(
+        services =
+            services.filter(
+                service =>
+                    service
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+            );
+    }
+
+
+    if(!services.length){
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">' +
+                    '🔍' +
+                '</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'No services found' +
+                '</strong>' +
+
+                '<p>' +
+                    'There are currently no services matching your search.' +
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    box.className =
+        "service-grid";
+
+
+    box.innerHTML = "";
+
+
+    services.forEach(
+        service => {
+
+            const card =
+                document.createElement(
+                    "button"
+                );
+
+
+            card.type =
+                "button";
+
+
+            card.className =
+                "service-card";
+
+
+            card.onclick =
+                () =>
+                    openService(
+                        service
+                    );
+
+
+            const icon =
+                serviceIcons[
+                    service
+                ] ||
+                "📦";
+
+
+            const count =
+                getServiceCount(
+                    selectedCategory,
+                    service
+                );
+
+
+            card.innerHTML =
+
+                '<div class="service-card-icon">' +
+
+                    escapeHTML(
+                        icon
+                    ) +
+
+                '</div>' +
+
+                '<div class="service-card-name">' +
+
+                    escapeHTML(
+                        service
+                    ) +
+
+                '</div>' +
+
+                '<div class="service-card-count">' +
+
+                    (
+                        count
+                        ?
+                        count +
+                        " available"
+                        :
+                        "View services"
+                    ) +
+
+                '</div>';
+
+
+            box.appendChild(
+                card
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   OPEN SERVICE
+========================================================= */
+
+async function openService(
+    service
+){
+
+    selectedService =
+        service;
+
+
+    viewLevel =
+        "listings";
+
+
+    document
+        .getElementById(
+            "categoryTitle"
+        )
+        .textContent =
+            service;
+
+
+    document
+        .getElementById(
+            "categoryDescription"
+        )
+        .textContent =
+            "Available " +
+            service +
+            " services.";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    youngpgProducts = [];
+
+
+    renderCurrentView();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+
+
+    /*
+       Fetch only the selected service.
+       This prevents VPN from receiving
+       Facebook/Instagram listings and
+       prevents one service from replacing
+       the complete category screen.
+    */
+
+    loadYoungPGProducts(
+        selectedCategory,
+        selectedService,
+        ""
+    );
+}
+
+
+/* =========================================================
+   RENDER LISTINGS
+========================================================= */
+
+function renderListings(){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+
+    if(!box){
+
+        return;
+    }
+
+
+    box.className =
+        "products";
+
+
+    const search =
+        document
+            .getElementById(
+                "serviceSearch"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    let manual =
+        getManualProductsForService(
+            selectedCategory,
+            selectedService
+        );
+
+
+    let youngpg =
+        youngpgProducts.filter(
+            product => {
+
+                if(
+                    product.service_category !==
+                    selectedService
+                ){
+
+                    return false;
+                }
+
+
+                if(
+                    search &&
+                    !String(
+                        product.name || ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+                ){
+
+                    return false;
+                }
+
+
+                return true;
+            }
+        );
+
+
+    if(search){
+
+        manual =
+            manual.filter(
                 product =>
 
                     String(
@@ -4038,38 +5155,46 @@ function renderServices(){
     }
 
 
+    const combined = [];
+
+
+    manual.forEach(
+        product => {
+
+            combined.push({
+
+                ...product,
+
+                source:
+                    "manual"
+            });
+
+        }
+    );
+
+
+    youngpg.forEach(
+        product => {
+
+            combined.push({
+
+                ...product,
+
+                source:
+                    "youngpg"
+            });
+
+        }
+    );
+
+
     if(
-        !allServices.length &&
-        productsLoading
+        !combined.length
     ){
 
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">' +
-                    '⏳' +
-                '</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-                    'Loading services...' +
-                '</strong>' +
-
-                '<p>' +
-                    'Please wait while we load the available services.' +
-                '</p>' +
-
-            '</div>';
-
-        return;
-    }
-
-
-    if(!list.length){
-
-        if(productsLoading){
+        if(
+            youngpgLoading
+        ){
 
             box.innerHTML =
 
@@ -4086,7 +5211,11 @@ function renderServices(){
                     '</strong>' +
 
                     '<p>' +
-                        'Please wait while we load the available services.' +
+                        'Please wait while we load the available ' +
+                        escapeHTML(
+                            selectedService
+                        ) +
+                        ' services.' +
                     '</p>' +
 
                 '</div>';
@@ -4110,7 +5239,15 @@ function renderServices(){
                 '</strong>' +
 
                 '<p>' +
-                    'There are currently no services in this category.' +
+
+                    search
+                    ?
+                    'Nothing matches your search.'
+                    :
+                    'There are currently no available services.'
+
+                +
+
                 '</p>' +
 
             '</div>';
@@ -4122,508 +5259,110 @@ function renderServices(){
     box.innerHTML = "";
 
 
-    list.forEach(
+    combined.forEach(
         product => {
 
-            const stock =
-                Number(
-                    product.stock || 0
-                );
-
-
-            const track =
-                product.track_stock !== false;
-
-
-            const status =
-                String(
-                    product.status ||
-                    "Available"
-                )
-                .trim()
-                .toLowerCase();
-
-
-            const soldOut =
-                track
-                ?
-                (
-                    stock <= 0 ||
-
-                    status === "sold" ||
-
-                    status === "sold out" ||
-
-                    status === "unavailable"
-                )
-                :
-                status === "unavailable";
-
-
-            let imageHTML =
-                "";
-
-
-            if(
-                product.image_url &&
-                String(
-                    product.image_url
-                ).trim()
-            ){
-
-                imageHTML =
-
-                    '<img ' +
-
-                        'src="' +
-                        escapeHTML(
-                            product.image_url
-                        ) +
-                        '" ' +
-
-                        'alt="" ' +
-
-                        'onerror="' +
-                            "this.style.display='none'" +
-                        '"' +
-
-                    '>';
-            }
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "product";
-
-
-            card.innerHTML =
-
-                imageHTML +
-
-                '<h3>' +
-
-                    escapeHTML(
-                        product.name ||
-                        "Unnamed Service"
-                    ) +
-
-                '</h3>' +
-
-                '<span class="badge">' +
-
-                    escapeHTML(
-                        product.category ||
-                        "Service"
-                    ) +
-
-                '</span>' +
-
-                '<p class="desc">' +
-
-                    escapeHTML(
-                        product.description ||
-                        ""
-                    ) +
-
-                '</p>' +
-
-                '<p class="price">' +
-
-                    '₦' +
-
-                    Number(
-                        product.price || 0
-                    ).toLocaleString(
-                        "en-NG",
-                        {
-                            minimumFractionDigits:0,
-                            maximumFractionDigits:2
-                        }
-                    ) +
-
-                '</p>' +
-
-                '<p class="stock">' +
-
-                    (
-                        soldOut
-                        ?
-                        "❌ Sold Out / Unavailable"
-                        :
-                        "✅ Available"
-                    ) +
-
-                '</p>' +
-
-                '<button ' +
-
-                    'class="buy" ' +
-
-                    (
-                        soldOut
-                        ? "disabled"
-                        : ""
-                    ) +
-
-                    ' onclick="buyProduct(' +
-
-                        Number(
-                            product.id
-                        ) +
-
-                    ')"' +
-
-                '>' +
-
-                    (
-                        soldOut
-                        ? "Sold Out"
-                        : "Buy Now"
-                    ) +
-
-                '</button>';
-
-
-            box.appendChild(
-                card
-            );
-
-        }
-    );
-}
-
-
-/* =========================================================
-   RENDER YOUNGPG SERVICES / LISTINGS
-========================================================= */
-
-function renderYoungPGServicesOrListings(){
-
-    const box =
-        document.getElementById(
-            "products"
-        );
-
-
-    if(youngPGLoading){
-
-        renderYoungPGLoading();
-
-        return;
-    }
-
-
-    const search =
-        document
-            .getElementById(
-                "serviceSearch"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    if(
-        !selectedYoungPGService
-    ){
-
-        let services =
-            youngPGServices.slice();
-
-
-        if(search){
-
-            services =
-                services.filter(
-                    service =>
-                        service
-                            .toLowerCase()
-                            .includes(search)
-                );
-        }
-
-
-        if(!services.length){
-
-            box.innerHTML =
-
-                '<div class="msg">' +
-
-                    '<div style="font-size:40px">🔍</div>' +
-
-                    '<br>' +
-
-                    '<strong>' +
-                        'No services found' +
-                    '</strong>' +
-
-                    '<p>' +
-
-                        (
-                            search
-                            ?
-                            'No service category matches your search.'
-                            :
-                            'There are currently no available services in this category.'
-                        ) +
-
-                    '</p>' +
-
-                '</div>';
-
-            return;
-        }
-
-
-        box.innerHTML =
-            '<div class="youngpg-services"></div>';
-
-
-        const serviceBox =
-            box.querySelector(
-                ".youngpg-services"
-            );
-
-
-        services.forEach(
-            service => {
-
-                const button =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                button.type =
-                    "button";
-
-
-                button.className =
-                    "youngpg-service";
-
-
-                button.onclick =
-                    () =>
-                        selectYoungPGService(
-                            service
-                        );
-
-
-                button.innerHTML =
-
-                    '<div class="youngpg-service-icon">' +
-
-                        escapeHTML(
-                            getYoungPGServiceIcon(
-                                service
-                            )
-                        ) +
-
-                    '</div>' +
-
-                    '<div class="youngpg-service-name">' +
-
-                        escapeHTML(
-                            service
-                        ) +
-
-                    '</div>';
-
-
-                serviceBox.appendChild(
-                    button
-                );
-
-            }
-        );
-
-
-        return;
-    }
-
-
-    let listings =
-        youngPGListings.slice();
-
-
-    if(search){
-
-        listings =
-            listings.filter(
-                listing =>
-
-                    String(
-                        listing.title ||
-                        listing.name ||
-                        ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-
-                    ||
-
-                    String(
-                        listing.description ||
-                        ""
-                    )
-                    .toLowerCase()
-                    .includes(search)
-            );
-    }
-
-
-    if(!listings.length){
-
-        box.innerHTML =
-
-            '<div class="msg">' +
-
-                '<div style="font-size:40px">🔍</div>' +
-
-                '<br>' +
-
-                '<strong>' +
-                    'No listings found' +
-                '</strong>' +
-
-                '<p>' +
-
-                    (
-                        search
-                        ?
-                        'No listing matches your search.'
-                        :
-                        'There are currently no available listings in this service.'
-                    ) +
-
-                '</p>' +
-
-            '</div>';
-
-        return;
-    }
-
-
-    box.innerHTML = "";
-
-
-    listings.forEach(
-        listing => {
-
-            renderYoungPGListing(
+            renderProductCard(
                 box,
-                listing
+                product
             );
+
         }
     );
 }
 
 
 /* =========================================================
-   DURATION TEXT
+   RENDER PRODUCT CARD
 ========================================================= */
 
-function getDurationText(
-    listing
-){
-
-    const value =
-        Number(
-            listing.duration_value || 0
-        );
-
-
-    const unit =
-        String(
-            listing.duration_unit || ""
-        ).trim();
-
-
-    if(
-        value > 0 &&
-        unit
-    ){
-
-        return (
-            value +
-            " " +
-            unit +
-            (
-                value === 1
-                ? ""
-                : (
-                    unit.endsWith("s")
-                    ? ""
-                    : "s"
-                )
-            )
-        );
-    }
-
-
-    const title =
-        String(
-            listing.title ||
-            listing.name ||
-            ""
-        );
-
-
-    const match =
-        title.match(
-            /(\d+(?:\.\d+)?)\s*(month|months|year|years|week|weeks|day|days)/i
-        );
-
-
-    if(match){
-
-        return (
-            match[1] +
-            " " +
-            match[2]
-        );
-    }
-
-
-    return "";
-}
-
-
-/* =========================================================
-   RENDER YOUNGPG LISTING
-========================================================= */
-
-function renderYoungPGListing(
+function renderProductCard(
     box,
-    listing
+    product
 ){
+
+    const isYoungPG =
+        product.source ===
+        "youngpg";
+
 
     const stock =
         Number(
-            listing.available_stock || 0
+            product.available_stock ??
+            product.stock ??
+            0
         );
+
+
+    const track =
+        product.track_stock !== false;
+
+
+    const status =
+        String(
+            product.status ||
+            "Available"
+        )
+        .trim()
+        .toLowerCase();
+
+
+    const soldOut =
+
+        track
+        ?
+
+        (
+            stock <= 0 ||
+
+            status === "sold" ||
+
+            status === "sold out" ||
+
+            status === "unavailable"
+        )
+
+        :
+
+        status === "unavailable";
+
+
+    let imageHTML =
+        "";
+
+
+    if(
+        product.image_url &&
+        String(
+            product.image_url
+        ).trim()
+    ){
+
+        imageHTML =
+
+            '<img ' +
+
+                'src="' +
+                escapeHTML(
+                    product.image_url
+                ) +
+                '" ' +
+
+                'alt="" ' +
+
+                'onerror="' +
+                    "this.style.display='none'" +
+                '"' +
+
+            '>';
+    }
 
 
     const price =
         Number(
-            listing.selling_price_ngn || 0
-        );
-
-
-    const providerPrice =
-        Number(
-            listing.provider_price_ngn || 0
-        );
-
-
-    const duration =
-        getDurationText(
-            listing
+            product.selling_price_ngn ??
+            product.price ??
+            0
         );
 
 
@@ -4634,92 +5373,87 @@ function renderYoungPGListing(
 
 
     card.className =
-        "product youngpg-listing";
+        "product";
+
+
+    const buyId =
+        isYoungPG
+        ?
+        "youngpg_" +
+        encodeURIComponent(
+            product.slug
+        )
+        :
+        "manual_" +
+        Number(
+            product.id
+        );
 
 
     card.innerHTML =
 
-        '<span class="badge">' +
-
-            escapeHTML(
-                listing.service_category ||
-                listing.site_category ||
-                "YoungPG"
-            ) +
-
-        '</span>' +
+        imageHTML +
 
         '<h3>' +
 
             escapeHTML(
-                listing.title ||
-                listing.name ||
+                product.name ||
+                product.title ||
                 "Unnamed Service"
             ) +
 
         '</h3>' +
 
+        '<span class="badge">' +
+
+            escapeHTML(
+                isYoungPG
+                ?
+                "YoungPG"
+                :
+                product.category ||
+                selectedService ||
+                "Service"
+            ) +
+
+        '</span>' +
+
         (
-            duration
+            product.description
             ?
-            '<span class="youngpg-duration">' +
-                escapeHTML(duration) +
-            '</span>'
+            '<p class="desc">' +
+
+                escapeHTML(
+                    product.description
+                ) +
+
+            '</p>'
             :
             ""
         ) +
 
-        '<p class="desc">' +
+        '<p class="price">' +
 
-            escapeHTML(
-                listing.description ||
-                ""
+            '₦' +
+
+            price.toLocaleString(
+                "en-NG",
+                {
+                    minimumFractionDigits:0,
+                    maximumFractionDigits:2
+                }
             ) +
 
         '</p>' +
 
-        '<div class="youngpg-price-row">' +
-
-            '<p class="price">' +
-
-                '₦' +
-
-                price.toLocaleString(
-                    "en-NG",
-                    {
-                        minimumFractionDigits:0,
-                        maximumFractionDigits:2
-                    }
-                ) +
-
-            '</p>' +
-
-            '<div class="youngpg-provider">' +
-
-                'Provider: ₦' +
-
-                providerPrice.toLocaleString(
-                    "en-NG",
-                    {
-                        minimumFractionDigits:0,
-                        maximumFractionDigits:2
-                    }
-                ) +
-
-            '</div>' +
-
-        '</div>' +
-
         '<p class="stock">' +
 
             (
-                stock > 0
+                soldOut
                 ?
-                "✅ " +
-                stock +
-                " available"
+                "❌ Sold Out / Unavailable"
                 :
-                "❌ Sold Out"
+                "✅ Available"
             ) +
 
         '</p>' +
@@ -4728,33 +5462,63 @@ function renderYoungPGListing(
 
             'class="buy" ' +
 
+            'data-buy-id="' +
+            escapeHTML(
+                buyId
+            ) +
+            '" ' +
+
             (
-                stock <= 0
+                soldOut
                 ? "disabled"
                 : ""
             ) +
 
-            ' onclick="buyYoungPGProduct(' +
-
-                "'" +
-                escapeHTML(
-                    listing.slug
-                ) +
-                "'" +
-
-            ')"' +
-
-        '>' +
+            '>' +
 
             (
-                stock > 0
-                ?
-                "Buy Now"
-                :
-                "Sold Out"
+                soldOut
+                ? "Sold Out"
+                : "Buy Now"
             ) +
 
         '</button>';
+
+
+    const buyButton =
+        card.querySelector(
+            ".buy"
+        );
+
+
+    if(
+        buyButton &&
+        !soldOut
+    ){
+
+        buyButton.addEventListener(
+            "click",
+            () => {
+
+                if(isYoungPG){
+
+                    buyYoungPG(
+                        product,
+                        buyButton
+                    );
+
+                }else{
+
+                    buyManualProduct(
+                        product.id,
+                        buyButton
+                    );
+
+                }
+
+            }
+        );
+    }
 
 
     box.appendChild(
@@ -4764,51 +5528,106 @@ function renderYoungPGListing(
 
 
 /* =========================================================
+   SEARCH
+========================================================= */
+
+let searchTimer = null;
+
+
+function handleSearch(){
+
+    clearTimeout(
+        searchTimer
+    );
+
+
+    searchTimer =
+        setTimeout(
+            () => {
+
+                renderCurrentView();
+
+
+                /*
+                   When inside a YoungPG listing
+                   screen, search the provider again
+                   so listings outside the first
+                   result page can also be found.
+                */
+
+                if(
+                    viewLevel === "listings" &&
+                    selectedService
+                ){
+
+                    const search =
+                        document
+                            .getElementById(
+                                "serviceSearch"
+                            )
+                            .value
+                            .trim();
+
+
+                    if(
+                        search
+                    ){
+
+                        loadYoungPGProducts(
+                            selectedCategory,
+                            selectedService,
+                            search
+                        );
+                    }
+
+                }
+
+            },
+            150
+        );
+}
+
+
+/* =========================================================
+   MANUAL PRODUCT PURCHASE
+========================================================= */
+
+function buyManualProduct(
+    id,
+    button
+){
+
+    /*
+       Existing manual products continue
+       using the existing products.html
+       purchase flow.
+    */
+
+    location.href =
+        "products.html?id=" +
+        encodeURIComponent(
+            id
+        );
+}
+
+
+/* =========================================================
    YOUNGPG PURCHASE
 ========================================================= */
 
-async function buyYoungPGProduct(
-    slug
+async function buyYoungPG(
+    product,
+    button
 ){
 
-    if(!slug){
-
-        return;
-    }
-
-
-    const listing =
-        youngPGListings.find(
-            item =>
-                String(
-                    item.slug
-                ) === String(slug)
-        );
-
-
-    if(!listing){
-
-        alert(
-            "This listing is no longer available. Please refresh the page."
-        );
-
-        return;
-    }
-
-
-    const price =
-        Number(
-            listing.selling_price_ngn || 0
-        );
-
-
     if(
-        !Number.isFinite(price) ||
-        price <= 0
+        !product ||
+        !product.slug
     ){
 
-        alert(
-            "Unable to determine the current price."
+        showToast(
+            "This service is unavailable right now.",
+            "error"
         );
 
         return;
@@ -4816,86 +5635,31 @@ async function buyYoungPGProduct(
 
 
     if(
-        realBalance < price
+        button.dataset.processing ===
+        "true"
     ){
 
-        const shortfall =
-            price -
-            realBalance;
-
-
-        alert(
-            "Insufficient wallet balance.\n\n" +
-
-            "Price: ₦" +
-            price.toLocaleString(
-                "en-NG"
-            ) +
-
-            "\nYour balance: ₦" +
-            realBalance.toLocaleString(
-                "en-NG"
-            ) +
-
-            "\nYou need: ₦" +
-            shortfall.toLocaleString(
-                "en-NG"
-            ) +
-
-            " more."
-        );
-
-
         return;
     }
 
 
-    const confirmed =
-        confirm(
-            "Buy this service?\n\n" +
-
-            (
-                listing.title ||
-                listing.name ||
-                "YoungPG Service"
-            ) +
-
-            "\n\nPrice: ₦" +
-
-            price.toLocaleString(
-                "en-NG"
-            )
-        );
+    button.dataset.processing =
+        "true";
 
 
-    if(!confirmed){
-
-        return;
-    }
-
-
-    const buttons =
-        document.querySelectorAll(
-            ".youngpg-listing .buy"
-        );
-
-
-    buttons.forEach(
-        button => {
-
-            button.disabled =
-                true;
-
-            button.textContent =
-                "Processing...";
-        }
+    button.classList.add(
+        "processing"
     );
+
+
+    button.disabled =
+        true;
 
 
     try{
 
         const result =
-            await youngPGRequest(
+            await youngpgRequest(
                 "purchase",
                 {
                     method:
@@ -4903,7 +5667,7 @@ async function buyYoungPGProduct(
 
                     body:{
                         slug:
-                            slug,
+                            product.slug,
 
                         quantity:
                             1
@@ -4912,54 +5676,97 @@ async function buyYoungPGProduct(
             );
 
 
-        const accounts =
-            Array.isArray(
-                result?.accounts
-            )
-            ?
-            result.accounts
-            :
-            [];
+        /*
+           Provider purchase and Delight
+           wallet finalization are handled
+           by the Edge Function.
 
+           No confirmation popup is used.
+        */
+
+        if(
+            result?.code ===
+            "INSUFFICIENT_FUNDS"
+        ){
+
+            showToast(
+                result?.error ||
+                "Insufficient wallet balance.",
+                "error"
+            );
+
+            button.disabled =
+                false;
+
+            button.dataset.processing =
+                "false";
+
+            button.classList.remove(
+                "processing"
+            );
+
+            return;
+        }
+
+
+        if(
+            result?.code ===
+            "PROVIDER_SUCCESS_FINALIZATION_FAILED"
+        ){
+
+            showToast(
+                "Purchase reached the provider but could not be finalized. Please contact support. Do not retry this purchase.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if(
+            result?.success === false
+        ){
+
+            throw new Error(
+                result?.error ||
+                result?.message ||
+                "Purchase failed."
+            );
+        }
+
+
+        /*
+           Refresh wallet locally.
+        */
 
         await loadWallet();
 
-        await loadTransactions();
 
+        /*
+           Remove purchased YoungPG item from
+           the current visible stock immediately.
+        */
 
-        const accountText =
-            accounts.length
-            ?
-            accounts.join("\n")
-            :
-            String(
-                result?.content ||
-                "Account details are available in My Purchases."
+        youngpgProducts =
+            youngpgProducts.filter(
+                item =>
+                    item.slug !==
+                    product.slug
             );
 
 
-        alert(
+        /*
+           Purchase is already inserted into
+           purchases + transactions by the
+           Edge Function.
 
-            "Purchase successful! ✅\n\n" +
+           Send the customer to their existing
+           purchases page so the delivered
+           account/content can be seen there.
+        */
 
-            (
-                listing.title ||
-                listing.name ||
-                "YoungPG Service"
-            ) +
-
-            "\n\n" +
-
-            accountText +
-
-            "\n\nYour purchase has also been added to My Purchases."
-        );
-
-
-        await loadYoungPGListings(
-            selectedCategory,
-            selectedYoungPGService
-        );
+        location.href =
+            "purchases.html";
 
 
     }catch(error){
@@ -4970,26 +5777,47 @@ async function buyYoungPGProduct(
         );
 
 
-        alert(
-            error.message ||
-            "Purchase failed. Please try again."
+        const message =
+            String(
+                error?.message ||
+                ""
+            );
+
+
+        if(
+            message
+                .toLowerCase()
+                .includes(
+                    "insufficient"
+                )
+        ){
+
+            showToast(
+                message ||
+                "Insufficient wallet balance.",
+                "error"
+            );
+
+        }else{
+
+            showToast(
+                message ||
+                "Purchase failed. Please try again.",
+                "error"
+            );
+        }
+
+
+        button.disabled =
+            false;
+
+        button.dataset.processing =
+            "false";
+
+        button.classList.remove(
+            "processing"
         );
-
-
-        renderServices();
     }
-}
-
-
-/* =========================================================
-   BUY MANUAL PRODUCT
-========================================================= */
-
-function buyProduct(id){
-
-    location.href =
-        "products.html?id=" +
-        encodeURIComponent(id);
 }
 
 
@@ -5376,19 +6204,7 @@ async function startDashboard(){
 
     updateGreeting();
 
-    /*
-       Categories are loaded directly from
-       service_categories.
-
-       This means categories added from
-       admin automatically appear here.
-    */
-
     loadCategories();
-
-    /*
-       Product loading remains independent.
-    */
 
     loadProducts();
 
@@ -5407,20 +6223,48 @@ async function startDashboard(){
 startDashboard();
 
 
-setInterval(() => {
+/*
+   Only refresh the dashboard's actual
+   service categories.
 
-    loadCategories();
+   We do NOT continuously reset the current
+   service/listing screen, which prevents
+   Facebook/Spotify/VPN screens from
+   suddenly replacing the user's current
+   page.
+*/
 
-}, 5000);
+setInterval(
+    () => {
+
+        if(
+            viewLevel === "home"
+        ){
+
+            loadCategories();
+        }
+
+    },
+    5000
+);
 
 
 document.addEventListener(
     "visibilitychange",
     () => {
 
-        if(!document.hidden){
+        if(
+            !document.hidden &&
+            viewLevel === "home"
+        ){
 
             loadCategories();
+
+            loadProducts();
+
+            loadWallet();
+
+            loadTransactions();
         }
 
     }
