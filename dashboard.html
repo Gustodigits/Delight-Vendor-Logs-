@@ -1054,6 +1054,153 @@ main{
 
 
 /* =========================================================
+   YOUNGPG SERVICE CATEGORIES
+========================================================= */
+
+.youngpg-services{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:14px;
+}
+
+.youngpg-service{
+
+    min-height:120px;
+
+    border:
+        1px solid
+        #e2e6f0;
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:18px 14px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    text-align:center;
+
+    color:#303951;
+
+    box-shadow:
+        0 3px 12px
+        #00000008;
+
+    transition:
+        transform .12s ease,
+        border-color .12s ease;
+}
+
+.youngpg-service:active{
+
+    transform:scale(.98);
+}
+
+.youngpg-service-icon{
+
+    width:52px;
+    height:52px;
+
+    border-radius:16px;
+
+    background:#edf1ff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:25px;
+}
+
+.youngpg-service-name{
+
+    font-size:14px;
+
+    font-weight:800;
+
+    line-height:1.25;
+}
+
+
+/* =========================================================
+   YOUNGPG LISTING
+========================================================= */
+
+.youngpg-listing h3{
+
+    word-break:break-word;
+
+    line-height:1.35;
+}
+
+.youngpg-price-row{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    margin:
+        13px
+        0
+        7px;
+}
+
+.youngpg-price-row .price{
+
+    margin:0;
+}
+
+.youngpg-provider{
+
+    color:#9098b0;
+
+    font-size:11px;
+
+    text-align:right;
+}
+
+.youngpg-duration{
+
+    display:inline-block;
+
+    background:#eef8f5;
+
+    color:#087b60;
+
+    padding:
+        5px
+        8px;
+
+    border-radius:8px;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    margin-top:8px;
+}
+
+
+/* =========================================================
    CONTACT ICONS
 ========================================================= */
 
@@ -1473,6 +1620,12 @@ main{
 
         flex-basis:39px;
     }
+
+    .youngpg-services{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
 }
 
 @media(max-width:380px){
@@ -1493,6 +1646,11 @@ main{
         height:43px;
 
         font-size:21px;
+    }
+
+    .youngpg-services{
+
+        grid-template-columns:1fr;
     }
 }
 
@@ -2007,6 +2165,15 @@ const supabaseClient =
 
 
 /* =========================================================
+   YOUNGPG
+========================================================= */
+
+const YOUNGPG_FUNCTION_URL =
+    SUPABASE_URL +
+    "/functions/v1/youngpg-api";
+
+
+/* =========================================================
    VARIABLES
 ========================================================= */
 
@@ -2015,6 +2182,14 @@ let allServices = [];
 let categories = [];
 
 let selectedCategory = "Home";
+
+let selectedYoungPGService = "";
+
+let youngPGListings = [];
+
+let youngPGServices = [];
+
+let youngPGLoading = false;
 
 let realBalance = 0;
 
@@ -2026,6 +2201,13 @@ let productsLoaded = false;
 
 const PRODUCTS_CACHE_KEY =
     "delight_vendor_products_cache_v2";
+
+
+const YOUNGPG_CATEGORIES = [
+    "All Social Logs",
+    "Streaming & More",
+    "VPN"
+];
 
 
 /* =========================================================
@@ -2070,6 +2252,104 @@ const existingIcons = {
     "Gmail":
         "📧"
 
+};
+
+
+/* =========================================================
+   YOUNGPG SERVICE ICONS
+========================================================= */
+
+const youngPGServiceIcons = {
+
+    "facebook":
+        "📘",
+
+    "instagram":
+        "📸",
+
+    "tiktok":
+        "🎵",
+
+    "reddit":
+        "👽",
+
+    "linkedin":
+        "💼",
+
+    "dating sites":
+        "❤️",
+
+    "twitter/x":
+        "𝕏",
+
+    "twitter":
+        "𝕏",
+
+    "threads":
+        "🧵",
+
+    "discord":
+        "🎮",
+
+    "apple id/icloud":
+        "",
+
+    "apple id":
+        "",
+
+    "icloud":
+        "☁️",
+
+    "snapchat":
+        "👻",
+
+    "texting apps":
+        "💬",
+
+    "google voice":
+        "📞",
+
+    "netflix":
+        "🎬",
+
+    "spotify":
+        "🎧",
+
+    "prime video":
+        "▶️",
+
+    "apple music":
+        "🎵",
+
+    "disney+":
+        "🏰",
+
+    "youtube premium":
+        "▶️",
+
+    "crunchyroll":
+        "🍥",
+
+    "nordvpn":
+        "🔐",
+
+    "expressvpn":
+        "🔒",
+
+    "surfshark":
+        "🦈",
+
+    "ipvanish":
+        "🔐",
+
+    "hma vpn":
+        "🛡️",
+
+    "pia vpn":
+        "🛡️",
+
+    "gmail":
+        "📧"
 };
 
 
@@ -2144,7 +2424,9 @@ function closeContactSupport(event){
     }
 
     document
-        .getElementById("contactSupportModal")
+        .getElementById(
+            "contactSupportModal"
+        )
         .classList.remove("open");
 }
 
@@ -2792,13 +3074,6 @@ function loadProductsFromCache(){
         }
 
 
-        /*
-           Cache may contain products that
-           have since been deleted.
-
-           Filter them out here too.
-        */
-
         allServices =
             parsed.filter(
                 product =>
@@ -3003,10 +3278,579 @@ async function loadProducts(){
 
 
 /* =========================================================
+   YOUNGPG CATEGORY CHECK
+========================================================= */
+
+function isYoungPGCategory(
+    category
+){
+
+    return YOUNGPG_CATEGORIES
+        .some(
+            item =>
+                categoryMatches(
+                    category,
+                    item
+                )
+        );
+}
+
+
+/* =========================================================
+   YOUNGPG API REQUEST
+========================================================= */
+
+async function youngPGRequest(
+    action,
+    options = {}
+){
+
+    const user =
+        await getUserFast();
+
+
+    if(!user){
+
+        location.href =
+            "login.html";
+
+        throw new Error(
+            "Login session not found."
+        );
+    }
+
+
+    const sessionResult =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    const accessToken =
+        sessionResult
+            ?.data
+            ?.session
+            ?.access_token;
+
+
+    if(!accessToken){
+
+        throw new Error(
+            "Authentication session expired. Please login again."
+        );
+    }
+
+
+    let url =
+        YOUNGPG_FUNCTION_URL +
+        "?action=" +
+        encodeURIComponent(
+            action
+        );
+
+
+    if(options.params){
+
+        Object.entries(
+            options.params
+        ).forEach(
+            (
+                [key,value]
+            ) => {
+
+                if(
+                    value !== undefined &&
+                    value !== null &&
+                    String(value) !== ""
+                ){
+
+                    url +=
+                        "&" +
+                        encodeURIComponent(key) +
+                        "=" +
+                        encodeURIComponent(value);
+                }
+            }
+        );
+    }
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    options.method ||
+                    "GET",
+
+                headers:{
+                    "Authorization":
+                        "Bearer " +
+                        accessToken,
+
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    options.body
+                    ?
+                    JSON.stringify(
+                        options.body
+                    )
+                    :
+                    undefined
+            }
+        );
+
+
+    let result = null;
+
+
+    try{
+
+        result =
+            await response.json();
+
+    }catch(error){
+
+        throw new Error(
+            "YoungPG returned an invalid response."
+        );
+    }
+
+
+    if(!response.ok){
+
+        throw new Error(
+            result?.error ||
+            result?.message ||
+            "YoungPG request failed."
+        );
+    }
+
+
+    if(
+        result &&
+        result.success === false
+    ){
+
+        throw new Error(
+            result.message ||
+            result.error ||
+            "YoungPG request failed."
+        );
+    }
+
+
+    return result;
+}
+
+
+/* =========================================================
+   YOUNGPG SERVICE NAME
+========================================================= */
+
+function normalizeYoungPGService(
+    value
+){
+
+    return String(
+        value || ""
+    )
+    .trim()
+    .toLowerCase();
+}
+
+
+function getYoungPGServiceIcon(
+    service
+){
+
+    const key =
+        normalizeYoungPGService(
+            service
+        );
+
+
+    return (
+        youngPGServiceIcons[key] ||
+        "📦"
+    );
+}
+
+
+/* =========================================================
+   LOAD YOUNGPG LISTINGS
+========================================================= */
+
+async function loadYoungPGListings(
+    category,
+    service = "",
+    search = ""
+){
+
+    youngPGLoading = true;
+
+    youngPGListings = [];
+
+
+    renderYoungPGLoading();
+
+
+    try{
+
+        const result =
+            await youngPGRequest(
+                "listings",
+                {
+                    params:{
+                        category:
+                            category,
+
+                        service:
+                            service,
+
+                        search:
+                            search,
+
+                        per_page:
+                            100
+                    }
+                }
+            );
+
+
+        const listings =
+            Array.isArray(
+                result?.data
+            )
+            ?
+            result.data
+            :
+            [];
+
+
+        youngPGListings =
+            listings.filter(
+                item =>
+                    item &&
+                    Number(
+                        item.available_stock || 0
+                    ) > 0
+            );
+
+
+        youngPGLoading = false;
+
+
+        if(!service){
+
+            buildYoungPGServices(
+                youngPGListings
+            );
+        }
+
+
+        renderServices();
+
+
+    }catch(error){
+
+        console.error(
+            "YoungPG listings error:",
+            error
+        );
+
+
+        youngPGLoading = false;
+
+        youngPGListings = [];
+
+
+        const box =
+            document.getElementById(
+                "products"
+            );
+
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">⚠️</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+
+                    escapeHTML(
+                        error.message ||
+                        "Unable to load YoungPG services."
+                    ) +
+
+                '</strong>' +
+
+                '<p>' +
+
+                    'Please try again.' +
+
+                '</p>' +
+
+            '</div>';
+    }
+}
+
+
+/* =========================================================
+   BUILD YOUNGPG SERVICE CATEGORIES
+========================================================= */
+
+function buildYoungPGServices(
+    listings
+){
+
+    const map =
+        new Map();
+
+
+    listings.forEach(
+        listing => {
+
+            let service =
+                String(
+                    listing.service_category ||
+                    ""
+                ).trim();
+
+
+            if(!service){
+
+                service =
+                    String(
+                        listing.title ||
+                        listing.name ||
+                        "Other"
+                    )
+                    .trim();
+            }
+
+
+            if(!service){
+
+                return;
+            }
+
+
+            const key =
+                normalizeYoungPGService(
+                    service
+                );
+
+
+            if(!map.has(key)){
+
+                map.set(
+                    key,
+                    service
+                );
+            }
+        }
+    );
+
+
+    youngPGServices =
+        Array.from(
+            map.values()
+        )
+        .sort(
+            (
+                a,
+                b
+            ) =>
+                a.localeCompare(
+                    b
+                )
+        );
+}
+
+
+/* =========================================================
+   YOUNGPG LOADING DISPLAY
+========================================================= */
+
+function renderYoungPGLoading(){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+
+    box.innerHTML =
+
+        '<div class="msg">' +
+
+            '<div style="font-size:40px">⏳</div>' +
+
+            '<br>' +
+
+            '<strong>' +
+                'Loading services...' +
+            '</strong>' +
+
+            '<p>' +
+                'Please wait while we load the available services.' +
+            '</p>' +
+
+        '</div>';
+}
+
+
+/* =========================================================
+   SELECT YOUNGPG SERVICE
+========================================================= */
+
+async function selectYoungPGService(
+    service
+){
+
+    selectedYoungPGService =
+        service;
+
+
+    document
+        .getElementById(
+            "categoryDescription"
+        )
+        .textContent =
+            service +
+            " services available under " +
+            selectedCategory +
+            ".";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    await loadYoungPGListings(
+        selectedCategory,
+        service
+    );
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function backHome(){
+
+    if(
+        isYoungPGCategory(
+            selectedCategory
+        ) &&
+        selectedYoungPGService
+    ){
+
+        selectedYoungPGService =
+            "";
+
+
+        document
+            .getElementById(
+                "serviceSearch"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "categoryDescription"
+            )
+            .textContent =
+                "Services available under " +
+                selectedCategory +
+                ".";
+
+
+        buildYoungPGServices(
+            youngPGListings
+        );
+
+
+        renderServices();
+
+
+        window.scrollTo({
+            top:0,
+            behavior:"auto"
+        });
+
+
+        return;
+    }
+
+
+    selectedCategory =
+        "Home";
+
+
+    selectedYoungPGService =
+        "";
+
+
+    youngPGListings = [];
+
+    youngPGServices = [];
+
+
+    document
+        .getElementById(
+            "servicesView"
+        )
+        .classList.remove(
+            "active"
+        );
+
+
+    document
+        .getElementById(
+            "homeView"
+        )
+        .style.display =
+            "block";
+
+
+    document
+        .getElementById(
+            "serviceSearch"
+        )
+        .value = "";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"auto"
+    });
+}
+
+
+/* =========================================================
    SELECT CATEGORY
 ========================================================= */
 
-function selectCategory(
+async function selectCategory(
     category
 ){
 
@@ -3035,6 +3879,15 @@ function selectCategory(
 
     selectedCategory =
         category;
+
+
+    selectedYoungPGService =
+        "";
+
+
+    youngPGListings = [];
+
+    youngPGServices = [];
 
 
     document
@@ -3079,48 +3932,20 @@ function selectCategory(
         .value = "";
 
 
-    renderServices();
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"auto"
-    });
-}
-
-
-/* =========================================================
-   BACK HOME
-========================================================= */
-
-function backHome(){
-
-    selectedCategory =
-        "Home";
-
-
-    document
-        .getElementById(
-            "servicesView"
+    if(
+        isYoungPGCategory(
+            category
         )
-        .classList.remove(
-            "active"
+    ){
+
+        await loadYoungPGListings(
+            category
         );
 
+    }else{
 
-    document
-        .getElementById(
-            "homeView"
-        )
-        .style.display =
-            "block";
-
-
-    document
-        .getElementById(
-            "serviceSearch"
-        )
-        .value = "";
+        renderServices();
+    }
 
 
     window.scrollTo({
@@ -3148,6 +3973,18 @@ function renderServices(){
     ){
 
         box.innerHTML = "";
+
+        return;
+    }
+
+
+    if(
+        isYoungPGCategory(
+            selectedCategory
+        )
+    ){
+
+        renderYoungPGServicesOrListings();
 
         return;
     }
@@ -3327,13 +4164,6 @@ function renderServices(){
                 "";
 
 
-            /*
-               IMPORTANT:
-
-               If there is no image, absolutely
-               no image container is created.
-            */
-
             if(
                 product.image_url &&
                 String(
@@ -3469,7 +4299,690 @@ function renderServices(){
 
 
 /* =========================================================
-   BUY PRODUCT
+   RENDER YOUNGPG SERVICES / LISTINGS
+========================================================= */
+
+function renderYoungPGServicesOrListings(){
+
+    const box =
+        document.getElementById(
+            "products"
+        );
+
+
+    if(youngPGLoading){
+
+        renderYoungPGLoading();
+
+        return;
+    }
+
+
+    const search =
+        document
+            .getElementById(
+                "serviceSearch"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    if(
+        !selectedYoungPGService
+    ){
+
+        let services =
+            youngPGServices.slice();
+
+
+        if(search){
+
+            services =
+                services.filter(
+                    service =>
+                        service
+                            .toLowerCase()
+                            .includes(search)
+                );
+        }
+
+
+        if(!services.length){
+
+            box.innerHTML =
+
+                '<div class="msg">' +
+
+                    '<div style="font-size:40px">🔍</div>' +
+
+                    '<br>' +
+
+                    '<strong>' +
+                        'No services found' +
+                    '</strong>' +
+
+                    '<p>' +
+
+                        (
+                            search
+                            ?
+                            'No service category matches your search.'
+                            :
+                            'There are currently no available services in this category.'
+                        ) +
+
+                    '</p>' +
+
+                '</div>';
+
+            return;
+        }
+
+
+        box.innerHTML =
+            '<div class="youngpg-services"></div>';
+
+
+        const serviceBox =
+            box.querySelector(
+                ".youngpg-services"
+            );
+
+
+        services.forEach(
+            service => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+
+                button.className =
+                    "youngpg-service";
+
+
+                button.onclick =
+                    () =>
+                        selectYoungPGService(
+                            service
+                        );
+
+
+                button.innerHTML =
+
+                    '<div class="youngpg-service-icon">' +
+
+                        escapeHTML(
+                            getYoungPGServiceIcon(
+                                service
+                            )
+                        ) +
+
+                    '</div>' +
+
+                    '<div class="youngpg-service-name">' +
+
+                        escapeHTML(
+                            service
+                        ) +
+
+                    '</div>';
+
+
+                serviceBox.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+        return;
+    }
+
+
+    let listings =
+        youngPGListings.slice();
+
+
+    if(search){
+
+        listings =
+            listings.filter(
+                listing =>
+
+                    String(
+                        listing.title ||
+                        listing.name ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        listing.description ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+            );
+    }
+
+
+    if(!listings.length){
+
+        box.innerHTML =
+
+            '<div class="msg">' +
+
+                '<div style="font-size:40px">🔍</div>' +
+
+                '<br>' +
+
+                '<strong>' +
+                    'No listings found' +
+                '</strong>' +
+
+                '<p>' +
+
+                    (
+                        search
+                        ?
+                        'No listing matches your search.'
+                        :
+                        'There are currently no available listings in this service.'
+                    ) +
+
+                '</p>' +
+
+            '</div>';
+
+        return;
+    }
+
+
+    box.innerHTML = "";
+
+
+    listings.forEach(
+        listing => {
+
+            renderYoungPGListing(
+                box,
+                listing
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   DURATION TEXT
+========================================================= */
+
+function getDurationText(
+    listing
+){
+
+    const value =
+        Number(
+            listing.duration_value || 0
+        );
+
+
+    const unit =
+        String(
+            listing.duration_unit || ""
+        ).trim();
+
+
+    if(
+        value > 0 &&
+        unit
+    ){
+
+        return (
+            value +
+            " " +
+            unit +
+            (
+                value === 1
+                ? ""
+                : (
+                    unit.endsWith("s")
+                    ? ""
+                    : "s"
+                )
+            )
+        );
+    }
+
+
+    const title =
+        String(
+            listing.title ||
+            listing.name ||
+            ""
+        );
+
+
+    const match =
+        title.match(
+            /(\d+(?:\.\d+)?)\s*(month|months|year|years|week|weeks|day|days)/i
+        );
+
+
+    if(match){
+
+        return (
+            match[1] +
+            " " +
+            match[2]
+        );
+    }
+
+
+    return "";
+}
+
+
+/* =========================================================
+   RENDER YOUNGPG LISTING
+========================================================= */
+
+function renderYoungPGListing(
+    box,
+    listing
+){
+
+    const stock =
+        Number(
+            listing.available_stock || 0
+        );
+
+
+    const price =
+        Number(
+            listing.selling_price_ngn || 0
+        );
+
+
+    const providerPrice =
+        Number(
+            listing.provider_price_ngn || 0
+        );
+
+
+    const duration =
+        getDurationText(
+            listing
+        );
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "product youngpg-listing";
+
+
+    card.innerHTML =
+
+        '<span class="badge">' +
+
+            escapeHTML(
+                listing.service_category ||
+                listing.site_category ||
+                "YoungPG"
+            ) +
+
+        '</span>' +
+
+        '<h3>' +
+
+            escapeHTML(
+                listing.title ||
+                listing.name ||
+                "Unnamed Service"
+            ) +
+
+        '</h3>' +
+
+        (
+            duration
+            ?
+            '<span class="youngpg-duration">' +
+                escapeHTML(duration) +
+            '</span>'
+            :
+            ""
+        ) +
+
+        '<p class="desc">' +
+
+            escapeHTML(
+                listing.description ||
+                ""
+            ) +
+
+        '</p>' +
+
+        '<div class="youngpg-price-row">' +
+
+            '<p class="price">' +
+
+                '₦' +
+
+                price.toLocaleString(
+                    "en-NG",
+                    {
+                        minimumFractionDigits:0,
+                        maximumFractionDigits:2
+                    }
+                ) +
+
+            '</p>' +
+
+            '<div class="youngpg-provider">' +
+
+                'Provider: ₦' +
+
+                providerPrice.toLocaleString(
+                    "en-NG",
+                    {
+                        minimumFractionDigits:0,
+                        maximumFractionDigits:2
+                    }
+                ) +
+
+            '</div>' +
+
+        '</div>' +
+
+        '<p class="stock">' +
+
+            (
+                stock > 0
+                ?
+                "✅ " +
+                stock +
+                " available"
+                :
+                "❌ Sold Out"
+            ) +
+
+        '</p>' +
+
+        '<button ' +
+
+            'class="buy" ' +
+
+            (
+                stock <= 0
+                ? "disabled"
+                : ""
+            ) +
+
+            ' onclick="buyYoungPGProduct(' +
+
+                "'" +
+                escapeHTML(
+                    listing.slug
+                ) +
+                "'" +
+
+            ')"' +
+
+        '>' +
+
+            (
+                stock > 0
+                ?
+                "Buy Now"
+                :
+                "Sold Out"
+            ) +
+
+        '</button>';
+
+
+    box.appendChild(
+        card
+    );
+}
+
+
+/* =========================================================
+   YOUNGPG PURCHASE
+========================================================= */
+
+async function buyYoungPGProduct(
+    slug
+){
+
+    if(!slug){
+
+        return;
+    }
+
+
+    const listing =
+        youngPGListings.find(
+            item =>
+                String(
+                    item.slug
+                ) === String(slug)
+        );
+
+
+    if(!listing){
+
+        alert(
+            "This listing is no longer available. Please refresh the page."
+        );
+
+        return;
+    }
+
+
+    const price =
+        Number(
+            listing.selling_price_ngn || 0
+        );
+
+
+    if(
+        !Number.isFinite(price) ||
+        price <= 0
+    ){
+
+        alert(
+            "Unable to determine the current price."
+        );
+
+        return;
+    }
+
+
+    if(
+        realBalance < price
+    ){
+
+        const shortfall =
+            price -
+            realBalance;
+
+
+        alert(
+            "Insufficient wallet balance.\n\n" +
+
+            "Price: ₦" +
+            price.toLocaleString(
+                "en-NG"
+            ) +
+
+            "\nYour balance: ₦" +
+            realBalance.toLocaleString(
+                "en-NG"
+            ) +
+
+            "\nYou need: ₦" +
+            shortfall.toLocaleString(
+                "en-NG"
+            ) +
+
+            " more."
+        );
+
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Buy this service?\n\n" +
+
+            (
+                listing.title ||
+                listing.name ||
+                "YoungPG Service"
+            ) +
+
+            "\n\nPrice: ₦" +
+
+            price.toLocaleString(
+                "en-NG"
+            )
+        );
+
+
+    if(!confirmed){
+
+        return;
+    }
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".youngpg-listing .buy"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.disabled =
+                true;
+
+            button.textContent =
+                "Processing...";
+        }
+    );
+
+
+    try{
+
+        const result =
+            await youngPGRequest(
+                "purchase",
+                {
+                    method:
+                        "POST",
+
+                    body:{
+                        slug:
+                            slug,
+
+                        quantity:
+                            1
+                    }
+                }
+            );
+
+
+        const accounts =
+            Array.isArray(
+                result?.accounts
+            )
+            ?
+            result.accounts
+            :
+            [];
+
+
+        await loadWallet();
+
+        await loadTransactions();
+
+
+        const accountText =
+            accounts.length
+            ?
+            accounts.join("\n")
+            :
+            String(
+                result?.content ||
+                "Account details are available in My Purchases."
+            );
+
+
+        alert(
+
+            "Purchase successful! ✅\n\n" +
+
+            (
+                listing.title ||
+                listing.name ||
+                "YoungPG Service"
+            ) +
+
+            "\n\n" +
+
+            accountText +
+
+            "\n\nYour purchase has also been added to My Purchases."
+        );
+
+
+        await loadYoungPGListings(
+            selectedCategory,
+            selectedYoungPGService
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "YoungPG purchase error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Purchase failed. Please try again."
+        );
+
+
+        renderServices();
+    }
+}
+
+
+/* =========================================================
+   BUY MANUAL PRODUCT
 ========================================================= */
 
 function buyProduct(id){
@@ -3893,15 +5406,25 @@ async function startDashboard(){
 
 startDashboard();
 
-    setInterval(() => {
+
+setInterval(() => {
+
     loadCategories();
+
 }, 5000);
 
-    document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-        loadCategories();
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(!document.hidden){
+
+            loadCategories();
+        }
+
     }
-});
+);
 
 </script>
 
