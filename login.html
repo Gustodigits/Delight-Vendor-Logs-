@@ -9,965 +9,328 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>Delight Vendor Logs</title>
+<title>Login - Delight Vendor Logs</title>
 
-<meta
-    name="description"
-    content="Delight Vendor Logs — digital services, resources, numbers and more, all in one platform."
->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
-/* =========================
-   RESET
-========================= */
-
 *{
+    box-sizing:border-box;
     margin:0;
     padding:0;
-    box-sizing:border-box;
 }
 
-html{
-    scroll-behavior:smooth;
+html,
+body{
+    width:100%;
+    min-height:100%;
 }
 
 body{
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
+    font-family:Arial, Helvetica, sans-serif;
     background:#050505;
-    color:#fff;
-
-    overflow-x:hidden;
-}
-
-/* =========================
-   VARIABLES
-========================= */
-
-:root{
-    --black:#050505;
-    --black2:#0a0a0a;
-    --card:#0d0d0d;
-    --card2:#111111;
-
-    --gold:#d4af37;
-    --gold-light:#f1d77a;
-    --gold-dark:#9c7b16;
-
-    --white:#ffffff;
-    --muted:#a8a8a8;
-    --border:rgba(212,175,55,.22);
-}
-
-/* =========================
-   BACKGROUND EFFECT
-========================= */
-
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-        radial-gradient(
-            circle at 15% 10%,
-            rgba(212,175,55,.09),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 85% 20%,
-            rgba(212,175,55,.07),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 50% 80%,
-            rgba(212,175,55,.045),
-            transparent 35%
-        );
-
-    z-index:-2;
-}
-
-body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-
-    pointer-events:none;
-
-    opacity:.035;
-
-    background-image:
-        linear-gradient(
-            rgba(255,255,255,.8) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,.8) 1px,
-            transparent 1px
-        );
-
-    background-size:55px 55px;
-
-    z-index:-1;
-}
-
-/* =========================
-   HEADER
-========================= */
-
-header{
-    width:100%;
-    position:relative;
-    z-index:20;
-}
-
-.navbar{
-    width:min(1180px,92%);
-    margin:auto;
-
-    min-height:82px;
-
+    color:#ffffff;
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content:center;
+    min-height:100vh;
+    padding:25px 15px;
+}
 
-    border-bottom:1px solid rgba(212,175,55,.13);
+/* MAIN CONTAINER */
+
+.login-wrapper{
+    width:100%;
+    max-width:430px;
 }
 
 /* LOGO */
 
 .logo{
-    display:flex;
-    align-items:center;
-    gap:11px;
-
-    text-decoration:none;
-    color:#fff;
-}
-
-.logo-mark{
-    width:40px;
-    height:40px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:1px solid var(--gold);
-
-    border-radius:11px;
-
-    color:var(--gold);
-
-    font-size:20px;
-    font-weight:900;
-
-    box-shadow:
-        0 0 20px rgba(212,175,55,.12),
-        inset 0 0 15px rgba(212,175,55,.05);
-}
-
-.logo-text{
-    font-size:18px;
-    font-weight:850;
-    letter-spacing:-.4px;
-}
-
-.logo-text span{
-    color:var(--gold);
-}
-
-/* NAV BUTTONS */
-
-.nav-actions{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    min-height:44px;
-
-    padding:0 19px;
-
-    border-radius:10px;
-
-    font-size:14px;
-    font-weight:750;
-
-    text-decoration:none;
-
-    transition:
-        .25s ease;
-
-    cursor:pointer;
-}
-
-.btn-login{
-    color:#fff;
-
-    border:1px solid rgba(212,175,55,.55);
-
-    background:rgba(212,175,55,.03);
-}
-
-.btn-login:hover{
-    background:rgba(212,175,55,.10);
-    border-color:var(--gold);
-
-    transform:translateY(-1px);
-}
-
-.btn-gold{
-    color:#080808;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--gold-light),
-            var(--gold)
-        );
-
-    border:1px solid var(--gold);
-
-    box-shadow:
-        0 8px 28px rgba(212,175,55,.14);
-}
-
-.btn-gold:hover{
-    transform:translateY(-2px);
-
-    box-shadow:
-        0 12px 34px rgba(212,175,55,.22);
-}
-
-/* =========================
-   HERO
-========================= */
-
-.hero{
-    width:min(1180px,92%);
-    margin:auto;
-
-    min-height:650px;
-
-    display:flex;
-    align-items:center;
-
-    padding:90px 0 80px;
-
-    position:relative;
-}
-
-.hero-content{
-    width:100%;
-    max-width:850px;
-}
-
-.eyebrow{
-    display:inline-flex;
-    align-items:center;
-    gap:9px;
-
-    padding:8px 13px;
-
-    border:1px solid rgba(212,175,55,.25);
-
-    background:rgba(212,175,55,.055);
-
-    border-radius:999px;
-
-    color:var(--gold-light);
-
-    font-size:11px;
-    font-weight:800;
-
-    letter-spacing:1.2px;
-    text-transform:uppercase;
-
-    margin-bottom:27px;
-}
-
-.eyebrow-dot{
-    width:7px;
-    height:7px;
-
-    border-radius:50%;
-
-    background:var(--gold);
-
-    box-shadow:
-        0 0 10px var(--gold);
-}
-
-.hero h1{
-    font-size:
-        clamp(46px,7vw,86px);
-
-    line-height:.98;
-
-    letter-spacing:-4px;
-
-    font-weight:900;
-
-    max-width:850px;
-}
-
-.hero h1 .gold{
-    color:var(--gold);
-}
-
-.hero-description{
-    max-width:650px;
-
-    margin-top:28px;
-
-    color:#a9a9a9;
-
-    font-size:18px;
-    line-height:1.75;
-}
-
-.hero-actions{
-    display:flex;
-    flex-wrap:wrap;
-
-    gap:12px;
-
-    margin-top:34px;
-}
-
-.hero-actions .btn{
-    min-height:51px;
-    padding:0 23px;
-}
-
-/* SMALL TRUST TEXT */
-
-.hero-note{
-    display:flex;
-    align-items:center;
-    gap:9px;
-
-    margin-top:24px;
-
-    color:#777;
-
-    font-size:12px;
-}
-
-.hero-note span{
-    color:var(--gold);
-    font-size:15px;
-}
-
-/* =========================
-   NUMBER BANNER
-========================= */
-
-.number-section{
-    width:min(1180px,92%);
-    margin:0 auto 90px;
-}
-
-.number-card{
-    position:relative;
-
-    overflow:hidden;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    gap:30px;
-
-    padding:34px 36px;
-
-    background:
-        linear-gradient(
-            115deg,
-            #0f0f0f,
-            #080808
-        );
-
-    border:1px solid rgba(212,175,55,.35);
-
-    border-radius:22px;
-
-    box-shadow:
-        0 20px 70px rgba(0,0,0,.35);
-}
-
-.number-card::before{
-    content:"";
-
-    position:absolute;
-
-    width:300px;
-    height:300px;
-
-    right:-100px;
-    top:-150px;
-
-    border-radius:50%;
-
-    background:rgba(212,175,55,.10);
-
-    filter:blur(35px);
-}
-
-.number-content{
-    position:relative;
-    z-index:1;
-}
-
-.number-label{
-    color:var(--gold);
-
-    font-size:11px;
-    font-weight:850;
-
-    text-transform:uppercase;
-    letter-spacing:1.4px;
-
-    margin-bottom:9px;
-}
-
-.number-card h2{
-    font-size:clamp(24px,4vw,36px);
-
-    letter-spacing:-1.2px;
-
-    margin-bottom:8px;
-}
-
-.number-card p{
-    color:#929292;
-
-    line-height:1.6;
-
-    max-width:650px;
-}
-
-.number-btn{
-    position:relative;
-    z-index:1;
-
-    flex-shrink:0;
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    min-height:48px;
-
-    padding:0 20px;
-
-    border-radius:11px;
-
-    color:#080808;
-
-    background:var(--gold);
-
-    text-decoration:none;
-
-    font-size:14px;
-    font-weight:850;
-
-    transition:.25s ease;
-}
-
-.number-btn:hover{
-    transform:translateY(-2px);
-
-    background:var(--gold-light);
-
-    box-shadow:
-        0 10px 30px rgba(212,175,55,.18);
-}
-
-/* =========================
-   CATEGORY SECTION
-========================= */
-
-.categories-section{
-    width:min(1180px,92%);
-    margin:0 auto 100px;
-}
-
-.section-heading{
-    max-width:680px;
-
-    margin-bottom:32px;
-}
-
-.section-heading .small{
-    color:var(--gold);
-
-    font-size:11px;
-    font-weight:850;
-
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-
-    margin-bottom:10px;
-}
-
-.section-heading h2{
-    font-size:
-        clamp(31px,5vw,49px);
-
-    letter-spacing:-2px;
-
-    line-height:1.05;
-}
-
-.section-heading p{
-    color:#888;
-
-    margin-top:14px;
-
-    line-height:1.7;
-
-    font-size:15px;
-}
-
-/* CATEGORY GRID */
-
-.category-grid{
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,1fr);
-
-    gap:13px;
-}
-
-/*
-   These cards are intentionally NOT links.
-   They are showcase-only on the public landing page.
-*/
-
-.category-card{
-    min-height:145px;
-
-    padding:22px;
-
-    border:1px solid rgba(255,255,255,.07);
-
-    border-radius:17px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #101010,
-            #090909
-        );
-
-    transition:
-        border-color .25s ease,
-        transform .25s ease,
-        box-shadow .25s ease;
-}
-
-.category-card:hover{
-    transform:translateY(-3px);
-
-    border-color:rgba(212,175,55,.28);
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.25);
-}
-
-.category-icon{
-    width:43px;
-    height:43px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:rgba(212,175,55,.08);
-
-    border:1px solid rgba(212,175,55,.18);
-
-    color:var(--gold);
-
-    font-size:18px;
-
-    margin-bottom:22px;
-}
-
-.category-card h3{
-    font-size:15px;
-    font-weight:800;
-
-    margin-bottom:6px;
-}
-
-.category-card p{
-    color:#707070;
-
-    font-size:12px;
-
-    line-height:1.5;
-}
-
-/* =========================
-   FEATURE STRIP
-========================= */
-
-.feature-section{
-    width:min(1180px,92%);
-    margin:0 auto 100px;
-}
-
-.feature-box{
-    padding:50px 42px;
-
-    border-radius:25px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0f0f0f,
-            #070707
-        );
-
-    border:1px solid rgba(212,175,55,.15);
-
     text-align:center;
-}
-
-.feature-box h2{
-    font-size:
-        clamp(29px,5vw,47px);
-
-    letter-spacing:-1.8px;
-
-    line-height:1.05;
-}
-
-.feature-box h2 span{
-    color:var(--gold);
-}
-
-.feature-box > p{
-    max-width:620px;
-
-    margin:17px auto 38px;
-
-    color:#888;
-
-    line-height:1.7;
-}
-
-.features{
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:14px;
-
-    text-align:left;
-}
-
-.feature{
-    padding:22px;
-
-    border-radius:16px;
-
-    background:#0a0a0a;
-
-    border:1px solid rgba(255,255,255,.06);
-}
-
-.feature-number{
-    color:var(--gold);
-
-    font-size:12px;
-    font-weight:900;
-
-    margin-bottom:18px;
-}
-
-.feature h3{
-    font-size:15px;
-
-    margin-bottom:8px;
-}
-
-.feature p{
-    color:#727272;
-
-    font-size:12px;
-
-    line-height:1.6;
-}
-
-/* =========================
-   FINAL CTA
-========================= */
-
-.cta-section{
-    width:min(1000px,92%);
-
-    margin:0 auto;
-
-    padding:70px 0 100px;
-
-    text-align:center;
-}
-
-.cta-section .small{
-    color:var(--gold);
-
-    font-size:11px;
-    font-weight:850;
-
-    letter-spacing:1.5px;
-
-    text-transform:uppercase;
-
-    margin-bottom:15px;
-}
-
-.cta-section h2{
-    font-size:
-        clamp(37px,6vw,64px);
-
-    letter-spacing:-2.8px;
-
+    margin-bottom:30px;
     line-height:1;
 }
 
-.cta-section p{
-    max-width:570px;
-
-    margin:20px auto 30px;
-
-    color:#888;
-
-    line-height:1.7;
+.logo .delight{
+    display:block;
+    color:#ffffff;
+    font-size:34px;
+    font-weight:900;
+    letter-spacing:-1.5px;
 }
 
-.cta-actions{
-    display:flex;
-
-    justify-content:center;
-
-    gap:12px;
-
-    flex-wrap:wrap;
+.logo .vendor{
+    display:block;
+    color:#d4af37;
+    font-size:17px;
+    font-weight:800;
+    letter-spacing:4px;
+    margin-top:7px;
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* CARD */
 
-footer{
-    width:min(1180px,92%);
+.login-card{
+    width:100%;
+    background:#0d0d0d;
+    border:1px solid #252525;
+    border-radius:20px;
+    padding:32px 25px 28px;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.55),
+        0 0 35px rgba(212,175,55,0.05);
+}
 
-    margin:auto;
+/* HEADER */
 
-    padding:25px 0 35px;
+.login-header{
+    text-align:center;
+    margin-bottom:28px;
+}
 
-    border-top:1px solid rgba(255,255,255,.07);
+.login-header h1{
+    font-size:28px;
+    font-weight:800;
+    color:#ffffff;
+    margin-bottom:9px;
+}
 
+.login-header p{
+    color:#999999;
+    font-size:14px;
+    line-height:1.5;
+}
+
+/* FORM */
+
+.form-group{
+    margin-bottom:19px;
+}
+
+.form-group label{
+    display:block;
+    color:#dddddd;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.input-wrapper{
+    position:relative;
+}
+
+.form-group input{
+    width:100%;
+    height:52px;
+    border:1px solid #292929;
+    border-radius:11px;
+    background:#151515;
+    color:#ffffff;
+    outline:none;
+    padding:0 15px;
+    font-size:15px;
+    transition:0.2s ease;
+}
+
+.form-group input:focus{
+    border-color:#d4af37;
+    box-shadow:0 0 0 3px rgba(212,175,55,0.08);
+}
+
+.form-group input::placeholder{
+    color:#666666;
+}
+
+/* PASSWORD */
+
+.password-input{
+    padding-right:52px !important;
+}
+
+.toggle-password{
+    position:absolute;
+    right:0;
+    top:0;
+    width:50px;
+    height:52px;
+    border:0;
+    background:transparent;
+    color:#888888;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.toggle-password:hover{
+    color:#d4af37;
+}
+
+/* FORGOT PASSWORD */
+
+.forgot-row{
     display:flex;
+    justify-content:flex-end;
+    margin-top:-7px;
+    margin-bottom:22px;
+}
 
-    justify-content:space-between;
+.forgot-row a{
+    color:#d4af37;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:700;
+}
+
+.forgot-row a:hover{
+    text-decoration:underline;
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+    width:100%;
+    height:53px;
+    border:none;
+    border-radius:11px;
+    background:linear-gradient(135deg,#d4af37,#f0cf68);
+    color:#080808;
+    font-size:15px;
+    font-weight:900;
+    cursor:pointer;
+    transition:0.2s ease;
+}
+
+.login-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 25px rgba(212,175,55,0.18);
+}
+
+.login-btn:active{
+    transform:translateY(0);
+}
+
+.login-btn:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
+/* MESSAGE */
+
+.message{
+    display:none;
+    margin-top:16px;
+    padding:12px 13px;
+    border-radius:9px;
+    font-size:13px;
+    line-height:1.45;
+    text-align:center;
+}
+
+.message.error{
+    display:block;
+    background:rgba(255,70,70,0.08);
+    border:1px solid rgba(255,70,70,0.22);
+    color:#ff8b8b;
+}
+
+.message.success{
+    display:block;
+    background:rgba(212,175,55,0.08);
+    border:1px solid rgba(212,175,55,0.22);
+    color:#e8c95f;
+}
+
+/* DIVIDER */
+
+.divider{
+    display:flex;
     align-items:center;
-
-    gap:20px;
-
-    color:#555;
-
+    gap:12px;
+    margin:25px 0;
+    color:#666666;
     font-size:12px;
 }
 
-.footer-brand{
-    color:#777;
+.divider::before,
+.divider::after{
+    content:"";
+    height:1px;
+    flex:1;
+    background:#252525;
 }
 
-.footer-brand strong{
-    color:#b9b9b9;
+/* REGISTER */
+
+.register-text{
+    text-align:center;
+    color:#888888;
+    font-size:14px;
 }
 
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:850px){
-
-    .navbar{
-        min-height:72px;
-    }
-
-    .logo-text{
-        font-size:15px;
-    }
-
-    .logo-mark{
-        width:37px;
-        height:37px;
-    }
-
-    .nav-actions{
-        gap:7px;
-    }
-
-    .nav-actions .btn{
-        min-height:40px;
-        padding:0 13px;
-
-        font-size:12px;
-    }
-
-    .hero{
-        min-height:auto;
-
-        padding:
-            75px 0
-            65px;
-    }
-
-    .hero h1{
-        letter-spacing:-2.7px;
-    }
-
-    .hero-description{
-        font-size:16px;
-    }
-
-    .number-card{
-        align-items:flex-start;
-
-        flex-direction:column;
-
-        padding:28px;
-    }
-
-    .number-btn{
-        width:100%;
-    }
-
-    .category-grid{
-        grid-template-columns:
-            repeat(2,1fr);
-    }
-
-    .features{
-        grid-template-columns:1fr;
-    }
-
-    footer{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
+.register-text a{
+    color:#d4af37;
+    text-decoration:none;
+    font-weight:800;
 }
 
-@media(max-width:520px){
-
-    .navbar{
-        width:92%;
-    }
-
-    .logo-text{
-        display:none;
-    }
-
-    .hero{
-        padding-top:55px;
-    }
-
-    .eyebrow{
-        font-size:9px;
-    }
-
-    .hero h1{
-        font-size:46px;
-        letter-spacing:-2.3px;
-    }
-
-    .hero-description{
-        font-size:15px;
-        line-height:1.65;
-    }
-
-    .hero-actions{
-        width:100%;
-    }
-
-    .hero-actions .btn{
-        width:100%;
-    }
-
-    .category-grid{
-        grid-template-columns:1fr 1fr;
-
-        gap:9px;
-    }
-
-    .category-card{
-        min-height:135px;
-
-        padding:16px;
-    }
-
-    .category-icon{
-        width:38px;
-        height:38px;
-
-        margin-bottom:17px;
-    }
-
-    .category-card h3{
-        font-size:13px;
-    }
-
-    .category-card p{
-        font-size:10px;
-    }
-
-    .feature-box{
-        padding:35px 18px;
-    }
-
-    .cta-section{
-        padding-bottom:70px;
-    }
-
+.register-text a:hover{
+    text-decoration:underline;
 }
 
-/* =========================
-   ACCESSIBILITY
-========================= */
+/* BACK HOME */
 
-a:focus-visible{
-    outline:2px solid var(--gold);
+.back-home{
+    text-align:center;
+    margin-top:23px;
+}
 
-    outline-offset:4px;
+.back-home a{
+    color:#777777;
+    text-decoration:none;
+    font-size:13px;
+    transition:0.2s ease;
+}
+
+.back-home a:hover{
+    color:#d4af37;
+}
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    margin-top:25px;
+    color:#555555;
+    font-size:11px;
+}
+
+/* MOBILE */
+
+@media(max-width:480px){
+
+    body{
+        padding:18px 13px;
+    }
+
+    .login-card{
+        padding:28px 20px 25px;
+        border-radius:17px;
+    }
+
+    .logo{
+        margin-bottom:25px;
+    }
+
+    .logo .delight{
+        font-size:31px;
+    }
+
+    .login-header h1{
+        font-size:25px;
+    }
+
 }
 
 </style>
@@ -976,540 +339,419 @@ a:focus-visible{
 
 <body>
 
-<!-- =========================
-     HEADER
-========================= -->
+<div class="login-wrapper">
 
-<header>
+    <!-- LOGO -->
 
-    <nav class="navbar">
+    <div class="logo">
+        <span class="delight">Delight</span>
+        <span class="vendor">VENDOR LOGS</span>
+    </div>
 
-        <a href="index.html" class="logo">
 
-            <div class="logo-mark">
-                D
+    <!-- LOGIN CARD -->
+
+    <div class="login-card">
+
+        <div class="login-header">
+            <h1>Welcome back 👋</h1>
+
+            <p>
+                Sign in to your Delight Vendor Logs account
+            </p>
+        </div>
+
+
+        <form id="loginForm" onsubmit="loginUser(event)">
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
             </div>
 
-            <div class="logo-text">
-                Delight <span>Vendor Logs</span>
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="input-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        class="password-input"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        id="togglePassword"
+                        onclick="togglePassword()"
+                        aria-label="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
             </div>
 
-        </a>
 
-        <div class="nav-actions">
+            <!-- FORGOT PASSWORD -->
+
+            <div class="forgot-row">
+
+                <a href="forgot-password.html">
+                    Forgot Password?
+                </a>
+
+            </div>
+
 
             <!-- LOGIN -->
-            <a
-                href="login.html"
-                class="btn btn-login"
-            >
-                Login
-            </a>
 
-            <!-- CREATE ACCOUNT -->
-            <a
-                href="register.html"
-                class="btn btn-gold"
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginButton"
             >
+                Continue
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+        </form>
+
+
+        <!-- DIVIDER -->
+
+        <div class="divider">
+            or
+        </div>
+
+
+        <!-- REGISTER -->
+
+        <div class="register-text">
+
+            Don't have an account?
+
+            <a href="register.html">
                 Create Account
             </a>
 
         </div>
 
-    </nav>
-
-</header>
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<main>
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <div class="eyebrow">
-
-            <span class="eyebrow-dot"></span>
-
-            One platform • Multiple digital services
-
-        </div>
-
-
-        <h1>
-
-            Everything you need.
-
-            <span class="gold">
-                One platform.
-            </span>
-
-        </h1>
-
-
-        <p class="hero-description">
-
-            Access digital services, working resources,
-            numbers and more from one simple platform —
-            built to keep everything you need in one place.
-
-        </p>
-
-
-        <div class="hero-actions">
-
-            <!-- CREATE ACCOUNT -->
-            <a
-                href="register.html"
-                class="btn btn-gold"
-            >
-                Create Account
-            </a>
-
-            <!-- LOGIN -->
-            <a
-                href="login.html"
-                class="btn btn-login"
-            >
-                Login
-            </a>
-
-        </div>
-
-
-        <div class="hero-note">
-
-            <span>✦</span>
-
-            One account. One dashboard. Everything organized.
-
-        </div>
-
     </div>
 
-</section>
 
+    <!-- BACK HOME -->
 
-<!-- =========================
-     GET ALL COUNTRY NUMBERS
-     PUBLIC LANDING PAGE
-========================= -->
+    <div class="back-home">
 
-<section class="number-section">
-
-    <div class="number-card">
-
-        <div class="number-content">
-
-            <div class="number-label">
-                Digital Numbers
-            </div>
-
-            <h2>
-                Get All Country Numbers
-            </h2>
-
-            <p>
-                Access numbers from different countries
-                through your Delight Vendor Logs account.
-                Create an account to get started.
-            </p>
-
-        </div>
-
-
-        <!-- IMPORTANT:
-             This goes to REGISTER, NOT virtualnumber.html
-        -->
-
-        <a
-            href="register.html"
-            class="number-btn"
-        >
-            Create Account
+        <a href="index.html">
+            ← Back to Home
         </a>
 
     </div>
 
-</section>
 
+    <!-- FOOTER -->
 
-<!-- =========================
-     CATEGORIES
-========================= -->
+    <div class="footer">
 
-<section class="categories-section">
-
-    <div class="section-heading">
-
-        <div class="small">
-            What's inside
-        </div>
-
-        <h2>
-            Everything in one place.
-        </h2>
-
-        <p>
-            Explore the range of digital services and
-            resources available across the Delight Vendor
-            Logs platform.
-        </p>
+        © 2026 Delight Vendor Logs. All rights reserved.
 
     </div>
 
-
-    <div class="category-grid">
-
-
-        <!--
-            IMPORTANT:
-            These are showcase cards only.
-            They intentionally have NO href.
-        -->
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◈
-            </div>
-
-            <h3>
-                All Social Logs
-            </h3>
-
-            <p>
-                Digital social resources in one place.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◆
-            </div>
-
-            <h3>
-                Working Pictures
-            </h3>
-
-            <p>
-                Ready-to-use working resources.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◇
-            </div>
-
-            <h3>
-                Formats
-            </h3>
-
-            <p>
-                Useful digital formats and resources.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ↗
-            </div>
-
-            <h3>
-                Working Links
-            </h3>
-
-            <p>
-                Access available working resources.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◉
-            </div>
-
-            <h3>
-                Gmail
-            </h3>
-
-            <p>
-                Gmail-related digital services.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◎
-            </div>
-
-            <h3>
-                All Countries Numbers
-            </h3>
-
-            <p>
-                Numbers from different countries.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ▣
-            </div>
-
-            <h3>
-                Streaming & More
-            </h3>
-
-            <p>
-                Streaming services and more digital options.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ◌
-            </div>
-
-            <h3>
-                ESIMS
-            </h3>
-
-            <p>
-                Digital connectivity services.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ⌁
-            </div>
-
-            <h3>
-                VPN
-            </h3>
-
-            <p>
-                Digital privacy and connectivity options.
-            </p>
-
-        </div>
-
-
-        <div class="category-card">
-
-            <div class="category-icon">
-                ✦
-            </div>
-
-            <h3>
-                Voice Cloner / Fake Video Call
-            </h3>
-
-            <p>
-                Digital voice and video-related services.
-            </p>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     FEATURES
-========================= -->
-
-<section class="feature-section">
-
-    <div class="feature-box">
-
-        <h2>
-            One account.
-            <span>One platform.</span>
-        </h2>
-
-        <p>
-            Delight Vendor Logs brings different digital
-            services and resources together so you can
-            manage what you need from one place.
-        </p>
-
-
-        <div class="features">
-
-
-            <div class="feature">
-
-                <div class="feature-number">
-                    01
-                </div>
-
-                <h3>
-                    Simple Access
-                </h3>
-
-                <p>
-                    Create your account and access the
-                    platform through your personal dashboard.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="feature-number">
-                    02
-                </div>
-
-                <h3>
-                    Everything Organized
-                </h3>
-
-                <p>
-                    Different services and resources are
-                    arranged into clear categories.
-                </p>
-
-            </div>
-
-
-            <div class="feature">
-
-                <div class="feature-number">
-                    03
-                </div>
-
-                <h3>
-                    One Dashboard
-                </h3>
-
-                <p>
-                    Keep your account, balance and available
-                    services together in one place.
-                </p>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     FINAL CTA
-========================= -->
-
-<section class="cta-section">
-
-    <div class="small">
-        Get started
-    </div>
-
-    <h2>
-        Your digital world,
-        <span style="color:var(--gold);">
-            all in one place.
-        </span>
-    </h2>
-
-    <p>
-        Create your Delight Vendor Logs account and
-        get access to the platform.
-    </p>
-
-
-    <div class="cta-actions">
-
-        <!-- CREATE ACCOUNT -->
-        <a
-            href="register.html"
-            class="btn btn-gold"
-        >
-            Create Account
-        </a>
-
-
-        <!-- LOGIN -->
-        <a
-            href="login.html"
-            class="btn btn-login"
-        >
-            Login
-        </a>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer>
-
-    <div class="footer-brand">
-
-        © <span id="year"></span>
-
-        <strong>
-            Delight Vendor Logs
-        </strong>
-
-    </div>
-
-    <div>
-        Your digital marketplace
-    </div>
-
-</footer>
+</div>
 
 
 <script>
 
-/* Current year */
+/* ================================
+   SUPABASE CONFIGURATION
+================================ */
 
-document.getElementById("year").textContent =
-    new Date().getFullYear();
+const SUPABASE_URL =
+    "https://hkfhehbhmucymusaytoe.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* ================================
+   MESSAGE
+================================ */
+
+function showMessage(message, type){
+
+    const messageBox =
+        document.getElementById("message");
+
+    messageBox.textContent = message;
+
+    messageBox.className =
+        "message " + type;
+
+}
+
+
+/* ================================
+   PASSWORD TOGGLE
+================================ */
+
+function togglePassword(){
+
+    const password =
+        document.getElementById("password");
+
+    const toggle =
+        document.getElementById("togglePassword");
+
+    if(password.type === "password"){
+
+        password.type = "text";
+
+        toggle.textContent = "🙈";
+
+        toggle.setAttribute(
+            "aria-label",
+            "Hide password"
+        );
+
+    }else{
+
+        password.type = "password";
+
+        toggle.textContent = "👁";
+
+        toggle.setAttribute(
+            "aria-label",
+            "Show password"
+        );
+
+    }
+
+}
+
+
+/* ================================
+   LOGIN
+================================ */
+
+async function loginUser(event){
+
+    event.preventDefault();
+
+    const email =
+        document.getElementById("email")
+        .value
+        .trim();
+
+    const password =
+        document.getElementById("password")
+        .value;
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+
+    /* Clear previous message */
+
+    document.getElementById("message").className =
+        "message";
+
+
+    /* Validate */
+
+    if(!email){
+
+        showMessage(
+            "Please enter your email address.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!password){
+
+        showMessage(
+            "Please enter your password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* Disable button */
+
+    loginButton.disabled = true;
+
+    loginButton.textContent = "Signing In...";
+
+
+    try{
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+        if(error){
+
+            console.error("Login error:", error);
+
+            let errorMessage =
+                error.message ||
+                "Unable to sign in. Please try again.";
+
+
+            /*
+             * Make common Supabase errors
+             * easier for customers to understand.
+             */
+
+            if(
+                error.message &&
+                error.message.toLowerCase()
+                    .includes("invalid login credentials")
+            ){
+
+                errorMessage =
+                    "Incorrect email or password. Please check your details and try again.";
+
+            }
+
+
+            showMessage(
+                errorMessage,
+                "error"
+            );
+
+            loginButton.disabled = false;
+
+            loginButton.textContent = "Continue";
+
+            return;
+
+        }
+
+
+        /* Successful login */
+
+        if(data && data.session){
+
+            showMessage(
+                "Login successful. Redirecting...",
+                "success"
+            );
+
+
+            setTimeout(function(){
+
+                window.location.href =
+                    "dashboard.html";
+
+            }, 500);
+
+        }else{
+
+            showMessage(
+                "Login completed, but no active session was found. Please try again.",
+                "error"
+            );
+
+            loginButton.disabled = false;
+
+            loginButton.textContent = "Continue";
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Unexpected login error:",
+            error
+        );
+
+        showMessage(
+            "Something went wrong. Please check your internet connection and try again.",
+            "error"
+        );
+
+        loginButton.disabled = false;
+
+        loginButton.textContent = "Continue";
+
+    }
+
+}
+
+
+/* ================================
+   ENTER KEY / FORM
+================================ */
+
+document
+    .getElementById("email")
+    .addEventListener("keydown", function(event){
+
+        if(event.key === "Enter"){
+
+            event.preventDefault();
+
+            document
+                .getElementById("password")
+                .focus();
+
+        }
+
+    });
 
 </script>
 
