@@ -1,1846 +1,1517 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
 >
 
-<title>Delight Vendor Logs — Your Digital Marketplace</title>
+<title>Delight Vendor Logs</title>
 
+<meta
+    name="description"
+    content="Delight Vendor Logs — digital services, resources, numbers and more, all in one platform."
+>
 
 <style>
 
-*{
-  box-sizing:border-box;
-}
+/* =========================
+   RESET
+========================= */
 
-html,
-body{
-  margin:0;
-  padding:0;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 html{
-  scroll-behavior:smooth;
+    scroll-behavior:smooth;
 }
 
 body{
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+    background:#050505;
+    color:#fff;
 
-  background:#090909;
-
-  color:#f7f0df;
-
-  min-height:100vh;
-
-  overflow-x:hidden;
-
+    overflow-x:hidden;
 }
 
+/* =========================
+   VARIABLES
+========================= */
 
-/* =========================================
-   PAGE BACKGROUND
-========================================= */
+:root{
+    --black:#050505;
+    --black2:#0a0a0a;
+    --card:#0d0d0d;
+    --card2:#111111;
+
+    --gold:#d4af37;
+    --gold-light:#f1d77a;
+    --gold-dark:#9c7b16;
+
+    --white:#ffffff;
+    --muted:#a8a8a8;
+    --border:rgba(212,175,55,.22);
+}
+
+/* =========================
+   BACKGROUND EFFECT
+========================= */
 
 body::before{
+    content:"";
+    position:fixed;
+    inset:0;
 
-  content:"";
+    pointer-events:none;
 
-  position:fixed;
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(212,175,55,.09),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(212,175,55,.07),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 80%,
+            rgba(212,175,55,.045),
+            transparent 35%
+        );
 
-  inset:0;
-
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      circle at 85% 12%,
-      rgba(210,169,66,.13),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 10% 70%,
-      rgba(210,169,66,.07),
-      transparent 25%
-    );
-
-  z-index:-2;
-
+    z-index:-2;
 }
 
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
 
-/* =========================================
-   NAVBAR
-========================================= */
+    pointer-events:none;
+
+    opacity:.035;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.8) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.8) 1px,
+            transparent 1px
+        );
+
+    background-size:55px 55px;
+
+    z-index:-1;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    width:100%;
+    position:relative;
+    z-index:20;
+}
 
 .navbar{
+    width:min(1180px,92%);
+    margin:auto;
 
-  width:100%;
+    min-height:82px;
 
-  padding:
-    20px
-    24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-  border-bottom:
-    1px solid
-    rgba(212,174,73,.16);
-
-  background:
-    rgba(9,9,9,.92);
-
-  backdrop-filter:
-    blur(14px);
-
-  position:sticky;
-
-  top:0;
-
-  z-index:50;
-
+    border-bottom:1px solid rgba(212,175,55,.13);
 }
-
-
-.nav-inner{
-
-  width:100%;
-
-  max-width:1050px;
-
-  margin:0 auto;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:20px;
-
-}
-
 
 /* LOGO */
 
 .logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
 
-  display:flex;
-
-  align-items:center;
-
-  gap:11px;
-
-  text-decoration:none;
-
-  color:#fff8e7;
-
+    text-decoration:none;
+    color:#fff;
 }
-
 
 .logo-mark{
+    width:40px;
+    height:40px;
 
-  width:43px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-  height:43px;
+    border:1px solid var(--gold);
 
-  border-radius:13px;
+    border-radius:11px;
 
-  border:
-    1px solid
-    #cda84c;
+    color:var(--gold);
 
-  background:#111111;
+    font-size:20px;
+    font-weight:900;
 
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  color:#d6b253;
-
-  font-size:22px;
-
-  font-weight:900;
-
-  box-shadow:
-    0 0 20px rgba(210,169,66,.08);
-
+    box-shadow:
+        0 0 20px rgba(212,175,55,.12),
+        inset 0 0 15px rgba(212,175,55,.05);
 }
-
 
 .logo-text{
-
-  font-size:20px;
-
-  font-weight:900;
-
-  letter-spacing:-.5px;
-
+    font-size:18px;
+    font-weight:850;
+    letter-spacing:-.4px;
 }
-
 
 .logo-text span{
-
-  color:#d2aa4d;
-
+    color:var(--gold);
 }
 
+/* NAV BUTTONS */
 
 .nav-actions{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
 
-.nav-login{
+    min-height:44px;
 
-  height:43px;
+    padding:0 19px;
 
-  padding:
-    0
-    19px;
+    border-radius:10px;
 
-  border:0;
+    font-size:14px;
+    font-weight:750;
 
-  background:transparent;
+    text-decoration:none;
 
-  color:#f3ead7;
+    transition:
+        .25s ease;
 
-  font-size:14px;
-
-  font-weight:800;
-
-  cursor:pointer;
-
+    cursor:pointer;
 }
 
+.btn-login{
+    color:#fff;
 
-.nav-create{
+    border:1px solid rgba(212,175,55,.55);
 
-  height:43px;
-
-  padding:
-    0
-    19px;
-
-  border:
-    1px solid
-    #d3ad4d;
-
-  border-radius:11px;
-
-  background:#d3ad4d;
-
-  color:#090909;
-
-  font-size:14px;
-
-  font-weight:900;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 7px 20px rgba(211,173,77,.12);
-
+    background:rgba(212,175,55,.03);
 }
 
+.btn-login:hover{
+    background:rgba(212,175,55,.10);
+    border-color:var(--gold);
 
-/* =========================================
+    transform:translateY(-1px);
+}
+
+.btn-gold{
+    color:#080808;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold-light),
+            var(--gold)
+        );
+
+    border:1px solid var(--gold);
+
+    box-shadow:
+        0 8px 28px rgba(212,175,55,.14);
+}
+
+.btn-gold:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 34px rgba(212,175,55,.22);
+}
+
+/* =========================
    HERO
-========================================= */
+========================= */
 
 .hero{
+    width:min(1180px,92%);
+    margin:auto;
 
-  width:100%;
+    min-height:650px;
 
-  max-width:1050px;
+    display:flex;
+    align-items:center;
 
-  margin:0 auto;
+    padding:90px 0 80px;
 
-  padding:
-    85px
-    24px
-    55px;
-
-  text-align:center;
-
+    position:relative;
 }
 
-
-.hero-badge{
-
-  display:inline-flex;
-
-  align-items:center;
-
-  gap:8px;
-
-  padding:
-    9px
-    15px;
-
-  border:
-    1px solid
-    rgba(211,173,77,.35);
-
-  border-radius:999px;
-
-  background:
-    rgba(211,173,77,.07);
-
-  color:#d8b45a;
-
-  font-size:12px;
-
-  font-weight:800;
-
-  letter-spacing:1.4px;
-
-  text-transform:uppercase;
-
-  margin-bottom:25px;
-
+.hero-content{
+    width:100%;
+    max-width:850px;
 }
 
+.eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
 
-.hero-badge-dot{
+    padding:8px 13px;
 
-  width:7px;
+    border:1px solid rgba(212,175,55,.25);
 
-  height:7px;
+    background:rgba(212,175,55,.055);
 
-  border-radius:50%;
+    border-radius:999px;
 
-  background:#d5ad4d;
+    color:var(--gold-light);
 
-  box-shadow:
-    0 0 10px #d5ad4d;
+    font-size:11px;
+    font-weight:800;
 
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+
+    margin-bottom:27px;
 }
 
+.eyebrow-dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:var(--gold);
+
+    box-shadow:
+        0 0 10px var(--gold);
+}
 
 .hero h1{
+    font-size:
+        clamp(46px,7vw,86px);
 
-  margin:0 auto;
+    line-height:.98;
 
-  max-width:850px;
+    letter-spacing:-4px;
 
-  font-size:
-    clamp(
-      43px,
-      8vw,
-      82px
-    );
+    font-weight:900;
 
-  line-height:.98;
-
-  letter-spacing:-3px;
-
-  font-weight:900;
-
-  color:#f8f1df;
-
+    max-width:850px;
 }
 
-
-.hero h1 span{
-
-  color:#d5ad4d;
-
+.hero h1 .gold{
+    color:var(--gold);
 }
 
+.hero-description{
+    max-width:650px;
 
-.hero-subtitle{
+    margin-top:28px;
 
-  max-width:680px;
+    color:#a9a9a9;
 
-  margin:
-    27px
-    auto
-    0;
-
-  font-size:
-    clamp(
-      17px,
-      3vw,
-      21px
-    );
-
-  line-height:1.65;
-
-  color:#a9a092;
-
+    font-size:18px;
+    line-height:1.75;
 }
 
+.hero-actions{
+    display:flex;
+    flex-wrap:wrap;
 
-.hero-buttons{
+    gap:12px;
 
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-  gap:13px;
-
-  margin-top:35px;
-
-  flex-wrap:wrap;
-
+    margin-top:34px;
 }
 
-
-.primary-btn{
-
-  min-width:180px;
-
-  height:56px;
-
-  padding:
-    0
-    25px;
-
-  border:
-    1px solid
-    #d7b154;
-
-  border-radius:15px;
-
-  background:#d7b154;
-
-  color:#0b0b0b;
-
-  font-size:16px;
-
-  font-weight:900;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 12px 30px
-    rgba(215,177,84,.13);
-
-  transition:.2s;
-
+.hero-actions .btn{
+    min-height:51px;
+    padding:0 23px;
 }
 
+/* SMALL TRUST TEXT */
 
-.primary-btn:hover{
+.hero-note{
+    display:flex;
+    align-items:center;
+    gap:9px;
 
-  transform:translateY(-2px);
+    margin-top:24px;
 
-  background:#e0bc62;
+    color:#777;
 
+    font-size:12px;
 }
 
-
-.secondary-btn{
-
-  min-width:150px;
-
-  height:56px;
-
-  padding:
-    0
-    25px;
-
-  border:
-    1px solid
-    rgba(215,177,84,.4);
-
-  border-radius:15px;
-
-  background:#111111;
-
-  color:#eee4d0;
-
-  font-size:16px;
-
-  font-weight:800;
-
-  cursor:pointer;
-
-  transition:.2s;
-
+.hero-note span{
+    color:var(--gold);
+    font-size:15px;
 }
 
+/* =========================
+   NUMBER BANNER
+========================= */
 
-.secondary-btn:hover{
-
-  border-color:#d7b154;
-
-  color:#d7b154;
-
+.number-section{
+    width:min(1180px,92%);
+    margin:0 auto 90px;
 }
 
+.number-card{
+    position:relative;
 
-/* =========================================
-   TRUST LINE
-========================================= */
+    overflow:hidden;
 
-.trust-line{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-  display:flex;
+    gap:30px;
 
-  justify-content:center;
+    padding:34px 36px;
 
-  align-items:center;
+    background:
+        linear-gradient(
+            115deg,
+            #0f0f0f,
+            #080808
+        );
 
-  gap:12px;
+    border:1px solid rgba(212,175,55,.35);
 
-  margin-top:30px;
+    border-radius:22px;
 
-  color:#777164;
-
-  font-size:13px;
-
+    box-shadow:
+        0 20px 70px rgba(0,0,0,.35);
 }
 
+.number-card::before{
+    content:"";
 
-.trust-dot{
+    position:absolute;
 
-  width:6px;
+    width:300px;
+    height:300px;
 
-  height:6px;
+    right:-100px;
+    top:-150px;
 
-  border-radius:50%;
+    border-radius:50%;
 
-  background:#cba64a;
+    background:rgba(212,175,55,.10);
 
+    filter:blur(35px);
 }
 
+.number-content{
+    position:relative;
+    z-index:1;
+}
 
-/* =========================================
-   CATEGORY PREVIEW
-========================================= */
+.number-label{
+    color:var(--gold);
+
+    font-size:11px;
+    font-weight:850;
+
+    text-transform:uppercase;
+    letter-spacing:1.4px;
+
+    margin-bottom:9px;
+}
+
+.number-card h2{
+    font-size:clamp(24px,4vw,36px);
+
+    letter-spacing:-1.2px;
+
+    margin-bottom:8px;
+}
+
+.number-card p{
+    color:#929292;
+
+    line-height:1.6;
+
+    max-width:650px;
+}
+
+.number-btn{
+    position:relative;
+    z-index:1;
+
+    flex-shrink:0;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:48px;
+
+    padding:0 20px;
+
+    border-radius:11px;
+
+    color:#080808;
+
+    background:var(--gold);
+
+    text-decoration:none;
+
+    font-size:14px;
+    font-weight:850;
+
+    transition:.25s ease;
+}
+
+.number-btn:hover{
+    transform:translateY(-2px);
+
+    background:var(--gold-light);
+
+    box-shadow:
+        0 10px 30px rgba(212,175,55,.18);
+}
+
+/* =========================
+   CATEGORY SECTION
+========================= */
 
 .categories-section{
-
-  width:100%;
-
-  max-width:1050px;
-
-  margin:0 auto;
-
-  padding:
-    45px
-    24px
-    30px;
-
+    width:min(1180px,92%);
+    margin:0 auto 100px;
 }
 
+.section-heading{
+    max-width:680px;
 
-.section-label{
-
-  text-align:center;
-
-  color:#cba64a;
-
-  font-size:11px;
-
-  font-weight:900;
-
-  letter-spacing:2.5px;
-
-  text-transform:uppercase;
-
-  margin-bottom:10px;
-
+    margin-bottom:32px;
 }
 
+.section-heading .small{
+    color:var(--gold);
 
-.section-title{
+    font-size:11px;
+    font-weight:850;
 
-  margin:0;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
 
-  text-align:center;
-
-  font-size:
-    clamp(
-      28px,
-      5vw,
-      40px
-    );
-
-  letter-spacing:-1.2px;
-
-  color:#f3ecdc;
-
+    margin-bottom:10px;
 }
 
+.section-heading h2{
+    font-size:
+        clamp(31px,5vw,49px);
 
-.section-description{
+    letter-spacing:-2px;
 
-  max-width:580px;
-
-  margin:
-    13px
-    auto
-    28px;
-
-  text-align:center;
-
-  color:#858073;
-
-  line-height:1.6;
-
-  font-size:15px;
-
+    line-height:1.05;
 }
 
+.section-heading p{
+    color:#888;
+
+    margin-top:14px;
+
+    line-height:1.7;
+
+    font-size:15px;
+}
 
 /* CATEGORY GRID */
 
 .category-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      4,
-      1fr
-    );
-
-  gap:12px;
-
-}
-
-
-.category-card{
-
-  min-height:105px;
-
-  padding:18px 14px;
-
-  border:
-    1px solid
-    rgba(214,174,72,.17);
-
-  border-radius:17px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #121212,
-      #0d0d0d
-    );
-
-  display:flex;
-
-  flex-direction:column;
-
-  align-items:center;
-
-  justify-content:center;
-
-  text-align:center;
-
-  transition:
-    transform .2s,
-    border-color .2s,
-    background .2s;
-
-}
-
-
-.category-card:hover{
-
-  transform:translateY(-3px);
-
-  border-color:
-    rgba(214,174,72,.55);
-
-  background:#151515;
-
-}
-
-
-.category-icon{
-
-  width:42px;
-
-  height:42px;
-
-  border-radius:13px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  background:#181818;
-
-  border:
-    1px solid
-    rgba(211,174,76,.32);
-
-  color:#d4ad4d;
-
-  font-size:19px;
-
-  margin-bottom:10px;
-
-}
-
-
-.category-name{
-
-  color:#ddd4c2;
-
-  font-size:12px;
-
-  font-weight:800;
-
-  line-height:1.35;
-
-}
-
-
-/* =========================================
-   HIGHLIGHT BANNER
-========================================= */
-
-.number-banner{
-
-  width:100%;
-
-  max-width:1000px;
-
-  margin:
-    45px
-    auto
-    20px;
-
-  padding:
-    25px
-    27px;
-
-  border:
-    1px solid
-    rgba(215,177,84,.35);
-
-  border-radius:21px;
-
-  background:
-    linear-gradient(
-      105deg,
-      #141414,
-      #0c0c0c
-    );
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:20px;
-
-}
-
-
-.number-left{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:15px;
-
-}
-
-
-.number-icon{
-
-  width:52px;
-
-  height:52px;
-
-  flex-shrink:0;
-
-  border-radius:15px;
-
-  background:#d2aa4c;
-
-  color:#0b0b0b;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  font-size:23px;
-
-  font-weight:900;
-
-}
-
-
-.number-text h3{
-
-  margin:0 0 5px;
-
-  color:#f3ead7;
-
-  font-size:18px;
-
-}
-
-
-.number-text p{
-
-  margin:0;
-
-  color:#81796b;
-
-  font-size:13px;
-
-}
-
-
-.number-button{
-
-  flex-shrink:0;
-
-  height:45px;
-
-  padding:
-    0
-    17px;
-
-  border:
-    1px solid
-    #d4ad4d;
-
-  border-radius:12px;
-
-  background:#d4ad4d;
-
-  color:#0b0b0b;
-
-  font-weight:900;
-
-  font-size:13px;
-
-  cursor:pointer;
-
-}
-
-
-/* =========================================
-   DIVIDER
-========================================= */
-
-.gold-line{
-
-  width:100%;
-
-  max-width:1000px;
-
-  height:1px;
-
-  margin:
-    30px
-    auto
-    0;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(210,169,66,.35),
-      transparent
-    );
-
-}
-
-
-/* =========================================
-   WHY DELIGHT
-========================================= */
-
-.features{
-
-  width:100%;
-
-  max-width:1000px;
-
-  margin:
-    20px
-    auto
-    0;
-
-  padding:
-    45px
-    24px
-    75px;
-
-}
-
-
-.feature-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      3,
-      1fr
-    );
-
-  gap:14px;
-
-  margin-top:28px;
-
-}
-
-
-.feature{
-
-  padding:23px;
-
-  border:
-    1px solid
-    rgba(210,169,66,.14);
-
-  border-radius:18px;
-
-  background:#101010;
-
-}
-
-
-.feature-icon{
-
-  width:39px;
-
-  height:39px;
-
-  border-radius:12px;
-
-  background:#191919;
-
-  border:
-    1px solid
-    rgba(211,173,73,.28);
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:center;
-
-  color:#d3ad4d;
-
-  margin-bottom:15px;
-
-  font-size:18px;
-
-}
-
-
-.feature h3{
-
-  margin:0 0 8px;
-
-  font-size:16px;
-
-  color:#eee5d3;
-
-}
-
-
-.feature p{
-
-  margin:0;
-
-  color:#797367;
-
-  font-size:13px;
-
-  line-height:1.6;
-
-}
-
-
-/* =========================================
-   FINAL CTA
-========================================= */
-
-.final-cta{
-
-  width:100%;
-
-  max-width:1000px;
-
-  margin:
-    0
-    auto
-    65px;
-
-  padding:
-    48px
-    25px;
-
-  border:
-    1px solid
-    rgba(214,174,74,.25);
-
-  border-radius:25px;
-
-  text-align:center;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(210,169,66,.09),
-      transparent 65%
-    ),
-    #101010;
-
-}
-
-
-.final-cta h2{
-
-  margin:0;
-
-  font-size:
-    clamp(
-      28px,
-      5vw,
-      42px
-    );
-
-  color:#f4eddd;
-
-  letter-spacing:-1.3px;
-
-}
-
-
-.final-cta p{
-
-  max-width:560px;
-
-  margin:
-    13px
-    auto
-    25px;
-
-  color:#827b6d;
-
-  line-height:1.6;
-
-}
-
-
-/* =========================================
-   FOOTER
-========================================= */
-
-.footer{
-
-  border-top:
-    1px solid
-    rgba(210,169,66,.13);
-
-  padding:
-    30px
-    20px
-    38px;
-
-  text-align:center;
-
-}
-
-
-.footer-brand{
-
-  color:#ddd4c3;
-
-  font-size:15px;
-
-  font-weight:900;
-
-}
-
-
-.footer-brand span{
-
-  color:#d3ad4d;
-
-}
-
-
-.footer p{
-
-  margin:
-    9px
-    0
-    0;
-
-  color:#625e55;
-
-  font-size:12px;
-
-}
-
-
-.footer-note{
-
-  margin-top:18px;
-
-  color:#514e48;
-
-  font-size:10px;
-
-  letter-spacing:1px;
-
-  text-transform:uppercase;
-
-}
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media(max-width:750px){
-
-  .navbar{
-
-    padding:
-      15px
-      16px;
-
-  }
-
-  .logo-text{
-
-    font-size:17px;
-
-  }
-
-  .logo-mark{
-
-    width:40px;
-
-    height:40px;
-
-  }
-
-  .nav-login{
-
-    padding:0 10px;
-
-    font-size:13px;
-
-  }
-
-  .nav-create{
-
-    height:40px;
-
-    padding:
-      0
-      13px;
-
-    font-size:12px;
-
-  }
-
-
-  .hero{
-
-    padding:
-      62px
-      19px
-      35px;
-
-  }
-
-  .hero h1{
-
-    letter-spacing:-2px;
-
-  }
-
-
-  .category-grid{
+    display:grid;
 
     grid-template-columns:
-      repeat(
-        2,
-        1fr
-      );
+        repeat(4,1fr);
 
-  }
+    gap:13px;
+}
 
+/*
+   These cards are intentionally NOT links.
+   They are showcase-only on the public landing page.
+*/
 
-  .number-banner{
+.category-card{
+    min-height:145px;
 
-    margin:
-      35px
-      17px
-      15px;
+    padding:22px;
 
-    padding:20px;
+    border:1px solid rgba(255,255,255,.07);
 
-  }
+    border-radius:17px;
 
+    background:
+        linear-gradient(
+            145deg,
+            #101010,
+            #090909
+        );
 
-  .number-text h3{
+    transition:
+        border-color .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease;
+}
 
-    font-size:16px;
+.category-card:hover{
+    transform:translateY(-3px);
 
-  }
+    border-color:rgba(212,175,55,.28);
 
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.25);
+}
 
-  .number-text p{
+.category-icon{
+    width:43px;
+    height:43px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:rgba(212,175,55,.08);
+
+    border:1px solid rgba(212,175,55,.18);
+
+    color:var(--gold);
+
+    font-size:18px;
+
+    margin-bottom:22px;
+}
+
+.category-card h3{
+    font-size:15px;
+    font-weight:800;
+
+    margin-bottom:6px;
+}
+
+.category-card p{
+    color:#707070;
 
     font-size:12px;
 
-  }
+    line-height:1.5;
+}
 
+/* =========================
+   FEATURE STRIP
+========================= */
 
-  .number-button{
+.feature-section{
+    width:min(1180px,92%);
+    margin:0 auto 100px;
+}
 
-    padding:
-      0
-      13px;
+.feature-box{
+    padding:50px 42px;
+
+    border-radius:25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0f0f0f,
+            #070707
+        );
+
+    border:1px solid rgba(212,175,55,.15);
+
+    text-align:center;
+}
+
+.feature-box h2{
+    font-size:
+        clamp(29px,5vw,47px);
+
+    letter-spacing:-1.8px;
+
+    line-height:1.05;
+}
+
+.feature-box h2 span{
+    color:var(--gold);
+}
+
+.feature-box > p{
+    max-width:620px;
+
+    margin:17px auto 38px;
+
+    color:#888;
+
+    line-height:1.7;
+}
+
+.features{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:14px;
+
+    text-align:left;
+}
+
+.feature{
+    padding:22px;
+
+    border-radius:16px;
+
+    background:#0a0a0a;
+
+    border:1px solid rgba(255,255,255,.06);
+}
+
+.feature-number{
+    color:var(--gold);
+
+    font-size:12px;
+    font-weight:900;
+
+    margin-bottom:18px;
+}
+
+.feature h3{
+    font-size:15px;
+
+    margin-bottom:8px;
+}
+
+.feature p{
+    color:#727272;
 
     font-size:12px;
 
-  }
+    line-height:1.6;
+}
 
+/* =========================
+   FINAL CTA
+========================= */
 
-  .feature-grid{
+.cta-section{
+    width:min(1000px,92%);
 
-    grid-template-columns:1fr;
+    margin:0 auto;
 
-  }
+    padding:70px 0 100px;
 
+    text-align:center;
+}
 
-  .features{
+.cta-section .small{
+    color:var(--gold);
 
-    padding:
-      35px
-      19px
-      55px;
+    font-size:11px;
+    font-weight:850;
 
-  }
+    letter-spacing:1.5px;
 
+    text-transform:uppercase;
 
-  .final-cta{
+    margin-bottom:15px;
+}
 
-    width:calc(100% - 34px);
+.cta-section h2{
+    font-size:
+        clamp(37px,6vw,64px);
 
-    margin:
-      0
-      auto
-      50px;
+    letter-spacing:-2.8px;
 
-    padding:
-      38px
-      20px;
+    line-height:1;
+}
 
-  }
+.cta-section p{
+    max-width:570px;
+
+    margin:20px auto 30px;
+
+    color:#888;
+
+    line-height:1.7;
+}
+
+.cta-actions{
+    display:flex;
+
+    justify-content:center;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    width:min(1180px,92%);
+
+    margin:auto;
+
+    padding:25px 0 35px;
+
+    border-top:1px solid rgba(255,255,255,.07);
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    gap:20px;
+
+    color:#555;
+
+    font-size:12px;
+}
+
+.footer-brand{
+    color:#777;
+}
+
+.footer-brand strong{
+    color:#b9b9b9;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:850px){
+
+    .navbar{
+        min-height:72px;
+    }
+
+    .logo-text{
+        font-size:15px;
+    }
+
+    .logo-mark{
+        width:37px;
+        height:37px;
+    }
+
+    .nav-actions{
+        gap:7px;
+    }
+
+    .nav-actions .btn{
+        min-height:40px;
+        padding:0 13px;
+
+        font-size:12px;
+    }
+
+    .hero{
+        min-height:auto;
+
+        padding:
+            75px 0
+            65px;
+    }
+
+    .hero h1{
+        letter-spacing:-2.7px;
+    }
+
+    .hero-description{
+        font-size:16px;
+    }
+
+    .number-card{
+        align-items:flex-start;
+
+        flex-direction:column;
+
+        padding:28px;
+    }
+
+    .number-btn{
+        width:100%;
+    }
+
+    .category-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .features{
+        grid-template-columns:1fr;
+    }
+
+    footer{
+        flex-direction:column;
+        align-items:flex-start;
+    }
 
 }
 
+@media(max-width:520px){
 
-@media(max-width:470px){
+    .navbar{
+        width:92%;
+    }
 
-  .logo-text{
+    .logo-text{
+        display:none;
+    }
 
-    display:none;
+    .hero{
+        padding-top:55px;
+    }
 
-  }
+    .eyebrow{
+        font-size:9px;
+    }
 
+    .hero h1{
+        font-size:46px;
+        letter-spacing:-2.3px;
+    }
 
-  .nav-actions{
+    .hero-description{
+        font-size:15px;
+        line-height:1.65;
+    }
 
-    gap:3px;
+    .hero-actions{
+        width:100%;
+    }
 
-  }
+    .hero-actions .btn{
+        width:100%;
+    }
 
+    .category-grid{
+        grid-template-columns:1fr 1fr;
 
-  .nav-login{
+        gap:9px;
+    }
 
-    padding:
-      0
-      8px;
+    .category-card{
+        min-height:135px;
 
-  }
+        padding:16px;
+    }
 
+    .category-icon{
+        width:38px;
+        height:38px;
 
-  .hero-buttons{
+        margin-bottom:17px;
+    }
 
-    flex-direction:column;
+    .category-card h3{
+        font-size:13px;
+    }
 
-  }
+    .category-card p{
+        font-size:10px;
+    }
 
+    .feature-box{
+        padding:35px 18px;
+    }
 
-  .primary-btn,
-  .secondary-btn{
-
-    width:100%;
-
-    max-width:300px;
-
-  }
-
-
-  .number-banner{
-
-    align-items:flex-start;
-
-  }
-
-
-  .number-left{
-
-    align-items:flex-start;
-
-  }
-
-
-  .number-button{
-
-    margin-top:3px;
-
-  }
+    .cta-section{
+        padding-bottom:70px;
+    }
 
 }
 
+/* =========================
+   ACCESSIBILITY
+========================= */
+
+a:focus-visible{
+    outline:2px solid var(--gold);
+
+    outline-offset:4px;
+}
 
 </style>
 
 </head>
 
-
 <body>
 
+<!-- =========================
+     HEADER
+========================= -->
 
-<!-- =========================================
-     NAVBAR
-========================================= -->
+<header>
 
-<nav class="navbar">
+    <nav class="navbar">
 
-  <div class="nav-inner">
+        <a href="index.html" class="logo">
 
+            <div class="logo-mark">
+                D
+            </div>
 
-    <a
-      href="index.html"
-      class="logo"
-    >
+            <div class="logo-text">
+                Delight <span>Vendor Logs</span>
+            </div>
 
-      <div class="logo-mark">
-        D
-      </div>
+        </a>
 
-      <div class="logo-text">
-        Delight <span>Vendor Logs</span>
-      </div>
+        <div class="nav-actions">
 
-    </a>
+            <!-- LOGIN -->
+            <a
+                href="login.html"
+                class="btn btn-login"
+            >
+                Login
+            </a>
 
+            <!-- CREATE ACCOUNT -->
+            <a
+                href="register.html"
+                class="btn btn-gold"
+            >
+                Create Account
+            </a>
 
-    <div class="nav-actions">
+        </div>
 
-      <button
-        type="button"
-        class="nav-login"
-        onclick="location.href='login.html'"
-      >
-        Login
-      </button>
+    </nav>
 
-
-      <button
-        type="button"
-        class="nav-create"
-        onclick="location.href='register.html'"
-      >
-        Create Account
-      </button>
-
-    </div>
+</header>
 
 
-  </div>
-
-</nav>
-
-
-<!-- =========================================
+<!-- =========================
      HERO
-========================================= -->
+========================= -->
 
 <main>
 
-
 <section class="hero">
 
+    <div class="hero-content">
 
-  <div class="hero-badge">
+        <div class="eyebrow">
 
-    <span class="hero-badge-dot"></span>
+            <span class="eyebrow-dot"></span>
 
-    Everything you need, in one place
+            One platform • Multiple digital services
 
-  </div>
-
-
-  <h1>
-
-    Your digital marketplace.
-
-    <br>
-
-    <span>Simple. Fast. Reliable.</span>
-
-  </h1>
+        </div>
 
 
-  <p class="hero-subtitle">
+        <h1>
 
-    Access digital services, accounts, numbers,
-    working pictures, formats and more —
-    all from one platform built for convenience.
+            Everything you need.
 
-  </p>
+            <span class="gold">
+                One platform.
+            </span>
 
-
-  <div class="hero-buttons">
-
-
-    <button
-      type="button"
-      class="primary-btn"
-      onclick="location.href='register.html'"
-    >
-
-      Create Account
-      &nbsp; →
-
-    </button>
+        </h1>
 
 
-    <button
-      type="button"
-      class="secondary-btn"
-      onclick="location.href='login.html'"
-    >
+        <p class="hero-description">
 
-      Login
+            Access digital services, working resources,
+            numbers and more from one simple platform —
+            built to keep everything you need in one place.
 
-    </button>
+        </p>
 
 
-  </div>
+        <div class="hero-actions">
+
+            <!-- CREATE ACCOUNT -->
+            <a
+                href="register.html"
+                class="btn btn-gold"
+            >
+                Create Account
+            </a>
+
+            <!-- LOGIN -->
+            <a
+                href="login.html"
+                class="btn btn-login"
+            >
+                Login
+            </a>
+
+        </div>
 
 
-  <div class="trust-line">
+        <div class="hero-note">
 
-    <span class="trust-dot"></span>
+            <span>✦</span>
 
-    One platform for your digital needs
+            One account. One dashboard. Everything organized.
 
-  </div>
+        </div>
 
+    </div>
 
 </section>
 
 
-<!-- =========================================
+<!-- =========================
+     GET ALL COUNTRY NUMBERS
+     PUBLIC LANDING PAGE
+========================= -->
+
+<section class="number-section">
+
+    <div class="number-card">
+
+        <div class="number-content">
+
+            <div class="number-label">
+                Digital Numbers
+            </div>
+
+            <h2>
+                Get All Country Numbers
+            </h2>
+
+            <p>
+                Access numbers from different countries
+                through your Delight Vendor Logs account.
+                Create an account to get started.
+            </p>
+
+        </div>
+
+
+        <!-- IMPORTANT:
+             This goes to REGISTER, NOT virtualnumber.html
+        -->
+
+        <a
+            href="register.html"
+            class="number-btn"
+        >
+            Create Account
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
      CATEGORIES
-========================================= -->
+========================= -->
 
 <section class="categories-section">
 
+    <div class="section-heading">
 
-  <div class="section-label">
-    What we offer
-  </div>
+        <div class="small">
+            What's inside
+        </div>
 
+        <h2>
+            Everything in one place.
+        </h2>
 
-  <h2 class="section-title">
-    Everything in one platform
-  </h2>
-
-
-  <p class="section-description">
-
-    Browse a growing collection of digital
-    services and products available through
-    Delight Vendor Logs.
-
-  </p>
-
-
-  <div class="category-grid">
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        📱
-      </div>
-
-      <div class="category-name">
-        All Social Logs
-      </div>
+        <p>
+            Explore the range of digital services and
+            resources available across the Delight Vendor
+            Logs platform.
+        </p>
 
     </div>
 
 
-    <div class="category-card">
+    <div class="category-grid">
 
-      <div class="category-icon">
-        🖼️
-      </div>
 
-      <div class="category-name">
-        Working Pictures
-      </div>
+        <!--
+            IMPORTANT:
+            These are showcase cards only.
+            They intentionally have NO href.
+        -->
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ◈
+            </div>
+
+            <h3>
+                All Social Logs
+            </h3>
+
+            <p>
+                Digital social resources in one place.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ◆
+            </div>
+
+            <h3>
+                Working Pictures
+            </h3>
+
+            <p>
+                Ready-to-use working resources.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ◇
+            </div>
+
+            <h3>
+                Formats
+            </h3>
+
+            <p>
+                Useful digital formats and resources.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ↗
+            </div>
+
+            <h3>
+                Working Links
+            </h3>
+
+            <p>
+                Access available working resources.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ◉
+            </div>
+
+            <h3>
+                Gmail
+            </h3>
+
+            <p>
+                Gmail-related digital services.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ◎
+            </div>
+
+            <h3>
+                All Countries Numbers
+            </h3>
+
+            <p>
+                Numbers from different countries.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ▣
+            </div>
+
+            <h3>
+                Streaming & More
+            </h3>
+
+            <p>
+                Streaming services and more digital options.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ◌
+            </div>
+
+            <h3>
+                ESIMS
+            </h3>
+
+            <p>
+                Digital connectivity services.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ⌁
+            </div>
+
+            <h3>
+                VPN
+            </h3>
+
+            <p>
+                Digital privacy and connectivity options.
+            </p>
+
+        </div>
+
+
+        <div class="category-card">
+
+            <div class="category-icon">
+                ✦
+            </div>
+
+            <h3>
+                Voice Cloner / Fake Video Call
+            </h3>
+
+            <p>
+                Digital voice and video-related services.
+            </p>
+
+        </div>
+
 
     </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        📄
-      </div>
-
-      <div class="category-name">
-        Formats
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        🔗
-      </div>
-
-      <div class="category-name">
-        Working Links
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        🎙️
-      </div>
-
-      <div class="category-name">
-        Voice Cloner / Fake Video Call
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        📞
-      </div>
-
-      <div class="category-name">
-        All Countries Number
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        📺
-      </div>
-
-      <div class="category-name">
-        Streaming &amp; More
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        📡
-      </div>
-
-      <div class="category-name">
-        ESIMS
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        🔐
-      </div>
-
-      <div class="category-name">
-        VPN
-      </div>
-
-    </div>
-
-
-    <div class="category-card">
-
-      <div class="category-icon">
-        📧
-      </div>
-
-      <div class="category-name">
-        Gmail
-      </div>
-
-    </div>
-
-
-  </div>
-
 
 </section>
 
 
-<!-- =========================================
-     COUNTRY NUMBERS
-========================================= -->
-
-<section class="number-banner">
-
-
-  <div class="number-left">
-
-
-    <div class="number-icon">
-      ☎
-    </div>
-
-
-    <div class="number-text">
-
-      <h3>
-        Get All Country Numbers
-      </h3>
-
-      <p>
-        Get virtual numbers from different countries.
-      </p>
-
-    </div>
-
-
-  </div>
-
-
-  <button
-    type="button"
-    class="number-button"
-    onclick="location.href='virtualnumber.html'"
-  >
-
-    Get Number
-    &nbsp; →
-
-  </button>
-
-
-</section>
-
-
-<div class="gold-line"></div>
-
-
-<!-- =========================================
+<!-- =========================
      FEATURES
-========================================= -->
+========================= -->
 
-<section class="features">
+<section class="feature-section">
 
+    <div class="feature-box">
 
-  <div class="section-label">
-    Why Delight
-  </div>
+        <h2>
+            One account.
+            <span>One platform.</span>
+        </h2>
 
-
-  <h2 class="section-title">
-    Built around simplicity
-  </h2>
-
-
-  <p class="section-description">
-
-    Everything is designed to make finding,
-    purchasing and managing your digital
-    services easier.
-
-  </p>
+        <p>
+            Delight Vendor Logs brings different digital
+            services and resources together so you can
+            manage what you need from one place.
+        </p>
 
 
-  <div class="feature-grid">
+        <div class="features">
 
 
-    <div class="feature">
+            <div class="feature">
 
-      <div class="feature-icon">
-        ⚡
-      </div>
+                <div class="feature-number">
+                    01
+                </div>
 
-      <h3>
-        Fast Access
-      </h3>
+                <h3>
+                    Simple Access
+                </h3>
 
-      <p>
-        Find the service you need and get
-        started without unnecessary steps.
-      </p>
+                <p>
+                    Create your account and access the
+                    platform through your personal dashboard.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-number">
+                    02
+                </div>
+
+                <h3>
+                    Everything Organized
+                </h3>
+
+                <p>
+                    Different services and resources are
+                    arranged into clear categories.
+                </p>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-number">
+                    03
+                </div>
+
+                <h3>
+                    One Dashboard
+                </h3>
+
+                <p>
+                    Keep your account, balance and available
+                    services together in one place.
+                </p>
+
+            </div>
+
+
+        </div>
 
     </div>
-
-
-    <div class="feature">
-
-      <div class="feature-icon">
-        ◇
-      </div>
-
-      <h3>
-        One Platform
-      </h3>
-
-      <p>
-        Multiple categories and digital
-        services brought together in one place.
-      </p>
-
-    </div>
-
-
-    <div class="feature">
-
-      <div class="feature-icon">
-        ✓
-      </div>
-
-      <h3>
-        Easy To Use
-      </h3>
-
-      <p>
-        A straightforward dashboard that
-        keeps your services and purchases organized.
-      </p>
-
-    </div>
-
-
-  </div>
-
 
 </section>
 
 
-<!-- =========================================
+<!-- =========================
      FINAL CTA
-========================================= -->
+========================= -->
 
-<section class="final-cta">
+<section class="cta-section">
+
+    <div class="small">
+        Get started
+    </div>
+
+    <h2>
+        Your digital world,
+        <span style="color:var(--gold);">
+            all in one place.
+        </span>
+    </h2>
+
+    <p>
+        Create your Delight Vendor Logs account and
+        get access to the platform.
+    </p>
 
 
-  <h2>
-    Ready to get started?
-  </h2>
+    <div class="cta-actions">
+
+        <!-- CREATE ACCOUNT -->
+        <a
+            href="register.html"
+            class="btn btn-gold"
+        >
+            Create Account
+        </a>
 
 
-  <p>
+        <!-- LOGIN -->
+        <a
+            href="login.html"
+            class="btn btn-login"
+        >
+            Login
+        </a>
 
-    Create your Delight Vendor Logs account
-    and access your digital marketplace.
-
-  </p>
-
-
-  <button
-    type="button"
-    class="primary-btn"
-    onclick="location.href='register.html'"
-  >
-
-    Create Account
-    &nbsp; →
-
-  </button>
-
+    </div>
 
 </section>
-
 
 </main>
 
 
-<!-- =========================================
+<!-- =========================
      FOOTER
-========================================= -->
+========================= -->
 
-<footer class="footer">
+<footer>
 
+    <div class="footer-brand">
 
-  <div class="footer-brand">
+        © <span id="year"></span>
 
-    Delight <span>Vendor Logs</span>
+        <strong>
+            Delight Vendor Logs
+        </strong>
 
-  </div>
+    </div>
 
-
-  <p>
-    Your digital marketplace
-  </p>
-
-
-  <div class="footer-note">
-
-    All is for educational purposes
-
-  </div>
-
+    <div>
+        Your digital marketplace
+    </div>
 
 </footer>
 
 
-</body>
+<script>
 
+/* Current year */
+
+document.getElementById("year").textContent =
+    new Date().getFullYear();
+
+</script>
+
+</body>
 </html>
