@@ -756,10 +756,14 @@ document
 async function loadCategories(){
 
     const list =
-        document.getElementById("categoryList");
+        document.getElementById(
+            "categoryList"
+        );
 
     const select =
-        document.getElementById("productCategory");
+        document.getElementById(
+            "productCategory"
+        );
 
     if(list){
         list.innerHTML =
@@ -1372,32 +1376,13 @@ async function loadProducts(){
         return;
     }
 
-    /*
-     * One Product query is enough here.
-     *
-     * The previous version queried Product a second
-     * time just to build allProducts. That duplicate
-     * request has been removed to make the admin load
-     * faster.
-     */
-
     products =
         data || [];
 
     allProducts =
         products;
 
-    /*
-     * Render immediately so the product list does not
-     * wait for the inventory dropdown request.
-     */
-
     renderProducts();
-
-    /*
-     * This only fills the Add Inventory dropdown.
-     * It no longer blocks the product list from appearing.
-     */
 
     await loadInventoryProductDropdown();
 
@@ -2073,15 +2058,6 @@ async function loadInventory(){
     inventory =
         data || [];
 
-    /*
-     * Get the exact Product records used by
-     * the inventory items.
-     *
-     * This is intentionally done even if the
-     * product is inactive, because old inventory
-     * must still show its service name/category.
-     */
-
     const productIds =
         [
             ...new Set(
@@ -2123,11 +2099,6 @@ async function loadInventory(){
             );
 
         }else{
-
-            /*
-             * Replace matching entries in allProducts
-             * with the fresh records from Product.
-             */
 
             const productMap =
                 new Map();
@@ -2366,6 +2337,13 @@ function renderInventory(){
 
                 <button
                     type="button"
+                    onclick="editInventory(${Number(item.id)})"
+                >
+                    ✏️ Edit / Replace
+                </button>
+
+                <button
+                    type="button"
                     class="danger"
                     onclick="deleteInventory(${Number(item.id)})"
                 >
@@ -2381,6 +2359,134 @@ function renderInventory(){
         );
 
     });
+
+}
+
+/* =========================
+   EDIT / REPLACE INVENTORY
+========================= */
+
+async function editInventory(id){
+
+    const item =
+        inventory.find(
+            inventoryItem =>
+                Number(inventoryItem.id) ===
+                Number(id)
+        );
+
+    if(!item){
+
+        alert(
+            "❌ Inventory item not found."
+        );
+
+        return;
+    }
+
+    const currentContent =
+        String(
+            item.content || ""
+        );
+
+    const newContent =
+        prompt(
+            "Edit / Replace this inventory item.\n\n" +
+            "You are updating the existing inventory record. " +
+            "You do not need to delete it and create another one.\n\n" +
+            "Delivery Information:",
+            currentContent
+        );
+
+    if(newContent === null){
+
+        return;
+    }
+
+    const content =
+        newContent.trim();
+
+    if(!content){
+
+        alert(
+            "❌ Delivery information cannot be empty."
+        );
+
+        return;
+    }
+
+    if(content === currentContent){
+
+        return;
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("product_inventory")
+            .update({
+                content:content
+            })
+            .eq(
+                "id",
+                id
+            )
+            .select("id,product_id,content,status,created_at")
+            .maybeSingle();
+
+        if(error){
+
+            console.error(
+                "Edit inventory error:",
+                error
+            );
+
+            alert(
+                "❌ Could not update inventory:\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+        if(!data){
+
+            alert(
+                "❌ Inventory was not updated.\n\n" +
+                "The database did not return the updated inventory item."
+            );
+
+            return;
+        }
+
+        alert(
+            "✅ Inventory replaced successfully."
+        );
+
+        await loadInventory();
+        await loadProducts();
+        await updateStats();
+
+    }catch(error){
+
+        console.error(
+            "Unexpected edit inventory error:",
+            error
+        );
+
+        alert(
+            "❌ " +
+            (
+                error.message ||
+                "Something went wrong."
+            )
+        );
+
+    }
 
 }
 
@@ -3779,12 +3885,12 @@ function renderUsers(){
                                     new Date(
                                         p.created_at
                                     ).toLocaleString(
-                                            "en-NG"
-                                        )
+                                        "en-NG"
                                     )
-                                    :
-                                    "Unknown"
-                                }
+                                )
+                                :
+                                "Unknown"
+                            }
 
                         </div>
 
