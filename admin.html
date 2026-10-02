@@ -232,6 +232,33 @@ summary{
     color:#666;
 }
 
+/* =========================
+   INVENTORY EDITOR
+========================= */
+
+.inventory-editor{
+    margin-top:14px;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:11px;
+    background:#f7f7f7;
+}
+
+.inventory-editor textarea{
+    min-height:280px;
+    resize:vertical;
+    line-height:1.6;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+
+.inventory-editor label{
+    display:block;
+    font-size:14px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
 @media(max-width:600px){
 
     .row{
@@ -2262,6 +2289,11 @@ function renderInventory(){
         box.className =
             "item";
 
+        box.setAttribute(
+            "data-inventory-id",
+            String(item.id)
+        );
+
         box.innerHTML = `
 
             <b>
@@ -2363,80 +2395,170 @@ function renderInventory(){
 }
 
 /* =========================
-   EDIT / REPLACE INVENTORY
+   CANCEL INVENTORY EDIT
 ========================= */
 
-async function editInventory(id){
+function cancelInventoryEdit(id){
 
-    const item =
-        inventory.find(
-            inventoryItem =>
-                Number(inventoryItem.id) ===
-                Number(id)
+    const box =
+        document.querySelector(
+            '[data-inventory-id="' +
+            String(id) +
+            '"]'
         );
 
-    if(!item){
+    if(!box) return;
+
+    const editor =
+        box.querySelector(
+            ".inventory-editor"
+        );
+
+    if(editor){
+        editor.remove();
+    }
+
+}
+
+/* =========================
+   SAVE INVENTORY EDIT
+========================= */
+
+async function saveInventoryEdit(id){
+
+    const box =
+        document.querySelector(
+            '[data-inventory-id="' +
+            String(id) +
+            '"]'
+        );
+
+    if(!box){
 
         alert(
-            "❌ Inventory item not found."
+            "❌ Inventory editor was not found."
         );
 
         return;
     }
 
-    const currentContent =
-        String(
-            item.content || ""
+    const contentInput =
+        box.querySelector(
+            '[data-editor-content="' +
+            String(id) +
+            '"]'
         );
 
-    const newContent =
-        prompt(
-            "Edit / Replace this inventory item.\n\n" +
-            "You are updating the existing inventory record. " +
-            "You do not need to delete it and create another one.\n\n" +
-            "Delivery Information:",
-            currentContent
+    const productInput =
+        box.querySelector(
+            '[data-editor-product="' +
+            String(id) +
+            '"]'
         );
 
-    if(newContent === null){
+    const statusInput =
+        box.querySelector(
+            '[data-editor-status="' +
+            String(id) +
+            '"]'
+        );
+
+    const saveButton =
+        box.querySelector(
+            '[data-editor-save="' +
+            String(id) +
+            '"]'
+        );
+
+    if(
+        !contentInput ||
+        !productInput ||
+        !statusInput
+    ){
+
+        alert(
+            "❌ Inventory editor could not be loaded."
+        );
 
         return;
     }
 
+    /*
+       Do not trim the actual content being saved.
+       This keeps spaces and line breaks exactly
+       as entered in the editor.
+    */
     const content =
-        newContent.trim();
+        contentInput.value;
 
-    if(!content){
+    const productId =
+        Number(
+            productInput.value
+        );
+
+    const status =
+        String(
+            statusInput.value ||
+            "available"
+        );
+
+    if(!content.trim()){
 
         alert(
             "❌ Delivery information cannot be empty."
         );
 
+        contentInput.focus();
+
         return;
     }
 
-    if(content === currentContent){
+    if(
+        !Number.isFinite(productId) ||
+        productId <= 0
+    ){
+
+        alert(
+            "❌ Please select a valid service."
+        );
+
+        productInput.focus();
 
         return;
+    }
+
+    if(saveButton){
+
+        saveButton.disabled = true;
+
+        saveButton.textContent =
+            "💾 Saving...";
+
     }
 
     try{
 
         const {
-            data,
             error
         } =
         await supabaseClient
             .from("product_inventory")
             .update({
-                content:content
+
+                product_id:
+                    productId,
+
+                content:
+                    content,
+
+                status:
+                    status
+
             })
             .eq(
                 "id",
                 id
-            )
-            .select("id,product_id,content,status,created_at")
-            .maybeSingle();
+            );
 
         if(error){
 
@@ -2450,21 +2572,76 @@ async function editInventory(id){
                 error.message
             );
 
+            if(saveButton){
+
+                saveButton.disabled = false;
+
+                saveButton.textContent =
+                    "💾 Save Changes";
+
+            }
+
             return;
         }
 
-        if(!data){
+        /*
+           Verify the existing inventory record separately.
+           The update itself intentionally does not use
+           .select(), so it does not depend on Supabase
+           returning the updated row.
+        */
+        const {
+            data:updatedItem,
+            error:verifyError
+        } =
+        await supabaseClient
+            .from("product_inventory")
+            .select(
+                "id,product_id,content,status,created_at"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .maybeSingle();
+
+        if(verifyError){
+
+            console.error(
+                "Inventory verification error:",
+                verifyError
+            );
 
             alert(
-                "❌ Inventory was not updated.\n\n" +
-                "The database did not return the updated inventory item."
+                "⚠️ The inventory update was sent successfully, " +
+                "but the updated record could not be verified.\n\n" +
+                "Refreshing the inventory now."
             );
+
+            await loadInventory();
+            await loadProducts();
+            await updateStats();
+
+            return;
+        }
+
+        if(!updatedItem){
+
+            alert(
+                "⚠️ The inventory update was sent, " +
+                "but the database did not return the record during verification.\n\n" +
+                "Refreshing the inventory now."
+            );
+
+            await loadInventory();
+            await loadProducts();
+            await updateStats();
 
             return;
         }
 
         alert(
-            "✅ Inventory replaced successfully."
+            "✅ Inventory updated successfully."
         );
 
         await loadInventory();
@@ -2486,7 +2663,286 @@ async function editInventory(id){
             )
         );
 
+        if(saveButton){
+
+            saveButton.disabled = false;
+
+            saveButton.textContent =
+                "💾 Save Changes";
+
+        }
+
     }
+
+}
+
+/* =========================
+   EDIT / REPLACE INVENTORY
+========================= */
+
+function editInventory(id){
+
+    const item =
+        inventory.find(
+            inventoryItem =>
+                Number(inventoryItem.id) ===
+                Number(id)
+        );
+
+    if(!item){
+
+        alert(
+            "❌ Inventory item not found."
+        );
+
+        return;
+    }
+
+    const box =
+        document.querySelector(
+            '[data-inventory-id="' +
+            String(id) +
+            '"]'
+        );
+
+    if(!box){
+
+        alert(
+            "❌ Inventory item could not be opened."
+        );
+
+        return;
+    }
+
+    const existingEditor =
+        box.querySelector(
+            ".inventory-editor"
+        );
+
+    if(existingEditor){
+
+        existingEditor.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+        });
+
+        return;
+    }
+
+    const editor =
+        document.createElement(
+            "div"
+        );
+
+    editor.className =
+        "inventory-editor";
+
+    const currentContent =
+        String(
+            item.content || ""
+        );
+
+    const currentProductId =
+        Number(
+            item.product_id
+        );
+
+    const currentStatus =
+        String(
+            item.status ||
+            "available"
+        ).toLowerCase();
+
+    const productOptions =
+        allProducts
+            .filter(product => {
+
+                return (
+                    product &&
+                    product.id !== undefined &&
+                    product.id !== null
+                );
+
+            })
+            .sort(
+                (a,b) =>
+                    String(
+                        a.name || ""
+                    ).localeCompare(
+                        String(
+                            b.name || ""
+                        )
+                    )
+            )
+            .map(product => {
+
+                const selected =
+                    Number(product.id) ===
+                    currentProductId
+                    ?
+                    " selected"
+                    :
+                    "";
+
+                return `
+                    <option
+                        value="${escapeHTML(product.id)}"
+                        ${selected}
+                    >
+                        ${escapeHTML(
+                            product.name ||
+                            "Unnamed Service"
+                        )}
+                        — ₦${money(product.price)}
+                    </option>
+                `;
+
+            })
+            .join("");
+
+    editor.innerHTML = `
+
+        <div
+            style="
+                font-size:16px;
+                font-weight:bold;
+                margin-bottom:10px;
+            "
+        >
+            ✏️ Edit / Replace Inventory
+        </div>
+
+        <div
+            class="small"
+            style="margin-bottom:10px;"
+        >
+            Edit this existing inventory item below.
+            You can replace the content, keep spaces,
+            use multiple lines, or paste new content.
+        </div>
+
+        <label>
+            Service
+        </label>
+
+        <select
+            data-editor-product="${escapeHTML(id)}"
+        >
+            ${
+                productOptions ||
+                `
+                <option value="${escapeHTML(currentProductId)}">
+                    Current Product #${escapeHTML(currentProductId)}
+                </option>
+                `
+            }
+        </select>
+
+        <label>
+            Status
+        </label>
+
+        <select
+            data-editor-status="${escapeHTML(id)}"
+        >
+
+            <option
+                value="available"
+                ${
+                    currentStatus === "available"
+                    ?
+                    "selected"
+                    :
+                    ""
+                }
+            >
+                Available
+            </option>
+
+            <option
+                value="unavailable"
+                ${
+                    currentStatus === "unavailable"
+                    ?
+                    "selected"
+                    :
+                    ""
+                }
+            >
+                Unavailable
+            </option>
+
+        </select>
+
+        <label>
+            Delivery Information
+        </label>
+
+        <textarea
+            data-editor-content="${escapeHTML(id)}"
+            spellcheck="false"
+            placeholder="Enter the replacement inventory content here..."
+        ></textarea>
+
+        <div class="actions">
+
+            <button
+                type="button"
+                data-editor-save="${escapeHTML(id)}"
+                onclick="saveInventoryEdit(${Number(id)})"
+            >
+                💾 Save Changes
+            </button>
+
+            <button
+                type="button"
+                class="gray"
+                onclick="cancelInventoryEdit(${Number(id)})"
+            >
+                ✖️ Cancel
+            </button>
+
+        </div>
+
+    `;
+
+    const textarea =
+        editor.querySelector(
+            '[data-editor-content="' +
+            String(id) +
+            '"]'
+        );
+
+    if(textarea){
+
+        textarea.value =
+            currentContent;
+
+    }
+
+    box.appendChild(
+        editor
+    );
+
+    editor.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+    });
+
+    setTimeout(() => {
+
+        if(textarea){
+
+            textarea.focus();
+
+            textarea.setSelectionRange(
+                textarea.value.length,
+                textarea.value.length
+            );
+
+        }
+
+    },150);
 
 }
 
