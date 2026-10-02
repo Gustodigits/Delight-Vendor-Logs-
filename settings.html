@@ -15,17 +15,18 @@
 
     body {
       margin: 0;
-      background: #f4f7fb;
-      color: #111827;
+      background: #050505;
+      color: #fff;
       font-family: Arial, sans-serif;
     }
 
     header {
-      background: linear-gradient(135deg, #0066ff, #0047b3);
-      color: white;
+      background: #0a0a0a;
+      color: #f0cf68;
       padding: 20px 18px;
       text-align: center;
-      box-shadow: 0 4px 14px #0066ff22;
+      box-shadow: 0 4px 14px rgba(0,0,0,.35);
+      border-bottom: 1px solid rgba(212,175,55,.18);
     }
 
     header h1 {
@@ -43,48 +44,52 @@
     main > h2 {
       font-size: 16px;
       margin: 20px 3px 10px;
-      color: #111827;
+      color: #f0cf68;
     }
 
     .profile-card {
-      background: #fff;
+      background: #0d0d0d;
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 4px 18px #0000000d;
-      border: 1px solid #e8edf5;
+      box-shadow: 0 4px 18px rgba(0,0,0,.35);
+      border: 1px solid rgba(212,175,55,.14);
     }
 
     .profile-card h3 {
       font-size: 13px;
       margin: 2px 0 7px;
-      color: #4b5563;
+      color: #aaa;
     }
 
     input {
       width: 100%;
       padding: 13px 14px;
-      border: 1px solid #d9e0ea;
+      border: 1px solid #292929;
       border-radius: 10px;
-      background: #f9fafc;
-      color: #111827;
+      background: #080808;
+      color: #fff;
       font-size: 15px;
       outline: none;
       margin-bottom: 12px;
     }
 
+    input::placeholder {
+      color: #707070;
+    }
+
     input:focus {
-      border-color: #0066ff;
-      background: #fff;
-      box-shadow: 0 0 0 3px #0066ff12;
+      border-color: #d4af37;
+      background: #0a0a0a;
+      box-shadow: 0 0 0 3px rgba(212,175,55,.08);
     }
 
     #email {
       margin: 0 0 3px;
       padding: 13px 14px;
-      background: #f7f9fc;
-      border: 1px solid #edf0f5;
+      background: #080808;
+      border: 1px solid #242424;
       border-radius: 10px;
-      color: #374151;
+      color: #ccc;
       font-size: 15px;
     }
 
@@ -100,42 +105,43 @@
     }
 
     main > button[onclick="saveName()"] {
-      background: #0066ff;
-      color: white;
-      box-shadow: 0 4px 12px #0066ff22;
+      background: linear-gradient(135deg, #f0cf68, #c49a24);
+      color: #080808;
+      box-shadow: 0 4px 12px rgba(212,175,55,.15);
     }
 
     main > button[onclick="changePassword()"] {
-      background: #0066ff;
-      color: white;
-      box-shadow: 0 4px 12px #0066ff22;
+      background: linear-gradient(135deg, #f0cf68, #c49a24);
+      color: #080808;
+      box-shadow: 0 4px 12px rgba(212,175,55,.15);
     }
 
     main > button[onclick="logout()"] {
-      background: #fff;
-      color: #dc2626;
-      border: 1px solid #fecaca;
+      background: #0d0d0d;
+      color: #f87171;
+      border: 1px solid rgba(248,113,113,.25);
       margin-top: 8px;
     }
 
     main > button[onclick="window.location.href='dashboard.html'"] {
-      background: #111827;
-      color: white;
+      background: #111;
+      color: #f0cf68;
+      border: 1px solid rgba(212,175,55,.2);
     }
 
     #message {
       min-height: 18px;
       margin: 5px 2px 0;
       font-size: 13px;
-      color: #0066ff;
+      color: #f0cf68;
     }
 
     .password-section {
-      background: #fff;
+      background: #0d0d0d;
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 4px 18px #0000000d;
-      border: 1px solid #e8edf5;
+      box-shadow: 0 4px 18px rgba(0,0,0,.35);
+      border: 1px solid rgba(212,175,55,.14);
     }
 
     .password-section input {
@@ -147,8 +153,8 @@
       border: 0;
       border-radius: 10px;
       padding: 13px 15px;
-      background: #0066ff;
-      color: white;
+      background: linear-gradient(135deg, #f0cf68, #c49a24);
+      color: #080808;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
