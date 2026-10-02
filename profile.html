@@ -23,8 +23,8 @@
     body {
       margin: 0;
       padding: 0 0 30px;
-      background: #f3f6ff;
-      color: #10152b;
+      background: #050505;
+      color: #ffffff;
       font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -40,13 +40,13 @@
       background:
         radial-gradient(
           circle at 85% 10%,
-          rgba(255,255,255,.08),
+          rgba(212,175,55,.12),
           transparent 35%
         ),
         linear-gradient(
           135deg,
-          #1028b8,
-          #061a88
+          #17130a,
+          #050505
         );
       display: flex;
       align-items: center;
@@ -54,6 +54,7 @@
       color: white;
       overflow: hidden;
       position: relative;
+      border: 1px solid #29220e;
     }
 
     .profile-header::after {
@@ -61,7 +62,7 @@
       position: absolute;
       width: 240px;
       height: 240px;
-      border: 1px solid rgba(255,255,255,.08);
+      border: 1px solid rgba(212,175,55,.12);
       border-radius: 50%;
       right: -90px;
       top: -100px;
@@ -72,13 +73,14 @@
       height: 72px;
       min-width: 72px;
       border-radius: 22px;
-      background: rgba(255,255,255,.12);
-      border: 2px solid rgba(255,255,255,.14);
+      background: rgba(212,175,55,.10);
+      border: 2px solid rgba(212,175,55,.28);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 30px;
       font-weight: 800;
+      color: #d4af37;
       position: relative;
       z-index: 2;
     }
@@ -92,6 +94,7 @@
       margin: 0 0 7px;
       font-size: 24px;
       line-height: 1.15;
+      color: #ffffff;
     }
 
     .header-text p {
@@ -113,7 +116,7 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 11px;
-      color: #909bb9;
+      color: #b99a35;
       font-size: 16px;
       font-weight: 800;
       letter-spacing: 1px;
@@ -123,7 +126,7 @@
     .section-title::after {
       content: "";
       height: 1px;
-      background: #dce2ef;
+      background: #292929;
       flex: 1;
     }
 
@@ -132,8 +135,8 @@
     ========================= */
 
     .card {
-      background: white;
-      border: 1px solid #e0e5f0;
+      background: #0d0d0d;
+      border: 1px solid #252525;
       border-radius: 24px;
       overflow: hidden;
     }
@@ -144,7 +147,7 @@
       display: flex;
       align-items: center;
       gap: 20px;
-      border-bottom: 1px solid #e8ebf2;
+      border-bottom: 1px solid #222222;
     }
 
     .profile-row:last-child {
@@ -156,8 +159,8 @@
       height: 64px;
       min-width: 64px;
       border-radius: 18px;
-      background: #edf2ff;
-      border: 1px solid #d5def6;
+      background: #15120a;
+      border: 1px solid #3a3017;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -171,14 +174,14 @@
 
     .row-label {
       margin-bottom: 4px;
-      color: #9aa4bd;
+      color: #777777;
       font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
     }
 
     .row-value {
-      color: #10152b;
+      color: #ffffff;
       font-size: 19px;
       font-weight: 700;
       word-break: break-word;
@@ -193,10 +196,11 @@
       border-radius: 24px;
       background: linear-gradient(
         135deg,
-        #1230d0,
-        #073eea
+        #191407,
+        #080808
       );
       color: white;
+      border: 1px solid #332a12;
     }
 
     .wallet-title {
@@ -209,16 +213,17 @@
       width: 54px;
       height: 54px;
       border-radius: 16px;
-      background: rgba(255,255,255,.14);
+      background: rgba(212,175,55,.10);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 25px;
+      border: 1px solid rgba(212,175,55,.18);
     }
 
     .wallet-label {
       font-size: 13px;
-      color: rgba(255,255,255,.65);
+      color: rgba(255,255,255,.55);
       font-weight: 700;
       text-transform: uppercase;
     }
@@ -227,6 +232,7 @@
       margin-top: 5px;
       font-size: 25px;
       font-weight: 800;
+      color: #d4af37;
     }
 
     .fund-wallet {
@@ -235,8 +241,8 @@
       padding: 12px;
       border: 0;
       border-radius: 13px;
-      background: white;
-      color: #063edc;
+      background: #d4af37;
+      color: #080808;
       font-size: 15px;
       font-weight: 800;
       cursor: pointer;
@@ -251,7 +257,7 @@
     }
 
     .arrow {
-      color: #9aa5bd;
+      color: #777777;
       font-size: 28px;
       line-height: 1;
     }
@@ -269,10 +275,10 @@
       border-radius: 20px;
       background: linear-gradient(
         135deg,
-        #1645ee,
-        #0639e8
+        #d4af37,
+        #f0cf68
       );
-      color: white;
+      color: #080808;
       font-size: 18px;
       font-weight: 800;
       cursor: pointer;
@@ -283,10 +289,10 @@
       width: calc(100% - 56px);
       margin: 0 28px 20px;
       padding: 16px;
-      border: 2px solid #d7dff0;
+      border: 2px solid #3a3017;
       border-radius: 20px;
       background: transparent;
-      color: #0844db;
+      color: #d4af37;
       font-size: 17px;
       font-weight: 800;
       cursor: pointer;
@@ -300,7 +306,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(7, 15, 45, .55);
+      background: rgba(0,0,0,.70);
       z-index: 999;
       align-items: center;
       justify-content: center;
@@ -310,10 +316,11 @@
     .contact-modal {
       width: 100%;
       max-width: 430px;
-      background: white;
+      background: #0d0d0d;
+      border: 1px solid #292929;
       border-radius: 25px;
       padding: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
       position: relative;
     }
 
@@ -325,22 +332,22 @@
       height: 38px;
       border: 0;
       border-radius: 50%;
-      background: #f1f4fb;
-      color: #68738f;
+      background: #181818;
+      color: #999999;
       font-size: 24px;
       cursor: pointer;
     }
 
     .contact-title {
       margin: 0 45px 7px 0;
-      color: #10152b;
+      color: #ffffff;
       font-size: 22px;
       font-weight: 800;
     }
 
     .contact-subtitle {
       margin: 0 0 20px;
-      color: #8d99b8;
+      color: #777777;
       font-size: 14px;
     }
 
@@ -396,7 +403,7 @@
 
     .support-text {
       text-align: center;
-      color: #8d99b8;
+      color: #777777;
       font-size: 14px;
       margin: 0 20px 12px;
     }
@@ -407,9 +414,9 @@
       margin: 0 auto 20px;
       padding: 8px 15px;
       border-radius: 25px;
-      border: 1px solid #d9e1f4;
-      color: #2c5fd4;
-      background: #f7f9ff;
+      border: 1px solid #3a3017;
+      color: #d4af37;
+      background: #111008;
       font-size: 13px;
       font-weight: 700;
     }
