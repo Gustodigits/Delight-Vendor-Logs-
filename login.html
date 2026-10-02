@@ -10,9 +10,7 @@
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>Login - Delight Vendor Logs</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Delight Vendor Logs — Your Digital Marketplace</title>
 
 
 <style>
@@ -27,6 +25,10 @@ body{
   padding:0;
 }
 
+html{
+  scroll-behavior:smooth;
+}
+
 body{
 
   font-family:
@@ -34,408 +36,1300 @@ body{
     Helvetica,
     sans-serif;
 
-  background:#ffffff;
+  background:#090909;
 
-  color:#111827;
+  color:#f7f0df;
 
   min-height:100vh;
 
-}
-
-
-/* PAGE */
-
-.page{
-
-  width:100%;
-
-  max-width:720px;
-
-  margin:0 auto;
-
-  padding:
-    170px
-    34px
-    60px;
+  overflow-x:hidden;
 
 }
 
 
-/* HEADER */
+/* =========================================
+   PAGE BACKGROUND
+========================================= */
 
-.heading{
+body::before{
 
-  margin-bottom:48px;
+  content:"";
 
-}
+  position:fixed;
 
-.heading h1{
-
-  margin:0;
-
-  font-size:42px;
-
-  line-height:1.15;
-
-  font-weight:800;
-
-  letter-spacing:-1.3px;
-
-  color:#101522;
-
-}
-
-.heading p{
-
-  margin:14px 0 0;
-
-  font-size:19px;
-
-  line-height:1.5;
-
-  color:#66708a;
-
-}
-
-
-/* FORM */
-
-.field{
-
-  margin-bottom:28px;
-
-}
-
-.field label{
-
-  display:block;
-
-  margin-bottom:12px;
-
-  font-size:18px;
-
-  font-weight:700;
-
-  color:#151922;
-
-}
-
-
-.input-wrap{
-
-  position:relative;
-
-}
-
-
-.input-icon{
-
-  position:absolute;
-
-  left:21px;
-
-  top:50%;
-
-  transform:translateY(-50%);
-
-  color:#a0a9c2;
-
-  font-size:21px;
+  inset:0;
 
   pointer-events:none;
 
+  background:
+    radial-gradient(
+      circle at 85% 12%,
+      rgba(210,169,66,.13),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 10% 70%,
+      rgba(210,169,66,.07),
+      transparent 25%
+    );
+
+  z-index:-2;
+
 }
 
 
-.input-wrap input{
+/* =========================================
+   NAVBAR
+========================================= */
+
+.navbar{
 
   width:100%;
-
-  height:78px;
-
-  border:2px solid #e3e7f0;
-
-  background:#f7f8fc;
-
-  border-radius:20px;
-
-  outline:none;
 
   padding:
-    0
     20px
-    0
-    63px;
+    24px;
 
-  font-size:19px;
+  border-bottom:
+    1px solid
+    rgba(212,174,73,.16);
 
-  color:#202636;
+  background:
+    rgba(9,9,9,.92);
 
-  transition:.2s;
+  backdrop-filter:
+    blur(14px);
 
-}
+  position:sticky;
 
+  top:0;
 
-.input-wrap input::placeholder{
-
-  color:#a2abc2;
-
-}
-
-
-.input-wrap input:focus{
-
-  border-color:#1740e8;
-
-  background:#fff;
-
-  box-shadow:
-    0 0 0 4px #1740e810;
+  z-index:50;
 
 }
 
 
-/* PASSWORD */
-
-.password-input{
-
-  padding-right:60px !important;
-
-}
-
-
-.password-toggle{
-
-  position:absolute;
-
-  right:19px;
-
-  top:50%;
-
-  transform:translateY(-50%);
-
-  border:0;
-
-  background:none;
-
-  color:#9da6bf;
-
-  font-size:21px;
-
-  padding:8px;
-
-  cursor:pointer;
-
-}
-
-
-/* FORGOT */
-
-.forgot{
-
-  text-align:right;
-
-  margin-top:-8px;
-
-  margin-bottom:27px;
-
-}
-
-
-.forgot a{
-
-  color:#123bc8;
-
-  font-size:15px;
-
-  font-weight:700;
-
-  text-decoration:none;
-
-}
-
-
-/* LOGIN BUTTON */
-
-.login-btn{
+.nav-inner{
 
   width:100%;
 
-  height:76px;
+  max-width:1050px;
 
-  border:0;
-
-  border-radius:19px;
-
-  background:#123be8;
-
-  color:#fff;
-
-  font-size:21px;
-
-  font-weight:800;
-
-  cursor:pointer;
-
-  box-shadow:
-    0 8px 20px #123be82b;
-
-  transition:.2s;
-
-}
-
-
-.login-btn:active{
-
-  transform:scale(.99);
-
-}
-
-
-.login-btn:disabled{
-
-  opacity:.65;
-
-  cursor:not-allowed;
-
-}
-
-
-/* MESSAGE */
-
-#message{
-
-  text-align:center;
-
-  margin:20px 0 0;
-
-  color:#66708a;
-
-  font-size:16px;
-
-  line-height:1.5;
-
-}
-
-
-/* DIVIDER */
-
-.divider{
+  margin:0 auto;
 
   display:flex;
 
   align-items:center;
 
-  gap:16px;
+  justify-content:space-between;
 
-  margin:37px 0;
-
-  color:#a1a8bb;
-
-  font-size:16px;
+  gap:20px;
 
 }
 
 
-.divider::before,
-.divider::after{
+/* LOGO */
 
-  content:"";
+.logo{
 
-  height:2px;
+  display:flex;
 
-  background:#e7e9ef;
+  align-items:center;
 
-  flex:1;
-
-}
-
-
-/* CREATE ACCOUNT */
-
-.create-text{
-
-  text-align:center;
-
-  color:#68718b;
-
-  font-size:18px;
-
-  line-height:1.5;
-
-}
-
-
-.create-text a{
-
-  color:#123bc8;
-
-  font-weight:800;
+  gap:11px;
 
   text-decoration:none;
 
+  color:#fff8e7;
+
 }
 
 
-/* MOBILE */
+.logo-mark{
 
-@media(max-width:600px){
+  width:43px;
 
-  .page{
+  height:43px;
+
+  border-radius:13px;
+
+  border:
+    1px solid
+    #cda84c;
+
+  background:#111111;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  color:#d6b253;
+
+  font-size:22px;
+
+  font-weight:900;
+
+  box-shadow:
+    0 0 20px rgba(210,169,66,.08);
+
+}
+
+
+.logo-text{
+
+  font-size:20px;
+
+  font-weight:900;
+
+  letter-spacing:-.5px;
+
+}
+
+
+.logo-text span{
+
+  color:#d2aa4d;
+
+}
+
+
+.nav-actions{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+}
+
+
+.nav-login{
+
+  height:43px;
+
+  padding:
+    0
+    19px;
+
+  border:0;
+
+  background:transparent;
+
+  color:#f3ead7;
+
+  font-size:14px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+}
+
+
+.nav-create{
+
+  height:43px;
+
+  padding:
+    0
+    19px;
+
+  border:
+    1px solid
+    #d3ad4d;
+
+  border-radius:11px;
+
+  background:#d3ad4d;
+
+  color:#090909;
+
+  font-size:14px;
+
+  font-weight:900;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 7px 20px rgba(211,173,77,.12);
+
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero{
+
+  width:100%;
+
+  max-width:1050px;
+
+  margin:0 auto;
+
+  padding:
+    85px
+    24px
+    55px;
+
+  text-align:center;
+
+}
+
+
+.hero-badge{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:8px;
+
+  padding:
+    9px
+    15px;
+
+  border:
+    1px solid
+    rgba(211,173,77,.35);
+
+  border-radius:999px;
+
+  background:
+    rgba(211,173,77,.07);
+
+  color:#d8b45a;
+
+  font-size:12px;
+
+  font-weight:800;
+
+  letter-spacing:1.4px;
+
+  text-transform:uppercase;
+
+  margin-bottom:25px;
+
+}
+
+
+.hero-badge-dot{
+
+  width:7px;
+
+  height:7px;
+
+  border-radius:50%;
+
+  background:#d5ad4d;
+
+  box-shadow:
+    0 0 10px #d5ad4d;
+
+}
+
+
+.hero h1{
+
+  margin:0 auto;
+
+  max-width:850px;
+
+  font-size:
+    clamp(
+      43px,
+      8vw,
+      82px
+    );
+
+  line-height:.98;
+
+  letter-spacing:-3px;
+
+  font-weight:900;
+
+  color:#f8f1df;
+
+}
+
+
+.hero h1 span{
+
+  color:#d5ad4d;
+
+}
+
+
+.hero-subtitle{
+
+  max-width:680px;
+
+  margin:
+    27px
+    auto
+    0;
+
+  font-size:
+    clamp(
+      17px,
+      3vw,
+      21px
+    );
+
+  line-height:1.65;
+
+  color:#a9a092;
+
+}
+
+
+.hero-buttons{
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  gap:13px;
+
+  margin-top:35px;
+
+  flex-wrap:wrap;
+
+}
+
+
+.primary-btn{
+
+  min-width:180px;
+
+  height:56px;
+
+  padding:
+    0
+    25px;
+
+  border:
+    1px solid
+    #d7b154;
+
+  border-radius:15px;
+
+  background:#d7b154;
+
+  color:#0b0b0b;
+
+  font-size:16px;
+
+  font-weight:900;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 12px 30px
+    rgba(215,177,84,.13);
+
+  transition:.2s;
+
+}
+
+
+.primary-btn:hover{
+
+  transform:translateY(-2px);
+
+  background:#e0bc62;
+
+}
+
+
+.secondary-btn{
+
+  min-width:150px;
+
+  height:56px;
+
+  padding:
+    0
+    25px;
+
+  border:
+    1px solid
+    rgba(215,177,84,.4);
+
+  border-radius:15px;
+
+  background:#111111;
+
+  color:#eee4d0;
+
+  font-size:16px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+  transition:.2s;
+
+}
+
+
+.secondary-btn:hover{
+
+  border-color:#d7b154;
+
+  color:#d7b154;
+
+}
+
+
+/* =========================================
+   TRUST LINE
+========================================= */
+
+.trust-line{
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  gap:12px;
+
+  margin-top:30px;
+
+  color:#777164;
+
+  font-size:13px;
+
+}
+
+
+.trust-dot{
+
+  width:6px;
+
+  height:6px;
+
+  border-radius:50%;
+
+  background:#cba64a;
+
+}
+
+
+/* =========================================
+   CATEGORY PREVIEW
+========================================= */
+
+.categories-section{
+
+  width:100%;
+
+  max-width:1050px;
+
+  margin:0 auto;
+
+  padding:
+    45px
+    24px
+    30px;
+
+}
+
+
+.section-label{
+
+  text-align:center;
+
+  color:#cba64a;
+
+  font-size:11px;
+
+  font-weight:900;
+
+  letter-spacing:2.5px;
+
+  text-transform:uppercase;
+
+  margin-bottom:10px;
+
+}
+
+
+.section-title{
+
+  margin:0;
+
+  text-align:center;
+
+  font-size:
+    clamp(
+      28px,
+      5vw,
+      40px
+    );
+
+  letter-spacing:-1.2px;
+
+  color:#f3ecdc;
+
+}
+
+
+.section-description{
+
+  max-width:580px;
+
+  margin:
+    13px
+    auto
+    28px;
+
+  text-align:center;
+
+  color:#858073;
+
+  line-height:1.6;
+
+  font-size:15px;
+
+}
+
+
+/* CATEGORY GRID */
+
+.category-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      1fr
+    );
+
+  gap:12px;
+
+}
+
+
+.category-card{
+
+  min-height:105px;
+
+  padding:18px 14px;
+
+  border:
+    1px solid
+    rgba(214,174,72,.17);
+
+  border-radius:17px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #121212,
+      #0d0d0d
+    );
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  text-align:center;
+
+  transition:
+    transform .2s,
+    border-color .2s,
+    background .2s;
+
+}
+
+
+.category-card:hover{
+
+  transform:translateY(-3px);
+
+  border-color:
+    rgba(214,174,72,.55);
+
+  background:#151515;
+
+}
+
+
+.category-icon{
+
+  width:42px;
+
+  height:42px;
+
+  border-radius:13px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  background:#181818;
+
+  border:
+    1px solid
+    rgba(211,174,76,.32);
+
+  color:#d4ad4d;
+
+  font-size:19px;
+
+  margin-bottom:10px;
+
+}
+
+
+.category-name{
+
+  color:#ddd4c2;
+
+  font-size:12px;
+
+  font-weight:800;
+
+  line-height:1.35;
+
+}
+
+
+/* =========================================
+   HIGHLIGHT BANNER
+========================================= */
+
+.number-banner{
+
+  width:100%;
+
+  max-width:1000px;
+
+  margin:
+    45px
+    auto
+    20px;
+
+  padding:
+    25px
+    27px;
+
+  border:
+    1px solid
+    rgba(215,177,84,.35);
+
+  border-radius:21px;
+
+  background:
+    linear-gradient(
+      105deg,
+      #141414,
+      #0c0c0c
+    );
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:20px;
+
+}
+
+
+.number-left{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:15px;
+
+}
+
+
+.number-icon{
+
+  width:52px;
+
+  height:52px;
+
+  flex-shrink:0;
+
+  border-radius:15px;
+
+  background:#d2aa4c;
+
+  color:#0b0b0b;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  font-size:23px;
+
+  font-weight:900;
+
+}
+
+
+.number-text h3{
+
+  margin:0 0 5px;
+
+  color:#f3ead7;
+
+  font-size:18px;
+
+}
+
+
+.number-text p{
+
+  margin:0;
+
+  color:#81796b;
+
+  font-size:13px;
+
+}
+
+
+.number-button{
+
+  flex-shrink:0;
+
+  height:45px;
+
+  padding:
+    0
+    17px;
+
+  border:
+    1px solid
+    #d4ad4d;
+
+  border-radius:12px;
+
+  background:#d4ad4d;
+
+  color:#0b0b0b;
+
+  font-weight:900;
+
+  font-size:13px;
+
+  cursor:pointer;
+
+}
+
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.gold-line{
+
+  width:100%;
+
+  max-width:1000px;
+
+  height:1px;
+
+  margin:
+    30px
+    auto
+    0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(210,169,66,.35),
+      transparent
+    );
+
+}
+
+
+/* =========================================
+   WHY DELIGHT
+========================================= */
+
+.features{
+
+  width:100%;
+
+  max-width:1000px;
+
+  margin:
+    20px
+    auto
+    0;
+
+  padding:
+    45px
+    24px
+    75px;
+
+}
+
+
+.feature-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap:14px;
+
+  margin-top:28px;
+
+}
+
+
+.feature{
+
+  padding:23px;
+
+  border:
+    1px solid
+    rgba(210,169,66,.14);
+
+  border-radius:18px;
+
+  background:#101010;
+
+}
+
+
+.feature-icon{
+
+  width:39px;
+
+  height:39px;
+
+  border-radius:12px;
+
+  background:#191919;
+
+  border:
+    1px solid
+    rgba(211,173,73,.28);
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  color:#d3ad4d;
+
+  margin-bottom:15px;
+
+  font-size:18px;
+
+}
+
+
+.feature h3{
+
+  margin:0 0 8px;
+
+  font-size:16px;
+
+  color:#eee5d3;
+
+}
+
+
+.feature p{
+
+  margin:0;
+
+  color:#797367;
+
+  font-size:13px;
+
+  line-height:1.6;
+
+}
+
+
+/* =========================================
+   FINAL CTA
+========================================= */
+
+.final-cta{
+
+  width:100%;
+
+  max-width:1000px;
+
+  margin:
+    0
+    auto
+    65px;
+
+  padding:
+    48px
+    25px;
+
+  border:
+    1px solid
+    rgba(214,174,74,.25);
+
+  border-radius:25px;
+
+  text-align:center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(210,169,66,.09),
+      transparent 65%
+    ),
+    #101010;
+
+}
+
+
+.final-cta h2{
+
+  margin:0;
+
+  font-size:
+    clamp(
+      28px,
+      5vw,
+      42px
+    );
+
+  color:#f4eddd;
+
+  letter-spacing:-1.3px;
+
+}
+
+
+.final-cta p{
+
+  max-width:560px;
+
+  margin:
+    13px
+    auto
+    25px;
+
+  color:#827b6d;
+
+  line-height:1.6;
+
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer{
+
+  border-top:
+    1px solid
+    rgba(210,169,66,.13);
+
+  padding:
+    30px
+    20px
+    38px;
+
+  text-align:center;
+
+}
+
+
+.footer-brand{
+
+  color:#ddd4c3;
+
+  font-size:15px;
+
+  font-weight:900;
+
+}
+
+
+.footer-brand span{
+
+  color:#d3ad4d;
+
+}
+
+
+.footer p{
+
+  margin:
+    9px
+    0
+    0;
+
+  color:#625e55;
+
+  font-size:12px;
+
+}
+
+
+.footer-note{
+
+  margin-top:18px;
+
+  color:#514e48;
+
+  font-size:10px;
+
+  letter-spacing:1px;
+
+  text-transform:uppercase;
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:750px){
+
+  .navbar{
 
     padding:
-      155px
-      40px
+      15px
+      16px;
+
+  }
+
+  .logo-text{
+
+    font-size:17px;
+
+  }
+
+  .logo-mark{
+
+    width:40px;
+
+    height:40px;
+
+  }
+
+  .nav-login{
+
+    padding:0 10px;
+
+    font-size:13px;
+
+  }
+
+  .nav-create{
+
+    height:40px;
+
+    padding:
+      0
+      13px;
+
+    font-size:12px;
+
+  }
+
+
+  .hero{
+
+    padding:
+      62px
+      19px
+      35px;
+
+  }
+
+  .hero h1{
+
+    letter-spacing:-2px;
+
+  }
+
+
+  .category-grid{
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+
+  }
+
+
+  .number-banner{
+
+    margin:
+      35px
+      17px
+      15px;
+
+    padding:20px;
+
+  }
+
+
+  .number-text h3{
+
+    font-size:16px;
+
+  }
+
+
+  .number-text p{
+
+    font-size:12px;
+
+  }
+
+
+  .number-button{
+
+    padding:
+      0
+      13px;
+
+    font-size:12px;
+
+  }
+
+
+  .feature-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+
+  .features{
+
+    padding:
+      35px
+      19px
+      55px;
+
+  }
+
+
+  .final-cta{
+
+    width:calc(100% - 34px);
+
+    margin:
+      0
+      auto
       50px;
 
-  }
-
-  .heading h1{
-
-    font-size:34px;
-
-  }
-
-  .heading p{
-
-    font-size:18px;
-
-  }
-
-  .input-wrap input{
-
-    height:76px;
-
-    font-size:18px;
-
-  }
-
-  .login-btn{
-
-    height:75px;
+    padding:
+      38px
+      20px;
 
   }
 
 }
 
 
-@media(max-width:400px){
+@media(max-width:470px){
 
-  .page{
+  .logo-text{
 
-    padding-left:25px;
-
-    padding-right:25px;
+    display:none;
 
   }
 
-  .heading h1{
 
-    font-size:31px;
+  .nav-actions{
+
+    gap:3px;
+
+  }
+
+
+  .nav-login{
+
+    padding:
+      0
+      8px;
+
+  }
+
+
+  .hero-buttons{
+
+    flex-direction:column;
+
+  }
+
+
+  .primary-btn,
+  .secondary-btn{
+
+    width:100%;
+
+    max-width:300px;
+
+  }
+
+
+  .number-banner{
+
+    align-items:flex-start;
+
+  }
+
+
+  .number-left{
+
+    align-items:flex-start;
+
+  }
+
+
+  .number-button{
+
+    margin-top:3px;
 
   }
 
 }
+
 
 </style>
 
@@ -445,321 +1339,506 @@ body{
 <body>
 
 
-<div class="page">
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<nav class="navbar">
+
+  <div class="nav-inner">
 
 
-  <!-- HEADER -->
+    <a
+      href="index.html"
+      class="logo"
+    >
 
-  <div class="heading">
+      <div class="logo-mark">
+        D
+      </div>
 
-    <h1>
-      Welcome back 👋
-    </h1>
+      <div class="logo-text">
+        Delight <span>Vendor Logs</span>
+      </div>
 
-    <p>
-      Sign in to your Delight Vendor Logs account
-    </p>
-
-  </div>
-
-
-  <!-- EMAIL -->
-
-  <div class="field">
-
-    <label for="email">
-      Email Address
-    </label>
+    </a>
 
 
-    <div class="input-wrap">
+    <div class="nav-actions">
 
-      <span class="input-icon">
-        ✉
-      </span>
-
-
-      <input
-        id="email"
-        type="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-        required
+      <button
+        type="button"
+        class="nav-login"
+        onclick="location.href='login.html'"
       >
-
-    </div>
-
-  </div>
-
-
-  <!-- PASSWORD -->
-
-  <div class="field">
-
-    <label for="password">
-      Password
-    </label>
-
-
-    <div class="input-wrap">
-
-      <span class="input-icon">
-        🔒
-      </span>
-
-
-      <input
-        id="password"
-        class="password-input"
-        type="password"
-        placeholder="Enter your password"
-        autocomplete="current-password"
-        required
-      >
+        Login
+      </button>
 
 
       <button
         type="button"
-        class="password-toggle"
-        onclick="togglePassword()"
-        aria-label="Show password"
+        class="nav-create"
+        onclick="location.href='register.html'"
       >
-        👁
+        Create Account
       </button>
 
     </div>
 
-  </div>
-
-
-  <!-- FORGOT PASSWORD -->
-
-  <div class="forgot">
-
-    <a href="forgot-password.html">
-      Forgot Password?
-    </a>
 
   </div>
 
+</nav>
 
-  <!-- LOGIN -->
+
+<!-- =========================================
+     HERO
+========================================= -->
+
+<main>
+
+
+<section class="hero">
+
+
+  <div class="hero-badge">
+
+    <span class="hero-badge-dot"></span>
+
+    Everything you need, in one place
+
+  </div>
+
+
+  <h1>
+
+    Your digital marketplace.
+
+    <br>
+
+    <span>Simple. Fast. Reliable.</span>
+
+  </h1>
+
+
+  <p class="hero-subtitle">
+
+    Access digital services, accounts, numbers,
+    working pictures, formats and more —
+    all from one platform built for convenience.
+
+  </p>
+
+
+  <div class="hero-buttons">
+
+
+    <button
+      type="button"
+      class="primary-btn"
+      onclick="location.href='register.html'"
+    >
+
+      Create Account
+      &nbsp; →
+
+    </button>
+
+
+    <button
+      type="button"
+      class="secondary-btn"
+      onclick="location.href='login.html'"
+    >
+
+      Login
+
+    </button>
+
+
+  </div>
+
+
+  <div class="trust-line">
+
+    <span class="trust-dot"></span>
+
+    One platform for your digital needs
+
+  </div>
+
+
+</section>
+
+
+<!-- =========================================
+     CATEGORIES
+========================================= -->
+
+<section class="categories-section">
+
+
+  <div class="section-label">
+    What we offer
+  </div>
+
+
+  <h2 class="section-title">
+    Everything in one platform
+  </h2>
+
+
+  <p class="section-description">
+
+    Browse a growing collection of digital
+    services and products available through
+    Delight Vendor Logs.
+
+  </p>
+
+
+  <div class="category-grid">
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📱
+      </div>
+
+      <div class="category-name">
+        All Social Logs
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🖼️
+      </div>
+
+      <div class="category-name">
+        Working Pictures
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📄
+      </div>
+
+      <div class="category-name">
+        Formats
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🔗
+      </div>
+
+      <div class="category-name">
+        Working Links
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🎙️
+      </div>
+
+      <div class="category-name">
+        Voice Cloner / Fake Video Call
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📞
+      </div>
+
+      <div class="category-name">
+        All Countries Number
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📺
+      </div>
+
+      <div class="category-name">
+        Streaming &amp; More
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📡
+      </div>
+
+      <div class="category-name">
+        ESIMS
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🔐
+      </div>
+
+      <div class="category-name">
+        VPN
+      </div>
+
+    </div>
+
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📧
+      </div>
+
+      <div class="category-name">
+        Gmail
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+</section>
+
+
+<!-- =========================================
+     COUNTRY NUMBERS
+========================================= -->
+
+<section class="number-banner">
+
+
+  <div class="number-left">
+
+
+    <div class="number-icon">
+      ☎
+    </div>
+
+
+    <div class="number-text">
+
+      <h3>
+        Get All Country Numbers
+      </h3>
+
+      <p>
+        Get virtual numbers from different countries.
+      </p>
+
+    </div>
+
+
+  </div>
+
 
   <button
-    id="loginButton"
-    class="login-btn"
     type="button"
-    onclick="loginUser()"
+    class="number-button"
+    onclick="location.href='virtualnumber.html'"
   >
-    Continue
+
+    Get Number
+    &nbsp; →
+
   </button>
 
 
-  <p id="message"></p>
+</section>
 
 
-  <!-- DIVIDER -->
+<div class="gold-line"></div>
 
-  <div class="divider">
-    or
+
+<!-- =========================================
+     FEATURES
+========================================= -->
+
+<section class="features">
+
+
+  <div class="section-label">
+    Why Delight
   </div>
 
 
-  <!-- CREATE ACCOUNT -->
+  <h2 class="section-title">
+    Built around simplicity
+  </h2>
 
-  <div class="create-text">
 
-    Don't have an account?
+  <p class="section-description">
 
-    <a href="register.html">
-      Create one free
-    </a>
+    Everything is designed to make finding,
+    purchasing and managing your digital
+    services easier.
+
+  </p>
+
+
+  <div class="feature-grid">
+
+
+    <div class="feature">
+
+      <div class="feature-icon">
+        ⚡
+      </div>
+
+      <h3>
+        Fast Access
+      </h3>
+
+      <p>
+        Find the service you need and get
+        started without unnecessary steps.
+      </p>
+
+    </div>
+
+
+    <div class="feature">
+
+      <div class="feature-icon">
+        ◇
+      </div>
+
+      <h3>
+        One Platform
+      </h3>
+
+      <p>
+        Multiple categories and digital
+        services brought together in one place.
+      </p>
+
+    </div>
+
+
+    <div class="feature">
+
+      <div class="feature-icon">
+        ✓
+      </div>
+
+      <h3>
+        Easy To Use
+      </h3>
+
+      <p>
+        A straightforward dashboard that
+        keeps your services and purchases organized.
+      </p>
+
+    </div>
+
 
   </div>
 
 
-</div>
+</section>
 
 
-<script>
+<!-- =========================================
+     FINAL CTA
+========================================= -->
 
+<section class="final-cta">
 
-/* SUPABASE */
 
-const SUPABASE_URL =
-  "https://hkfhehbhmucymusaytoe.supabase.co";
+  <h2>
+    Ready to get started?
+  </h2>
 
 
-const SUPABASE_KEY =
-  "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+  <p>
 
+    Create your Delight Vendor Logs account
+    and access your digital marketplace.
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  </p>
 
 
-/* PASSWORD TOGGLE */
+  <button
+    type="button"
+    class="primary-btn"
+    onclick="location.href='register.html'"
+  >
 
-function togglePassword(){
+    Create Account
+    &nbsp; →
 
-  const password =
-    document.getElementById(
-      "password"
-    );
+  </button>
 
-  const button =
-    document.querySelector(
-      ".password-toggle"
-    );
 
+</section>
 
-  if(
-    password.type === "password"
-  ){
 
-    password.type = "text";
+</main>
 
-    button.textContent = "🙈";
 
-  }else{
+<!-- =========================================
+     FOOTER
+========================================= -->
 
-    password.type = "password";
+<footer class="footer">
 
-    button.textContent = "👁";
 
-  }
+  <div class="footer-brand">
 
-}
+    Delight <span>Vendor Logs</span>
 
+  </div>
 
-/* LOGIN */
 
-async function loginUser(){
+  <p>
+    Your digital marketplace
+  </p>
 
-  const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
 
+  <div class="footer-note">
 
-  const password =
-    document
-      .getElementById("password")
-      .value;
+    All is for educational purposes
 
+  </div>
 
-  const message =
-    document
-      .getElementById("message");
 
-
-  const button =
-    document
-      .getElementById("loginButton");
-
-
-  message.textContent = "";
-
-
-  if(
-    !email ||
-    !password
-  ){
-
-    message.textContent =
-      "Please enter your email and password.";
-
-    return;
-
-  }
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Signing In...";
-
-
-  message.textContent =
-    "Logging in...";
-
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .auth
-        .signInWithPassword({
-
-          email:email,
-
-          password:password
-
-        });
-
-
-    if(error){
-
-      console.error(error);
-
-      message.textContent =
-        error.message;
-
-      button.disabled = false;
-
-      button.textContent =
-        "Continue";
-
-      return;
-
-    }
-
-
-    if(
-      data &&
-      data.user
-    ){
-
-      window.location.href =
-        "dashboard.html";
-
-    }else{
-
-      message.textContent =
-        "Unable to log in. Please try again.";
-
-      button.disabled = false;
-
-      button.textContent =
-        "Continue";
-
-    }
-
-
-  }catch(error){
-
-    console.error(error);
-
-    message.textContent =
-      "Something went wrong. Please try again.";
-
-    button.disabled = false;
-
-    button.textContent =
-      "Continue";
-
-  }
-
-}
-
-</script>
+</footer>
 
 
 </body>
