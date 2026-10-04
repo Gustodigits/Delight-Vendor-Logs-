@@ -496,12 +496,11 @@
 
 <body>
 
-  <!-- ACCESS DENIED -->
   <div id="accessDenied">
     <div class="denied-box">
       <div class="denied-icon">🔒</div>
       <h2>Admin Access Only</h2>
-      <p>
+      <p id="deniedMessage">
         You do not have permission to access the Boosting Admin page.
       </p>
       <button class="primary-btn" onclick="goBack()">Go Back</button>
@@ -509,7 +508,6 @@
   </div>
 
 
-  <!-- MAIN ADMIN PAGE -->
   <div id="adminPage" class="hidden">
 
     <header>
@@ -544,7 +542,6 @@
       <div id="successMessage" class="success"></div>
 
 
-      <!-- STATISTICS -->
       <div class="stats">
 
         <div class="stat">
@@ -565,7 +562,6 @@
       </div>
 
 
-      <!-- DEFAULT MARKUP -->
       <section class="card">
 
         <div class="card-header">
@@ -610,7 +606,6 @@
       </section>
 
 
-      <!-- SERVICES -->
       <section class="card">
 
         <div class="card-header">
@@ -660,7 +655,14 @@
     const supabaseClient =
       supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_ANON_KEY
+        SUPABASE_ANON_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        }
       );
 
 
@@ -689,61 +691,139 @@
 
       try {
 
-        const {
-          data: {
-            session
-          },
-          error: sessionError
-        } = await supabaseClient.auth.getSession();
+        /*
+          First ask Supabase Auth for the currently
+          authenticated user.
 
-        if (sessionError) {
-          throw sessionError;
+          getUser() verifies the current authenticated
+          session instead of relying only on the locally
+          stored session object.
+        */
+
+        let user = null;
+
+        const {
+          data: userData,
+          error: userError
+        } = await supabaseClient.auth.getUser();
+
+        if (!userError && userData && userData.user) {
+          user = userData.user;
         }
 
-        if (!session || !session.user) {
-          denyAccess();
+
+        /*
+          Fallback to the current session if getUser()
+          did not return a user.
+        */
+
+        if (!user) {
+
+          const {
+            data: sessionData,
+            error: sessionError
+          } = await supabaseClient.auth.getSession();
+
+          if (sessionError) {
+            throw sessionError;
+          }
+
+          if (
+            sessionData &&
+            sessionData.session &&
+            sessionData.session.user
+          ) {
+            user = sessionData.session.user;
+          }
+
+        }
+
+
+        if (!user) {
+
+          showDenied(
+            "No active login session was found. Please log into your Delight account first."
+          );
+
           return;
         }
 
-        currentUser = session.user;
+
+        currentUser = user;
+
+
+        /*
+          Check the exact authenticated UUID against
+          the existing admin_users table.
+        */
 
         const {
-          data: adminRecord,
+          data: adminRecords,
           error: adminError
         } = await supabaseClient
           .from("admin_users")
           .select("user_id")
-          .eq("user_id", currentUser.id)
-          .maybeSingle();
+          .eq("user_id", currentUser.id);
 
         if (adminError) {
-          throw new Error(
-            "Unable to verify admin access: " +
+
+          console.error(
+            "Admin verification error:",
+            adminError
+          );
+
+          showDenied(
+            "Admin verification failed: " +
             adminError.message
           );
-        }
 
-        if (!adminRecord) {
-          denyAccess();
           return;
         }
+
+
+        if (
+          !adminRecords ||
+          adminRecords.length === 0
+        ) {
+
+          console.error(
+            "Authenticated user is not in admin_users:",
+            currentUser.id
+          );
+
+          showDenied(
+            "This account is not registered as an administrator."
+          );
+
+          return;
+        }
+
+
+        /*
+          Admin confirmed.
+        */
 
         document
           .getElementById("adminPage")
           .classList.remove("hidden");
 
+        document
+          .getElementById("accessDenied")
+          .style.display = "none";
+
         await loadAll();
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "Admin access check failed:",
+          error
+        );
 
-        showError(
+        showDenied(
           error.message ||
           "Unable to verify admin access."
         );
-
-        denyAccess();
 
       }
 
@@ -751,18 +831,26 @@
 
 
     // =====================================================
-    // DENY ACCESS
+    // SHOW ACCESS DENIED
     // =====================================================
 
-    function denyAccess() {
+    function showDenied(message) {
 
       document
         .getElementById("adminPage")
         .classList.add("hidden");
 
-      document
-        .getElementById("accessDenied")
-        .style.display = "flex";
+      const denied =
+        document.getElementById("accessDenied");
+
+      const deniedMessage =
+        document.getElementById("deniedMessage");
+
+      if (deniedMessage) {
+        deniedMessage.textContent = message;
+      }
+
+      denied.style.display = "flex";
 
     }
 
@@ -1251,7 +1339,6 @@
           })
           .join("");
 
-      // Add live enabled/disabled text
       boostingServices.forEach(service => {
 
         const checkbox =
@@ -1382,7 +1469,6 @@
 
         updateStats();
 
-        // Update status badge
         if (serviceItem) {
 
           const status =
