@@ -1047,7 +1047,7 @@
 
         <!-- LINK -->
 
-        <div class="field">
+        <div class="field" id="linkField">
 
           <label for="linkInput">
             Post / Profile Link
@@ -1250,6 +1250,11 @@
     const serviceDelivery =
       document.getElementById(
         "serviceDelivery"
+      );
+
+    const linkField =
+      document.getElementById(
+        "linkField"
       );
 
     const linkInput =
@@ -2060,14 +2065,25 @@
 
 
       /*
-       * Bring the selected service
-       * into view on smaller screens.
+       * Automatically take the user
+       * down to the next section after
+       * selecting a service.
+       *
+       * This prevents the user from
+       * having to scroll manually again.
        */
 
-      selectedButton.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
-      });
+      setTimeout(
+        () => {
+
+          linkField.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+
+        },
+        180
+      );
 
     }
 
