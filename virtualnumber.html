@@ -196,6 +196,10 @@ main{
   word-break:break-word;
 }
 
+.hidden{
+  display:none !important;
+}
+
 /* =========================
    CARDS
 ========================= */
@@ -323,10 +327,6 @@ input:focus{
   border-radius:10px;
   font-size:14px;
   font-weight:bold;
-}
-
-.hidden{
-  display:none !important;
 }
 
 /* =========================
@@ -3510,8 +3510,10 @@ async function buyNumber(){
         immediateOrder,
         ...orders.filter(
           existing =>
-            orderUniqueKey(existing) !==
-            orderUniqueKey(immediateOrder)
+            !ordersRepresentSameOrder(
+              existing,
+              immediateOrder
+            )
         )
       ];
 
@@ -3538,7 +3540,7 @@ async function buyNumber(){
 
 
 /* ============================================================
-   ORDER NORMALIZATION FIX
+   ORDER NORMALIZATION
 ============================================================ */
 
 function firstOrderValue(
@@ -3973,6 +3975,109 @@ function orderUniqueKey(order){
 
 }
 
+/*
+  Determines whether two order objects are
+  actually the same order even when one version
+  uses the provider activation ID and another
+  version uses the database order ID.
+*/
+function ordersRepresentSameOrder(
+  first,
+  second
+){
+
+  if(!first || !second){
+    return false;
+  }
+
+  const firstProvider =
+    orderProvider(first);
+
+  const secondProvider =
+    orderProvider(second);
+
+  if(firstProvider !== secondProvider){
+    return false;
+  }
+
+  const firstActivation =
+    String(
+      first?.activation_id ||
+      first?.activationId ||
+      orderActivationId(first) ||
+      ""
+    ).trim();
+
+  const secondActivation =
+    String(
+      second?.activation_id ||
+      second?.activationId ||
+      orderActivationId(second) ||
+      ""
+    ).trim();
+
+  if(
+    firstActivation &&
+    secondActivation &&
+    firstActivation === secondActivation
+  ){
+
+    return true;
+
+  }
+
+  const firstDatabaseId =
+    String(
+      first?.id ??
+      first?.order_id ??
+      first?.orderId ??
+      ""
+    ).trim();
+
+  const secondDatabaseId =
+    String(
+      second?.id ??
+      second?.order_id ??
+      second?.orderId ??
+      ""
+    ).trim();
+
+  if(
+    firstDatabaseId &&
+    secondDatabaseId &&
+    firstDatabaseId === secondDatabaseId
+  ){
+
+    return true;
+
+  }
+
+  const firstNumber =
+    String(
+      orderNumber(first) ||
+      ""
+    ).trim();
+
+  const secondNumber =
+    String(
+      orderNumber(second) ||
+      ""
+    ).trim();
+
+  if(
+    firstNumber &&
+    secondNumber &&
+    firstNumber === secondNumber
+  ){
+
+    return true;
+
+  }
+
+  return false;
+
+}
+
 function orderActionId(
   order
 ){
@@ -4287,26 +4392,87 @@ async function loadAllOrders(){
       ...smsOrders
     ];
 
-    const unique =
-      new Map();
+    /*
+      First remove exact/recognizable duplicates.
+
+      This is intentionally based on the actual
+      order identity, activation ID, or number,
+      rather than only the database ID.
+    */
+    const uniqueOrders = [];
 
     merged.forEach(
       order => {
 
-        unique.set(
-          orderUniqueKey(order),
-          order
-        );
+        const existingIndex =
+          uniqueOrders.findIndex(
+            existing =>
+              ordersRepresentSameOrder(
+                existing,
+                order
+              )
+          );
+
+        if(existingIndex === -1){
+
+          uniqueOrders.push(order);
+
+        }else{
+
+          /*
+            Keep the version containing the most
+            useful/latest information.
+          */
+          const existing =
+            uniqueOrders[existingIndex];
+
+          const existingActivation =
+            orderActivationId(existing);
+
+          const newActivation =
+            orderActivationId(order);
+
+          const existingNumber =
+            orderNumber(existing);
+
+          const newNumber =
+            orderNumber(order);
+
+          if(
+            (!existingActivation && newActivation) ||
+            (!existingNumber && newNumber) ||
+            (
+              new Date(
+                order.created_at ||
+                order.purchased_at ||
+                order.updated_at ||
+                0
+              ) >
+              new Date(
+                existing.created_at ||
+                existing.purchased_at ||
+                existing.updated_at ||
+                0
+              )
+            )
+          ){
+
+            uniqueOrders[existingIndex] =
+              order;
+
+          }
+
+        }
 
       }
     );
 
-    const combined =
-      Array.from(
-        unique.values()
-      );
+    /*
+      ALWAYS sort newest purchase/order first.
 
-    combined.sort(
+      Status does not affect the order.
+    */
+    uniqueOrders.sort(
       (a,b) =>
         new Date(
           b.created_at ||
@@ -4322,34 +4488,21 @@ async function loadAllOrders(){
         )
     );
 
-    orders = combined;
+    orders =
+      uniqueOrders;
 
-    const activeOrders =
-      orders.filter(
-        order => {
+    /*
+      The newest order is ALWAYS the Current /
+      New Order.
 
-          const status =
-            String(
-              order.status || ""
-            ).toLowerCase();
-
-          return (
-            status === "waiting" ||
-            status === "pending" ||
-            status === "received"
-          );
-
-        }
-      );
-
+      It does not matter whether it is:
+      waiting, pending, received, completed,
+      cancelled, refunded, or failed.
+    */
     const active =
-      activeOrders.length > 0
-        ? activeOrders[0]
-        : (
-            orders.length > 0
-              ? orders[0]
-              : null
-          );
+      orders.length > 0
+        ? orders[0]
+        : null;
 
     if(active){
 
@@ -4378,17 +4531,26 @@ async function loadAllOrders(){
 
     }
 
-    const activeKey =
-      active
-        ? orderUniqueKey(active)
-        : null;
+    /*
+      IMPORTANT:
+      Previous Orders gets every order EXCEPT
+      the exact same newest order.
 
+      We compare using ordersRepresentSameOrder()
+      rather than only orderUniqueKey(), so the
+      newest order cannot appear twice when its
+      database ID changes between responses.
+    */
     const previousOrders =
-      orders.filter(
-        order =>
-          orderUniqueKey(order) !==
-          activeKey
-      );
+      active
+        ? orders.filter(
+            order =>
+              !ordersRepresentSameOrder(
+                order,
+                active
+              )
+          )
+        : orders;
 
     if(previousOrders.length === 0){
 
