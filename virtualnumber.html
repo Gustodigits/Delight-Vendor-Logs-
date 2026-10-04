@@ -4564,6 +4564,82 @@ async function checkOrder(
 
 }
 
+
+/* ============================================================
+   SMSBOWER CANCELLATION FIX ONLY
+============================================================ */
+
+function smsBowerCancellationActivationId(
+  order,
+  fallbackId = ""
+){
+
+  if(!order || typeof order !== "object"){
+    return String(fallbackId || "").trim();
+  }
+
+  const directActivation =
+    orderActivationId(order);
+
+  if(directActivation){
+    return String(directActivation).trim();
+  }
+
+  const sources =
+    collectOrderSources(order);
+
+  const extraActivation =
+    firstOrderValue(
+      sources,
+      [
+        "activation",
+        "activation_id",
+        "activationId",
+        "activationID",
+        "provider_activation_id",
+        "providerActivationId",
+        "activationIdValue",
+        "activation_id_value"
+      ]
+    );
+
+  if(extraActivation){
+    return String(extraActivation).trim();
+  }
+
+  /*
+    SMSBower orders can use their provider order ID
+    as the activation ID. This fallback is used ONLY
+    by the SMSBower cancellation request.
+  */
+  const providerOrderId =
+    firstOrderValue(
+      sources,
+      [
+        "activation_order_id",
+        "activationOrderId",
+        "provider_order_id",
+        "providerOrderId"
+      ]
+    );
+
+  if(providerOrderId){
+    return String(providerOrderId).trim();
+  }
+
+  const fallback =
+    String(
+      fallbackId ||
+      order?.id ||
+      order?.order_id ||
+      order?.orderId ||
+      ""
+    ).trim();
+
+  return fallback;
+
+}
+
 async function cancelOrder(
   orderId,
   providerName,
@@ -4646,6 +4722,31 @@ async function cancelOrder(
 
   try{
 
+    let cancellationActivationId =
+      activationId ||
+      target?.activation_id ||
+      "";
+
+    if(
+      providerName === "smsbower"
+    ){
+
+      cancellationActivationId =
+        smsBowerCancellationActivationId(
+          target,
+          cancellationActivationId ||
+          orderId
+        );
+
+    }else{
+
+      cancellationActivationId =
+        cancellationActivationId ||
+        orderActivationId(target) ||
+        null;
+
+    }
+
     const data =
       await api(
         "cancel",
@@ -4654,9 +4755,7 @@ async function cancelOrder(
             orderId,
 
           activation_id:
-            activationId ||
-            target?.activation_id ||
-            orderActivationId(target) ||
+            cancellationActivationId ||
             null
         },
         providerName
