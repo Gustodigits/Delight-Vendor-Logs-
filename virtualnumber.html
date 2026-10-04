@@ -631,6 +631,14 @@ input:focus{
   z-index:9999;
 }
 
+/* FIX: force a closed popup to disappear */
+.popup.popup-closed{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
 .popup-card{
   width:100%;
   max-width:500px;
@@ -1221,8 +1229,9 @@ class="popup"
 <h2>Important Verification</h2>
 
 <button
+type="button"
 class="popup-x"
-onclick="closeVerificationPopup()"
+onclick="closeVerificationPopup(event)"
 >
 ×
 </button>
@@ -1330,8 +1339,9 @@ If a server does not receive a code, please try another server. Each server show
 </div>
 
 <button
+type="button"
 class="popup-close"
-onclick="closeVerificationPopup()"
+onclick="closeVerificationPopup(event)"
 >
 I Understand
 </button>
@@ -1342,7 +1352,7 @@ I Understand
 
 <div
 id="portalNoticePopup"
-class="popup"
+class="popup popup-closed"
 style="display:none;"
 >
 
@@ -1357,8 +1367,9 @@ style="display:none;"
 <h2>PORTAL NOTICE</h2>
 
 <button
+type="button"
 class="popup-x"
-onclick="closePortalNotice()"
+onclick="closePortalNotice(event)"
 >
 ×
 </button>
@@ -1436,8 +1447,9 @@ Please make sure your VPN country matches the country of your purchased number.
 </div>
 
 <button
+type="button"
 class="popup-close"
-onclick="closePortalNotice()"
+onclick="closePortalNotice(event)"
 >
 I Understand
 </button>
@@ -1786,27 +1798,114 @@ function toggleMenu(){
 
 }
 
-function closeVerificationPopup(){
+/* ============================================================
+   POPUP FIX
+============================================================ */
 
-  document
-    .getElementById("verificationPopup")
-    .style.display = "none";
+function forceClosePopup(id){
+
+  const popup =
+    document.getElementById(id);
+
+  if(!popup){
+    return;
+  }
+
+  popup.classList.add(
+    "popup-closed"
+  );
+
+  popup.style.setProperty(
+    "display",
+    "none",
+    "important"
+  );
+
+  popup.style.setProperty(
+    "visibility",
+    "hidden",
+    "important"
+  );
+
+  popup.style.setProperty(
+    "opacity",
+    "0",
+    "important"
+  );
+
+  popup.style.setProperty(
+    "pointer-events",
+    "none",
+    "important"
+  );
 
 }
 
-function closePortalNotice(){
+function forceOpenPopup(id){
 
-  document
-    .getElementById("portalNoticePopup")
-    .style.display = "none";
+  const popup =
+    document.getElementById(id);
+
+  if(!popup){
+    return;
+  }
+
+  popup.classList.remove(
+    "popup-closed"
+  );
+
+  popup.style.removeProperty(
+    "display"
+  );
+
+  popup.style.removeProperty(
+    "visibility"
+  );
+
+  popup.style.removeProperty(
+    "opacity"
+  );
+
+  popup.style.removeProperty(
+    "pointer-events"
+  );
+
+  popup.style.display =
+    "flex";
+
+}
+
+function closeVerificationPopup(event){
+
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  forceClosePopup(
+    "verificationPopup"
+  );
+
+}
+
+function closePortalNotice(event){
+
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  forceClosePopup(
+    "portalNoticePopup"
+  );
 
 }
 
 function showPortalNotice(){
 
-  document
-    .getElementById("portalNoticePopup")
-    .style.display = "flex";
+  forceOpenPopup(
+    "portalNoticePopup"
+  );
 
 }
 
@@ -3070,28 +3169,6 @@ async function buyNumber(){
    ORDER NORMALIZATION FIX
 ============================================================ */
 
-/*
-  Grizzly V2 returns:
-
-  {
-    activationId: ...,
-    phoneNumber: ...
-  }
-
-  and getStatusV2 returns:
-
-  {
-    sms: {
-      code: ...,
-      text: ...
-    }
-  }
-
-  The order endpoint may wrap these values in different
-  objects. These helpers safely find the values without
-  allowing an object itself to become "[object Object]".
-*/
-
 function firstOrderValue(
   sources,
   keys
@@ -3208,29 +3285,22 @@ function orderNumber(
   const sources =
     collectOrderSources(order);
 
-  const number =
-    firstOrderValue(
-      sources,
-      [
-        "number",
-        "phoneNumber",
-        "phone_number",
-        "phone",
-        "phoneNumberFormatted",
-        "phone_number_formatted",
-        "activationNumber",
-        "activation_number",
-        "mobile",
-        "mobile_number",
-        "msisdn"
-      ]
-    );
-
-  if(number){
-    return number;
-  }
-
-  return "";
+  return firstOrderValue(
+    sources,
+    [
+      "number",
+      "phoneNumber",
+      "phone_number",
+      "phone",
+      "phoneNumberFormatted",
+      "phone_number_formatted",
+      "activationNumber",
+      "activation_number",
+      "mobile",
+      "mobile_number",
+      "msisdn"
+    ]
+  );
 
 }
 
@@ -3247,7 +3317,6 @@ function orderActivationId(
       "activationId",
       "activation_id",
       "activationID",
-      "activation",
       "provider_activation_id",
       "providerActivationId"
     ]
@@ -3415,13 +3484,10 @@ function normalizeOrder(
 
   normalized.number =
     orderNumber(order) ||
-    order?.number ||
     "";
 
   normalized.activation_id =
     orderActivationId(order) ||
-    order?.activation_id ||
-    order?.activationId ||
     "";
 
   normalized.otp_code =
@@ -3452,13 +3518,18 @@ function statusLabel(status){
     failed:"Failed"
   };
 
+  const cleanStatus =
+    typeof status === "string"
+      ? status.toLowerCase()
+      : "";
+
   return (
-    map[
-      String(status || "")
-        .toLowerCase()
-    ] ||
-    status ||
-    "Pending"
+    map[cleanStatus] ||
+    (
+      cleanStatus
+        ? cleanStatus
+        : "Pending"
+    )
   );
 
 }
@@ -3644,6 +3715,7 @@ function renderOrder(
       <div class="order-actions">
 
         <button
+          type="button"
           class="small-button check"
           data-action="check"
           data-order-id="${escapeHTML(actionId)}"
@@ -3655,6 +3727,7 @@ function renderOrder(
         </button>
 
         <button
+          type="button"
           class="small-button cancel"
           data-action="cancel"
           data-order-id="${escapeHTML(actionId)}"
@@ -3879,13 +3952,6 @@ async function loadAllOrders(){
 
     orders = combined;
 
-    /*
-      Keep every active/pending order available.
-      The newest one is the Current / New Order.
-      Older active orders remain in Previous Orders
-      and retain their own status/details.
-    */
-
     const activeOrders =
       orders.filter(
         order => {
@@ -3944,12 +4010,6 @@ async function loadAllOrders(){
       active
         ? orderUniqueKey(active)
         : null;
-
-    /*
-      Do NOT remove the other Grizzly purchases.
-      This is what allows both previously purchased
-      numbers to remain visible.
-    */
 
     const previousOrders =
       orders.filter(
@@ -4033,12 +4093,22 @@ async function checkOrder(
 
   if(target){
 
-    const container =
-      document.querySelector(
-        `[data-order-key="${CSS.escape(
-          orderUniqueKey(target)
-        )}"]`
-      );
+    let container = null;
+
+    try{
+
+      container =
+        document.querySelector(
+          `[data-order-key="${CSS.escape(
+            orderUniqueKey(target)
+          )}"]`
+        );
+
+    }catch{
+
+      container = null;
+
+    }
 
     if(container){
 
@@ -4302,8 +4372,85 @@ async function init(){
     )
     .classList.remove("active");
 
-  document
-    .getElementById(
-      "verificationPopup"
-    )
-    .style.display =
+  /*
+    Verification popup opens when the page
+    first loads, but it can now always be
+    closed permanently for that page session.
+  */
+  forceOpenPopup(
+    "verificationPopup"
+  );
+
+  await loadWatermark();
+  await loadCountries();
+  await loadWallet();
+  await loadAllOrders();
+
+}
+
+setInterval(
+  async () => {
+
+    if(
+      currentOrderId &&
+      currentOrderProvider
+    ){
+
+      try{
+
+        const current =
+          orders.find(
+            order =>
+              orderProvider(order) ===
+              currentOrderProvider &&
+              String(
+                orderActionId(order)
+              ) ===
+              String(currentOrderId)
+          );
+
+        const status =
+          String(
+            current?.status || ""
+          ).toLowerCase();
+
+        if(
+          status === "waiting" ||
+          status === "pending" ||
+          status === "received"
+        ){
+
+          await api(
+            "check",
+            {
+              order_id:
+                currentOrderId,
+
+              activation_id:
+                current?.activation_id ||
+                orderActivationId(current) ||
+                null
+            },
+            currentOrderProvider
+          );
+
+          await loadAllOrders();
+
+        }
+
+      }catch{
+
+      }
+
+    }
+
+  },
+  15000
+);
+
+init();
+
+</script>
+
+</body>
+</html>
