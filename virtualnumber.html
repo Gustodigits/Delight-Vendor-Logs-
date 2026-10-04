@@ -1628,11 +1628,11 @@ async function loadWatermark(){
       data,
       error
     } =
-      await supabaseClient
-        .from("site_settings")
-        .select("value")
-        .eq("key","watermark")
-        .maybeSingle();
+    await supabaseClient
+      .from("site_settings")
+      .select("value")
+      .eq("key","watermark")
+      .maybeSingle();
 
     if(error){
       console.error(
@@ -3472,13 +3472,6 @@ async function buyNumber(){
         ? data.message
         : "Number successfully purchased.";
 
-    /*
-      Immediately render a successfully purchased
-      number from the provider response.
-
-      This prevents the number from disappearing
-      while the orders list is being refreshed.
-    */
     const immediateOrder =
       buildImmediatePurchaseOrder(
         data,
@@ -3975,12 +3968,6 @@ function orderUniqueKey(order){
 
 }
 
-/*
-  Determines whether two order objects are
-  actually the same order even when one version
-  uses the provider activation ID and another
-  version uses the database order ID.
-*/
 function ordersRepresentSameOrder(
   first,
   second
@@ -4196,6 +4183,9 @@ function renderOrder(
           class="small-button check"
           data-action="check"
           data-order-id="${escapeHTML(actionId)}"
+          data-activation-id="${escapeHTML(
+            activationId
+          )}"
           data-provider="${escapeHTML(
             orderProvider(normalized)
           )}"
@@ -4289,7 +4279,8 @@ function attachOrderActions(){
             button.dataset.orderId,
             button.dataset.provider,
             button.closest(".order")
-              ?.dataset.orderKey || ""
+              ?.dataset.orderKey || "",
+            button.dataset.activationId || ""
           );
 
         };
@@ -4392,13 +4383,6 @@ async function loadAllOrders(){
       ...smsOrders
     ];
 
-    /*
-      First remove exact/recognizable duplicates.
-
-      This is intentionally based on the actual
-      order identity, activation ID, or number,
-      rather than only the database ID.
-    */
     const uniqueOrders = [];
 
     merged.forEach(
@@ -4419,10 +4403,6 @@ async function loadAllOrders(){
 
         }else{
 
-          /*
-            Keep the version containing the most
-            useful/latest information.
-          */
           const existing =
             uniqueOrders[existingIndex];
 
@@ -4438,20 +4418,38 @@ async function loadAllOrders(){
           const newNumber =
             orderNumber(order);
 
+          const existingOtp =
+            orderOtp(existing);
+
+          const newOtp =
+            orderOtp(order);
+
+          const existingText =
+            orderSmsText(existing);
+
+          const newText =
+            orderSmsText(order);
+
+          /*
+            Prefer the copy containing the newest
+            status/code/number information.
+          */
           if(
             (!existingActivation && newActivation) ||
             (!existingNumber && newNumber) ||
+            (!existingOtp && newOtp) ||
+            (!existingText && newText) ||
             (
               new Date(
+                order.updated_at ||
                 order.created_at ||
                 order.purchased_at ||
-                order.updated_at ||
                 0
               ) >
               new Date(
+                existing.updated_at ||
                 existing.created_at ||
                 existing.purchased_at ||
-                existing.updated_at ||
                 0
               )
             )
@@ -4468,9 +4466,7 @@ async function loadAllOrders(){
     );
 
     /*
-      ALWAYS sort newest purchase/order first.
-
-      Status does not affect the order.
+      Always sort newest purchase first.
     */
     uniqueOrders.sort(
       (a,b) =>
@@ -4492,16 +4488,33 @@ async function loadAllOrders(){
       uniqueOrders;
 
     /*
-      The newest order is ALWAYS the Current /
-      New Order.
+      CURRENT ORDER:
+      Only the newest still-active/pending order
+      belongs here.
 
-      It does not matter whether it is:
-      waiting, pending, received, completed,
-      cancelled, refunded, or failed.
+      Completed/received/cancelled/refunded
+      orders go to Previous Orders.
     */
+    const activeOrders =
+      orders.filter(
+        order => {
+
+          const status =
+            String(
+              orderStatus(order) || ""
+            ).toLowerCase();
+
+          return (
+            status === "waiting" ||
+            status === "pending"
+          );
+
+        }
+      );
+
     const active =
-      orders.length > 0
-        ? orders[0]
+      activeOrders.length > 0
+        ? activeOrders[0]
         : null;
 
     if(active){
@@ -4532,14 +4545,11 @@ async function loadAllOrders(){
     }
 
     /*
-      IMPORTANT:
-      Previous Orders gets every order EXCEPT
-      the exact same newest order.
+      Previous Orders contains every order that is
+      NOT the one currently active.
 
-      We compare using ordersRepresentSameOrder()
-      rather than only orderUniqueKey(), so the
-      newest order cannot appear twice when its
-      database ID changes between responses.
+      This prevents the same pending order from
+      appearing in both sections.
     */
     const previousOrders =
       active
@@ -4595,10 +4605,75 @@ async function loadAllOrders(){
 
 }
 
+
+/* ============================================================
+   PROVIDER STATUS CHECK
+============================================================ */
+
+async function checkProviderStatus(
+  order,
+  providerName,
+  orderId = ""
+){
+
+  const activationId =
+    order?.activation_id ||
+    order?.activationId ||
+    orderActivationId(order) ||
+    "";
+
+  /*
+    GRIZZLY:
+    The Grizzly Edge Function exposes the status
+    endpoint through action = "status".
+
+    We send the existing activation ID so Grizzly
+    can return an SMS that has already arrived.
+  */
+  if(providerName === "grizzly"){
+
+    return await api(
+      "status",
+      {
+        order_id:
+          orderId ||
+          orderActionId(order) ||
+          null,
+
+        activation_id:
+          activationId ||
+          null
+      },
+      "grizzly"
+    );
+
+  }
+
+  /*
+    SMSBower keeps its existing check flow.
+  */
+  return await api(
+    "check",
+    {
+      order_id:
+        orderId ||
+        orderActionId(order) ||
+        null,
+
+      activation_id:
+        activationId ||
+        null
+    },
+    "smsbower"
+  );
+
+}
+
 async function checkOrder(
   orderId,
   providerName,
-  orderKey = ""
+  orderKey = "",
+  activationId = ""
 ){
 
   const current =
@@ -4620,6 +4695,15 @@ async function checkOrder(
             orderActionId(order)
           ) ===
           String(orderId) &&
+          orderProvider(order) ===
+          providerName
+        ) ||
+        (
+          activationId &&
+          String(
+            orderActivationId(order)
+          ) ===
+          String(activationId) &&
           orderProvider(order) ===
           providerName
         )
@@ -4657,18 +4741,22 @@ async function checkOrder(
 
       try{
 
-        await api(
-          "check",
-          {
-            order_id:
-              orderId,
+        const data =
+          await checkProviderStatus(
+            target,
+            providerName,
+            orderId
+          );
 
-            activation_id:
-              target.activation_id ||
-              orderActivationId(target) ||
-              null
-          },
-          providerName
+        /*
+          The provider Edge Function returns the
+          actual status response. loadAllOrders()
+          then reloads the order and uses the
+          saved/provider-returned code.
+        */
+        console.log(
+          "Provider status:",
+          data
         );
 
         await loadAllOrders();
@@ -4703,13 +4791,17 @@ async function checkOrder(
 
   try{
 
-    await api(
-      "check",
-      {
-        order_id:
-          orderId
-      },
-      providerName
+    const targetFallback = {
+      id:orderId,
+      order_id:orderId,
+      activation_id:activationId,
+      provider:providerName
+    };
+
+    await checkProviderStatus(
+      targetFallback,
+      providerName,
+      orderId
     );
 
     await loadAllOrders();
@@ -4833,6 +4925,15 @@ async function cancelOrder(
             orderActionId(order)
           ) ===
           String(orderId) &&
+          orderProvider(order) ===
+          providerName
+        ) ||
+        (
+          activationId &&
+          String(
+            orderActivationId(order)
+          ) ===
+          String(activationId) &&
           orderProvider(order) ===
           providerName
         )
@@ -4989,6 +5090,109 @@ async function loadWallet(){
 
 }
 
+async function refreshPendingOrderStatuses(){
+
+  /*
+    Check ALL pending/waiting orders.
+
+    This is important for an older purchase that
+    already has an SMS on Grizzly. Previously only
+    currentOrderId was checked, so older pending
+    activations could remain stuck.
+  */
+
+  const pendingOrders =
+    orders.filter(
+      order => {
+
+        const status =
+          String(
+            orderStatus(order) || ""
+          ).toLowerCase();
+
+        return (
+          status === "waiting" ||
+          status === "pending"
+        );
+
+      }
+    );
+
+  if(pendingOrders.length === 0){
+    return;
+  }
+
+  let changed = false;
+
+  /*
+    Check sequentially so multiple activations do
+    not hit the provider simultaneously.
+  */
+  for(const order of pendingOrders){
+
+    try{
+
+      const providerName =
+        orderProvider(order);
+
+      const orderId =
+        orderActionId(order);
+
+      const activationId =
+        orderActivationId(order);
+
+      const data =
+        await checkProviderStatus(
+          order,
+          providerName,
+          orderId
+        );
+
+      /*
+        We don't need to create another order here.
+        The existing order is reloaded from the
+        database/provider after the status request.
+      */
+      if(
+        data &&
+        (
+          data.otp_code ||
+          data.sms_code ||
+          data.code ||
+          data.status === "received" ||
+          data.status === "completed"
+        )
+      ){
+
+        changed = true;
+
+      }
+
+    }catch(error){
+
+      console.warn(
+        "Order status check failed:",
+        error
+      );
+
+    }
+
+  }
+
+  /*
+    Reload after checking all pending orders.
+    This moves completed orders to Previous Orders
+    and leaves only the newest pending order in
+    Current / New Order.
+  */
+  if(changed || pendingOrders.length > 0){
+
+    await loadAllOrders();
+
+  }
+
+}
+
 async function init(){
 
   provider = "grizzly";
@@ -5019,61 +5223,33 @@ async function init(){
   await loadWallet();
   await loadAllOrders();
 
+  /*
+    Immediately check existing pending orders
+    after they have been loaded. This is what
+    allows an already-purchased Grizzly number
+    to retrieve an SMS that has already arrived.
+  */
+  await refreshPendingOrderStatuses();
+
 }
 
 setInterval(
   async () => {
 
-    if(
-      currentOrderId &&
-      currentOrderProvider
-    ){
+    try{
 
-      try{
+      /*
+        Re-check every pending order instead of
+        checking only the newest current order.
+      */
+      await refreshPendingOrderStatuses();
 
-        const current =
-          orders.find(
-            order =>
-              orderProvider(order) ===
-              currentOrderProvider &&
-              String(
-                orderActionId(order)
-              ) ===
-              String(currentOrderId)
-          );
+    }catch(error){
 
-        const status =
-          String(
-            current?.status || ""
-          ).toLowerCase();
-
-        if(
-          status === "waiting" ||
-          status === "pending" ||
-          status === "received"
-        ){
-
-          await api(
-            "check",
-            {
-              order_id:
-                currentOrderId,
-
-              activation_id:
-                current?.activation_id ||
-                orderActivationId(current) ||
-                null
-            },
-            currentOrderProvider
-          );
-
-          await loadAllOrders();
-
-        }
-
-      }catch{
-
-      }
+      console.warn(
+        "Automatic order status refresh failed:",
+        error
+      );
 
     }
 
