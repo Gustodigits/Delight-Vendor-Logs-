@@ -3491,10 +3491,15 @@ async function buyNumber(){
       const existingIndex =
         orders.findIndex(
           existing =>
-            ordersRepresentSameOrder(
-              existing,
-              immediateOrder
-            )
+            provider === "grizzly"
+              ? grizzlyOrdersRepresentSameOrder(
+                  existing,
+                  immediateOrder
+                )
+              : ordersRepresentSameOrder(
+                  existing,
+                  immediateOrder
+                )
         );
 
       if(existingIndex === -1){
@@ -3522,11 +3527,6 @@ async function buyNumber(){
 
     showPortalNotice();
 
-    /*
-      Reload the provider/database records, but the
-      new loadAllOrders() preserves the local order
-      state and any OTP/status already received.
-    */
     await loadAllOrders();
     await loadWallet();
     await loadServers();
@@ -3835,11 +3835,6 @@ function orderStatus(
     const clean =
       direct.toLowerCase();
 
-    /*
-      If an OTP exists, the order must never remain
-      visually pending even if an older database copy
-      still says waiting/pending.
-    */
     if(
       orderOtp(order) &&
       (
@@ -3910,11 +3905,6 @@ function normalizeOrder(
   normalized.status =
     orderStatus(normalized);
 
-  /*
-    An order that already has an OTP is received,
-    regardless of whether the old database copy
-    still reports waiting.
-  */
   if(normalized.otp_code){
 
     normalized.status =
@@ -3981,10 +3971,225 @@ function orderProvider(order){
 
 }
 
+
+/* ============================================================
+   GRIZZLY-ONLY ORDER IDENTITY FIX
+============================================================ */
+
+/*
+  Grizzly numbers can sometimes arrive in different
+  formats, for example:
+
+  18127761715
+  +18127761715
+  +1 812 776 1715
+
+  They are the same number.
+
+  This normalization is used ONLY for Grizzly
+  deduplication. SMSBower does not use it.
+*/
+function grizzlyCanonicalNumber(
+  order
+){
+
+  const number =
+    orderNumber(order);
+
+  if(!number){
+    return "";
+  }
+
+  return String(number)
+    .replace(/[^\d]/g,"")
+    .replace(/^00+/,"");
+
+}
+
+
+/*
+  Grizzly activation IDs are normalized to a
+  simple string so numeric/string copies cannot
+  become separate orders.
+
+  Example:
+
+  636962620
+  "636962620"
+
+  Both become the same identity.
+*/
+function grizzlyCanonicalActivation(
+  order
+){
+
+  const activation =
+    orderActivationId(order);
+
+  if(!activation){
+    return "";
+  }
+
+  return String(activation)
+    .trim()
+    .replace(/\s+/g,"");
+
+}
+
+
+/*
+  IMPORTANT:
+
+  This function is ONLY used when the order provider
+  is Grizzly.
+
+  Rules:
+
+  1. Same activation ID = same order.
+  2. If one copy has activation ID and the other
+     doesn't, compare their number.
+  3. If both have different activation IDs,
+     they remain separate.
+  4. If activation ID is unavailable, same normalized
+     phone number = same order.
+
+  This stops one Grizzly purchase from appearing
+  twice even when one record came from the immediate
+  purchase response and another came from the
+  provider/database response.
+*/
+function grizzlyOrdersRepresentSameOrder(
+  first,
+  second
+){
+
+  if(!first || !second){
+    return false;
+  }
+
+  if(
+    orderProvider(first) !== "grizzly" ||
+    orderProvider(second) !== "grizzly"
+  ){
+
+    return false;
+
+  }
+
+  const firstActivation =
+    grizzlyCanonicalActivation(first);
+
+  const secondActivation =
+    grizzlyCanonicalActivation(second);
+
+  if(
+    firstActivation &&
+    secondActivation
+  ){
+
+    return (
+      firstActivation ===
+      secondActivation
+    );
+
+  }
+
+  const firstNumber =
+    grizzlyCanonicalNumber(first);
+
+  const secondNumber =
+    grizzlyCanonicalNumber(second);
+
+  if(
+    firstNumber &&
+    secondNumber &&
+    firstNumber === secondNumber
+  ){
+
+    return true;
+
+  }
+
+  return false;
+
+}
+
+
+/*
+  Grizzly-only unique key.
+
+  This is deliberately separate from the existing
+  SMSBower identity function.
+*/
+function grizzlyOrderUniqueKey(
+  order
+){
+
+  const activation =
+    grizzlyCanonicalActivation(order);
+
+  if(activation){
+
+    return (
+      "grizzly:activation:" +
+      activation
+    );
+
+  }
+
+  const number =
+    grizzlyCanonicalNumber(order);
+
+  if(number){
+
+    return (
+      "grizzly:number:" +
+      number
+    );
+
+  }
+
+  const databaseId =
+    String(
+      order?.id ??
+      order?.order_id ??
+      order?.orderId ??
+      ""
+    ).trim();
+
+  if(databaseId){
+
+    return (
+      "grizzly:db:" +
+      databaseId
+    );
+
+  }
+
+  return (
+    "grizzly:unknown:" +
+    JSON.stringify(order || {})
+  );
+
+}
+
 function orderUniqueKey(order){
 
   const providerName =
     orderProvider(order);
+
+  /*
+    Use the stronger Grizzly identity ONLY for
+    Grizzly. Existing SMSBower behavior below
+    remains unchanged.
+  */
+  if(providerName === "grizzly"){
+
+    return grizzlyOrderUniqueKey(
+      order
+    );
+
+  }
 
   const activationId =
     order?.activation_id ||
@@ -3992,12 +4197,6 @@ function orderUniqueKey(order){
     orderActivationId(order) ||
     "";
 
-  /*
-    Activation ID is the strongest provider-side
-    identity for Grizzly. Use it before the local
-    database ID so two copies of the same activation
-    are always treated as one order.
-  */
   if(activationId !== ""){
 
     return (
@@ -4062,6 +4261,19 @@ function ordersRepresentSameOrder(
 
   if(firstProvider !== secondProvider){
     return false;
+  }
+
+  /*
+    Grizzly uses the dedicated identity logic above.
+    SMSBower continues using the original logic.
+  */
+  if(firstProvider === "grizzly"){
+
+    return grizzlyOrdersRepresentSameOrder(
+      first,
+      second
+    );
+
   }
 
   const firstActivation =
@@ -4147,14 +4359,6 @@ function ordersRepresentSameOrder(
    ORDER MERGING FIX
 ============================================================ */
 
-/*
-  Merge two copies of the same order.
-
-  The important rule here is:
-  if either copy already contains an OTP/status,
-  never replace that information with an older
-  pending database copy.
-*/
 function mergeOrderRecords(
   existing,
   incoming
@@ -4221,9 +4425,6 @@ function mergeOrderRecords(
     ...newOrder
   };
 
-  /*
-    Preserve the strongest identity.
-  */
   merged.id =
     oldOrder.id ??
     newOrder.id ??
@@ -4261,9 +4462,6 @@ function mergeOrderRecords(
     newOrder.phoneNumber ||
     merged.number;
 
-  /*
-    OTP always wins over a missing OTP.
-  */
   merged.otp_code =
     oldOtp ||
     newOtp ||
@@ -4275,19 +4473,11 @@ function mergeOrderRecords(
   merged.code =
     merged.otp_code;
 
-  /*
-    Preserve SMS text too.
-  */
   merged.sms_text =
     oldText ||
     newText ||
     "";
 
-  /*
-    If either copy has a final/received state,
-    do not allow a stale waiting/pending copy
-    to overwrite it.
-  */
   if(oldHasFinal && !newHasFinal){
 
     merged.status =
@@ -4311,9 +4501,6 @@ function mergeOrderRecords(
 
   }
 
-  /*
-    An OTP is always received visually.
-  */
   if(merged.otp_code){
 
     merged.status =
@@ -4321,10 +4508,6 @@ function mergeOrderRecords(
 
   }
 
-  /*
-    Preserve the original purchase time where
-    available so sorting doesn't jump around.
-  */
   merged.created_at =
     oldOrder.created_at ||
     newOrder.created_at ||
@@ -4332,9 +4515,6 @@ function mergeOrderRecords(
     newOrder.purchased_at ||
     new Date().toISOString();
 
-  /*
-    Fill missing metadata from either copy.
-  */
   merged.country =
     oldOrder.country ||
     newOrder.country ||
@@ -4393,15 +4573,6 @@ function mergeOrderRecords(
 
 }
 
-
-/*
-  Merge a provider status response directly into
-  the existing order.
-
-  This fixes the exact issue where Grizzly had
-  already received the SMS but the frontend called
-  loadAllOrders() and then discarded the returned OTP.
-*/
 function mergeProviderStatusIntoOrder(
   order,
   data
@@ -4620,11 +4791,6 @@ function mergeProviderStatusIntoOrder(
 
   }
 
-  /*
-    If the provider returned completed/received,
-    keep that status. If it returned waiting,
-    leave an existing OTP untouched.
-  */
   if(
     orderOtp(update)
   ){
@@ -4658,11 +4824,6 @@ function orderActionId(
     order?.activationId ||
     orderActivationId(order);
 
-  /*
-    For provider status checking, the activation ID
-    is preferred because that is what identifies the
-    Grizzly activation.
-  */
   if(activationId){
 
     return String(
@@ -4813,11 +4974,20 @@ function renderOrder(
 
   }
 
+  /*
+    Grizzly gets its stronger unique key.
+    SMSBower continues using its existing key.
+  */
+  const renderedOrderKey =
+    orderProvider(normalized) === "grizzly"
+      ? grizzlyOrderUniqueKey(normalized)
+      : orderUniqueKey(normalized);
+
   return `
     <div
       class="order"
       data-order-key="${escapeHTML(
-        orderUniqueKey(normalized)
+        renderedOrderKey
       )}"
     >
 
@@ -4865,18 +5035,10 @@ function renderOrder(
 }
 
 
-/*
-  One central renderer for Current and Previous.
+/* ============================================================
+   ORDER RENDERING
+============================================================ */
 
-  CURRENT:
-  - Only ONE newest active waiting/pending order.
-  - An order with an OTP is never considered current.
-
-  PREVIOUS:
-  - Everything else.
-  - The current order is explicitly excluded.
-  - Same activation/order can only exist once.
-*/
 function renderOrderSections(){
 
   const current =
@@ -4893,12 +5055,6 @@ function renderOrderSections(){
     return;
   }
 
-  /*
-    Normalize and deduplicate the local list again
-    before rendering. This prevents the same order
-    from being rendered twice even if provider data
-    returned duplicate records.
-  */
   const uniqueOrders = [];
 
   for(const rawOrder of orders){
@@ -4909,13 +5065,26 @@ function renderOrderSections(){
         orderProvider(rawOrder)
       );
 
+    const isGrizzly =
+      orderProvider(normalized) ===
+      "grizzly";
+
     const existingIndex =
       uniqueOrders.findIndex(
         existing =>
-          ordersRepresentSameOrder(
-            existing,
-            normalized
-          )
+          isGrizzly
+            ? (
+                orderProvider(existing) ===
+                "grizzly" &&
+                grizzlyOrdersRepresentSameOrder(
+                  existing,
+                  normalized
+                )
+              )
+            : ordersRepresentSameOrder(
+                existing,
+                normalized
+              )
       );
 
     if(existingIndex === -1){
@@ -4956,8 +5125,7 @@ function renderOrderSections(){
     uniqueOrders;
 
   /*
-    Only waiting/pending orders WITHOUT an OTP
-    can be the active order.
+    Only waiting/pending WITHOUT OTP can be current.
   */
   const activeOrders =
     orders.filter(
@@ -4982,6 +5150,9 @@ function renderOrderSections(){
       }
     );
 
+  /*
+    Current/New Order is deliberately singular.
+  */
   const active =
     activeOrders.length > 0
       ? activeOrders[0]
@@ -5015,17 +5186,35 @@ function renderOrderSections(){
   }
 
   /*
-    If there is an active order, explicitly remove
-    that exact order from Previous Orders.
+    Grizzly previous filtering uses the same strong
+    Grizzly identity, so the active Grizzly order
+    can NEVER also appear in Previous.
   */
   const previousOrders =
     active
       ? orders.filter(
-          order =>
-            !ordersRepresentSameOrder(
+          order => {
+
+            if(
+              orderProvider(order) ===
+              "grizzly" &&
+              orderProvider(active) ===
+              "grizzly"
+            ){
+
+              return !grizzlyOrdersRepresentSameOrder(
+                order,
+                active
+              );
+
+            }
+
+            return !ordersRepresentSameOrder(
               order,
               active
-            )
+            );
+
+          }
         )
       : orders;
 
@@ -5111,7 +5300,7 @@ function attachOrderActions(){
 
 
 /* ============================================================
-   LOAD ALL ORDERS - FIXED
+   LOAD ALL ORDERS
 ============================================================ */
 
 async function loadAllOrders(){
@@ -5128,16 +5317,6 @@ async function loadAllOrders(){
 
   try{
 
-    /*
-      IMPORTANT:
-
-      Keep the existing in-memory orders before
-      requesting fresh database/provider data.
-
-      This means an OTP returned by Grizzly during
-      a status check is not immediately lost when
-      the database still contains "waiting".
-    */
     const previousLocalOrders =
       Array.isArray(orders)
         ? [...orders]
@@ -5190,13 +5369,6 @@ async function loadAllOrders(){
             )
         : [];
 
-    /*
-      Put local orders FIRST.
-
-      That allows an already-received OTP to win
-      over a stale database copy that still says
-      waiting/pending.
-    */
     const merged = [
       ...previousLocalOrders,
       ...grizzlyOrders,
@@ -5214,13 +5386,33 @@ async function loadAllOrders(){
             orderProvider(order)
           );
 
+        const isGrizzly =
+          orderProvider(normalized) ===
+          "grizzly";
+
+        /*
+          ONLY Grizzly uses the new stronger
+          duplicate identity here.
+
+          SMSBower continues with the original
+          ordersRepresentSameOrder() behavior.
+        */
         const existingIndex =
           uniqueOrders.findIndex(
             existing =>
-              ordersRepresentSameOrder(
-                existing,
-                normalized
-              )
+              isGrizzly
+                ? (
+                    orderProvider(existing) ===
+                    "grizzly" &&
+                    grizzlyOrdersRepresentSameOrder(
+                      existing,
+                      normalized
+                    )
+                  )
+                : ordersRepresentSameOrder(
+                    existing,
+                    normalized
+                  )
           );
 
         if(existingIndex === -1){
@@ -5261,19 +5453,10 @@ async function loadAllOrders(){
     orders =
       uniqueOrders;
 
-    /*
-      Render from the merged local state instead of
-      rebuilding Current/Previous directly from the
-      raw provider responses.
-    */
     renderOrderSections();
 
   }catch(error){
 
-    /*
-      If loading fails, don't destroy a valid local
-      order/OTP that is already on screen.
-    */
     if(
       Array.isArray(orders) &&
       orders.length > 0
@@ -5319,12 +5502,8 @@ async function checkProviderStatus(
     "";
 
   /*
-    GRIZZLY:
-    The Grizzly Edge Function exposes the status
-    endpoint through action = "status".
-
-    We send the existing activation ID so Grizzly
-    can return an SMS that has already arrived.
+    GRIZZLY ONLY:
+    Existing Grizzly status flow remains the same.
   */
   if(providerName === "grizzly"){
 
@@ -5346,7 +5525,7 @@ async function checkProviderStatus(
   }
 
   /*
-    SMSBower keeps its existing check flow.
+    SMSBower code remains untouched.
   */
   return await api(
     "check",
@@ -5367,7 +5546,7 @@ async function checkProviderStatus(
 
 
 /* ============================================================
-   CHECK ONE ORDER - FIXED
+   CHECK ONE ORDER
 ============================================================ */
 
 async function checkOrder(
@@ -5379,31 +5558,70 @@ async function checkOrder(
 
   const targetIndex =
     orders.findIndex(
-      order =>
-        (
-          orderKey &&
-          orderUniqueKey(order) ===
-          orderKey
-        ) ||
-        (
-          activationId &&
-          String(
-            orderActivationId(order)
-          ) ===
-          String(activationId) &&
-          orderProvider(order) ===
-          providerName
-        ) ||
-        (
-          !orderKey &&
-          !activationId &&
-          String(
-            orderActionId(order)
-          ) ===
-          String(orderId) &&
-          orderProvider(order) ===
-          providerName
-        )
+      order => {
+
+        if(
+          providerName === "grizzly"
+        ){
+
+          return (
+            (
+              orderKey &&
+              grizzlyOrderUniqueKey(order) ===
+              orderKey
+            ) ||
+            (
+              activationId &&
+              String(
+                grizzlyCanonicalActivation(order)
+              ) ===
+              String(activationId).trim()
+            ) ||
+            (
+              !orderKey &&
+              !activationId &&
+              String(
+                orderActionId(order)
+              ) ===
+              String(orderId) &&
+              orderProvider(order) ===
+              "grizzly"
+            )
+          );
+
+        }
+
+        /*
+          Existing SMSBower lookup unchanged.
+        */
+        return (
+          (
+            orderKey &&
+            orderUniqueKey(order) ===
+            orderKey
+          ) ||
+          (
+            activationId &&
+            String(
+              orderActivationId(order)
+            ) ===
+            String(activationId) &&
+            orderProvider(order) ===
+            providerName
+          ) ||
+          (
+            !orderKey &&
+            !activationId &&
+            String(
+              orderActionId(order)
+            ) ===
+            String(orderId) &&
+            orderProvider(order) ===
+            providerName
+          )
+        );
+
+      }
     );
 
   if(targetIndex === -1){
@@ -5426,7 +5644,9 @@ async function checkOrder(
     container =
       document.querySelector(
         `[data-order-key="${CSS.escape(
-          orderUniqueKey(target)
+          providerName === "grizzly"
+            ? grizzlyOrderUniqueKey(target)
+            : orderUniqueKey(target)
         )}"]`
       );
 
@@ -5465,27 +5685,12 @@ async function checkOrder(
       data
     );
 
-    /*
-      THIS IS THE MAIN FIX.
-
-      Previously the response was received but then
-      discarded.
-
-      Now the returned OTP/status is merged directly
-      into the same existing order.
-    */
     orders[targetIndex] =
       mergeProviderStatusIntoOrder(
         target,
         data
       );
 
-    /*
-      Re-render from the local merged state.
-
-      Do NOT immediately replace it with stale
-      database data.
-    */
     renderOrderSections();
 
   }catch(error){
@@ -5551,11 +5756,6 @@ function smsBowerCancellationActivationId(
     return String(extraActivation).trim();
   }
 
-  /*
-    SMSBower orders can use their provider order ID
-    as the activation ID. This fallback is used ONLY
-    by the SMSBower cancellation request.
-  */
   const providerOrderId =
     firstOrderValue(
       sources,
@@ -5603,30 +5803,69 @@ async function cancelOrder(
 
   const targetIndex =
     orders.findIndex(
-      order =>
-        (
-          orderKey &&
-          orderUniqueKey(order) ===
-          orderKey
-        ) ||
-        (
-          !orderKey &&
-          String(
-            orderActionId(order)
-          ) ===
-          String(orderId) &&
-          orderProvider(order) ===
-          providerName
-        ) ||
-        (
-          activationId &&
-          String(
-            orderActivationId(order)
-          ) ===
-          String(activationId) &&
-          orderProvider(order) ===
-          providerName
-        )
+      order => {
+
+        if(providerName === "grizzly"){
+
+          return (
+            (
+              orderKey &&
+              grizzlyOrderUniqueKey(order) ===
+              orderKey
+            ) ||
+            (
+              !orderKey &&
+              String(
+                orderActionId(order)
+              ) ===
+              String(orderId) &&
+              orderProvider(order) ===
+              "grizzly"
+            ) ||
+            (
+              activationId &&
+              String(
+                grizzlyCanonicalActivation(order)
+              ) ===
+              String(activationId).trim() &&
+              orderProvider(order) ===
+              "grizzly"
+            )
+          );
+
+        }
+
+        /*
+          Existing SMSBower cancellation lookup
+          remains unchanged.
+        */
+        return (
+          (
+            orderKey &&
+            orderUniqueKey(order) ===
+            orderKey
+          ) ||
+          (
+            !orderKey &&
+            String(
+              orderActionId(order)
+            ) ===
+            String(orderId) &&
+            orderProvider(order) ===
+            providerName
+          ) ||
+          (
+            activationId &&
+            String(
+              orderActivationId(order)
+            ) ===
+            String(activationId) &&
+            orderProvider(order) ===
+            providerName
+          )
+        );
+
+      }
     );
 
   const target =
@@ -5643,7 +5882,9 @@ async function cancelOrder(
       container =
         document.querySelector(
           `[data-order-key="${CSS.escape(
-            orderUniqueKey(target)
+            providerName === "grizzly"
+              ? grizzlyOrderUniqueKey(target)
+              : orderUniqueKey(target)
           )}"]`
         );
 
@@ -5719,10 +5960,6 @@ async function cancelOrder(
         providerName
       );
 
-    /*
-      Update the same local order immediately so
-      it doesn't briefly appear as pending/current.
-    */
     if(targetIndex >= 0){
 
       orders[targetIndex] =
@@ -5806,17 +6043,11 @@ async function loadWallet(){
 
 
 /* ============================================================
-   AUTOMATIC PENDING STATUS REFRESH - FIXED
+   AUTOMATIC PENDING STATUS REFRESH
 ============================================================ */
 
 async function refreshPendingOrderStatuses(){
 
-  /*
-    Check ALL pending/waiting orders.
-
-    An order with an OTP is NOT checked again because
-    it has already received its code.
-  */
   const pendingOrders =
     orders.filter(
       order => {
@@ -5846,10 +6077,6 @@ async function refreshPendingOrderStatuses(){
 
   let changed = false;
 
-  /*
-    Check sequentially so multiple activations do
-    not hit the provider simultaneously.
-  */
   for(const order of pendingOrders){
 
     try{
@@ -5867,17 +6094,29 @@ async function refreshPendingOrderStatuses(){
           orderId
         );
 
-      /*
-        Find the SAME order again because the array
-        can contain merged copies.
-      */
       const index =
         orders.findIndex(
-          existing =>
-            ordersRepresentSameOrder(
+          existing => {
+
+            if(providerName === "grizzly"){
+
+              return (
+                orderProvider(existing) ===
+                "grizzly" &&
+                grizzlyOrdersRepresentSameOrder(
+                  existing,
+                  order
+                )
+              );
+
+            }
+
+            return ordersRepresentSameOrder(
               existing,
               order
-            )
+            );
+
+          }
         );
 
       if(index === -1){
@@ -5896,10 +6135,6 @@ async function refreshPendingOrderStatuses(){
           ) || ""
         ).toLowerCase();
 
-      /*
-        Merge the provider response into the existing
-        order instead of throwing the response away.
-      */
       orders[index] =
         mergeProviderStatusIntoOrder(
           orders[index],
@@ -5942,14 +6177,6 @@ async function refreshPendingOrderStatuses(){
 
   }
 
-  /*
-    IMPORTANT:
-    Render the local merged orders directly.
-
-    We intentionally do NOT call loadAllOrders()
-    here because that could replace the freshly
-    retrieved OTP with an older database status.
-  */
   if(changed){
 
     renderOrderSections();
@@ -5979,10 +6206,6 @@ async function init(){
     )
     .classList.remove("active");
 
-  /*
-    Verification popup opens when the page
-    first loads.
-  */
   forceOpenPopup(
     "verificationPopup"
   );
@@ -5992,12 +6215,6 @@ async function init(){
   await loadWallet();
   await loadAllOrders();
 
-  /*
-    Immediately check existing pending orders
-    after they have been loaded. This allows an
-    already-purchased Grizzly number to retrieve
-    an SMS that has already arrived.
-  */
   await refreshPendingOrderStatuses();
 
 }
@@ -6007,10 +6224,6 @@ setInterval(
 
     try{
 
-      /*
-        Re-check every pending order instead of
-        checking only the newest current order.
-      */
       await refreshPendingOrderStatuses();
 
     }catch(error){
