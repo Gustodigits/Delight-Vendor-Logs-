@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+
+  <title>Boosting — Delight Vendor Logs</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --gold: #c99a24;
+      --gold-light: #e0b63f;
+      --gold-dark: #9d7415;
+      --black: #050505;
+      --black-2: #0b0b0b;
+      --black-3: #111111;
+      --card: #121212;
+      --card-2: #171717;
+      --border: rgba(201, 154, 36, 0.25);
+      --text: #ffffff;
+      --muted: #9c9c9c;
+      --green: #35c978;
+      --red: #ff5252;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--black);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      width: 100%;
+      height: 68px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #080808;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .back-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #101010;
+      color: white;
+      font-size: 21px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-btn:active {
+      transform: scale(0.96);
+    }
+
+    .brand {
+      text-align: center;
+      line-height: 1;
+    }
+
+    .brand .delight {
+      display: block;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+    }
+
+    .brand .vendor {
+      display: block;
+      color: var(--gold-light);
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .wallet-mini {
+      border: 1px solid var(--border);
+      background: #101010;
+      border-radius: 12px;
+      padding: 7px 10px;
+      min-width: 74px;
+      text-align: center;
+    }
+
+    .wallet-mini-label {
+      display: block;
+      font-size: 9px;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .wallet-mini-value {
+      display: block;
+      font-size: 12px;
+      color: var(--gold-light);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    /* MAIN */
+
+    .container {
+      width: min(680px, calc(100% - 28px));
+      margin: 0 auto;
+      padding-top: 22px;
+    }
+
+    .page-heading {
+      margin-bottom: 18px;
+    }
+
+    .page-heading h1 {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .page-heading h1 span {
+      color: var(--gold-light);
+    }
+
+    .page-heading p {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* WALLET CARD */
+
+    .wallet-card {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(201, 154, 36, 0.20),
+          rgba(201, 154, 36, 0.05) 45%,
+          rgba(0, 0, 0, 0.25)
+        ),
+        #101010;
+      border: 1px solid rgba(201, 154, 36, 0.4);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .wallet-card::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -65px;
+      top: -70px;
+      border-radius: 50%;
+      background: rgba(201, 154, 36, 0.12);
+    }
+
+    .wallet-title {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .wallet-balance {
+      font-size: 27px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 13px;
+    }
+
+    .wallet-actions {
+      display: flex;
+      gap: 9px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .wallet-action {
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.35);
+      color: white;
+      border-radius: 10px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .wallet-action.primary {
+      background: var(--gold);
+      color: #050505;
+      border-color: var(--gold);
+    }
+
+    /* CARD */
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    /* PLATFORM */
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+
+    .platform-btn {
+      min-height: 54px;
+      background: var(--black-3);
+      border: 1px solid #242424;
+      border-radius: 12px;
+      color: #ddd;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 8px 5px;
+      transition: 0.18s;
+    }
+
+    .platform-btn.active {
+      background: rgba(201, 154, 36, 0.13);
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .platform-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* FORM */
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      color: #dddddd;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      min-height: 48px;
+      background: #0a0a0a;
+      border: 1px solid #292929;
+      border-radius: 11px;
+      color: white;
+      outline: none;
+      padding: 0 13px;
+      font-size: 13px;
+    }
+
+    .input:focus,
+    .select:focus {
+      border-color: var(--gold);
+    }
+
+    .select {
+      appearance: auto;
+    }
+
+    .service-loading {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 12px 0;
+    }
+
+    .service-info {
+      display: none;
+      margin-top: 8px;
+      padding: 11px;
+      border-radius: 10px;
+      background: #0a0a0a;
+      border: 1px solid #222;
+    }
+
+    .service-info.show {
+      display: block;
+    }
+
+    .service-info-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 11px;
+      padding: 3px 0;
+    }
+
+    .service-info-line span:first-child {
+      color: var(--muted);
+    }
+
+    .service-info-line span:last-child {
+      color: #eee;
+      text-align: right;
+    }
+
+    /* PRICE */
+
+    .price-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 14px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(201, 154, 36, 0.15),
+          rgba(201, 154, 36, 0.03)
+        ),
+        #0a0a0a;
+      border: 1px solid rgba(201, 154, 36, 0.32);
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 5px 0;
+    }
+
+    .price-row span:first-child {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .price-row span:last-child {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .price-total {
+      margin-top: 9px;
+      padding-top: 12px;
+      border-top: 1px solid #282828;
+    }
+
+    .price-total span:first-child {
+      color: white;
+      font-weight: 800;
+    }
+
+    .price-total span:last-child {
+      color: var(--gold-light);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    /* BUY */
+
+    .boost-btn {
+      width: 100%;
+      height: 53px;
+      border: none;
+      border-radius: 13px;
+      margin-top: 15px;
+      background: linear-gradient(
+        135deg,
+        var(--gold-light),
+        var(--gold)
+      );
+      color: #050505;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 8px 25px rgba(201, 154, 36, 0.12);
+    }
+
+    .boost-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .boost-btn:not(:disabled):active {
+      transform: scale(0.985);
+    }
+
+    /* MESSAGE */
+
+    .message {
+      display: none;
+      margin-bottom: 16px;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      background: rgba(53, 201, 120, 0.10);
+      border: 1px solid rgba(53, 201, 120, 0.28);
+      color: #70e6a1;
+    }
+
+    .message.error {
+      background: rgba(255, 82, 82, 0.09);
+      border: 1px solid rgba(255, 82, 82, 0.28);
+      color: #ff8585;
+    }
+
+    .message.warning {
+      background: rgba(201, 154, 36, 0.10);
+      border: 1px solid rgba(201, 154, 36, 0.30);
+      color: var(--gold-light);
+    }
+
+    /* ORDERS */
+
+    .orders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 13px;
+    }
+
+    .refresh-btn {
+      border: 1px solid #2c2c2c;
+      background: #0a0a0a;
+      color: #ddd;
+      border-radius: 9px;
+      padding: 7px 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .order-item {
+      background: #0b0b0b;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .order-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .order-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.4;
+    }
+
+    .order-platform {
+      color: var(--gold-light);
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
+    .status {
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      padding: 5px 7px;
+      border-radius: 7px;
+      white-space: nowrap;
+    }
+
+    .status.pending,
+    .status.processing,
+    .status.in_progress {
+      color: var(--gold-light);
+      background: rgba(201, 154, 36, 0.12);
+    }
+
+    .status.completed,
+    .status.complete,
+    .status.success {
+      color: #63dc96;
+      background: rgba(53, 201, 120, 0.10);
+    }
+
+    .status.cancelled,
+    .status.canceled,
+    .status.failed,
+    .status.error {
+      color: #ff7777;
+      background: rgba(255, 82, 82, 0.10);
+    }
+
+    .order-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid #1e1e1e;
+    }
+
+    .order-detail span:first-child {
+      display: block;
+      color: #777;
+      font-size: 9px;
+      margin-bottom: 3px;
+    }
+
+    .order-detail span:last-child {
+      display: block;
+      color: #ddd;
+      font-size: 10px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .empty-orders {
+      text-align: center;
+      padding: 25px 10px;
+      color: #666;
+      font-size: 12px;
+    }
+
+    /* LOADING */
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #333;
+      border-top-color: var(--gold-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 9px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* FOOTER */
+
+    .footer {
+      text-align: center;
+      color: #555;
+      font-size: 10px;
+      padding: 10px 20px 30px;
+      line-height: 1.6;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 430px) {
+      .container {
+        width: min(100% - 20px, 680px);
+        padding-top: 17px;
+      }
+
+      .topbar {
+        padding: 0 10px;
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .wallet-balance {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="topbar">
+      <button class="back-btn" id="backBtn" aria-label="Back">‹</button>
+
+      <div class="brand">
+        <span class="delight">Delight</span>
+        <span class="vendor">VENDOR LOGS</span>
+      </div>
+
+      <div class="wallet-mini">
+        <span class="wallet-mini-label">Wallet</span>
+        <span class="wallet-mini-value" id="miniBalance">₦0.00</span>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <section class="page-heading">
+        <h1>Social Media <span>Boosting</span></h1>
+        <p>
+          Boost your social media content with fast and reliable delivery.
+        </p>
+      </section>
+
+      <div id="message" class="message"></div>
+
+      <!-- WALLET -->
+
+      <section class="wallet-card">
+        <div class="wallet-title">Available Wallet Balance</div>
+
+        <div class="wallet-balance" id="walletBalance">
+          ₦0.00
+        </div>
+
+        <div class="wallet-actions">
+          <button class="wallet-action primary" id="fundWalletBtn">
+            Fund Wallet
+          </button>
+
+          <button class="wallet-action" id="walletHistoryBtn">
+            History
+          </button>
+        </div>
+      </section>
+
+      <!-- BOOSTING -->
+
+      <section class="card">
+
+        <div class="card-title">Create Boost</div>
+
+        <div class="card-subtitle">
+          Select a platform, choose the service, enter your link and quantity,
+          then place your order.
+        </div>
+
+        <div class="field">
+          <label>Platform</label>
+
+          <div class="platform-grid" id="platformGrid">
+            <button class="platform-btn active" data-platform="Instagram">
+              Instagram
+            </button>
+
+            <button class="platform-btn" data-platform="TikTok">
+              TikTok
+            </button>
+
+            <button class="platform-btn" data-platform="YouTube">
+              YouTube
+            </button>
+
+            <button class="platform-btn" data-platform="Facebook">
+              Facebook
+            </button>
+
+            <button class="platform-btn" data-platform="X">
+              X / Twitter
+            </button>
+
+            <button class="platform-btn" data-platform="Other">
+              Other
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="serviceSelect">Service</label>
+
+          <select class="select" id="serviceSelect">
+            <option value="">Loading services...</option>
+          </select>
+
+          <div id="serviceInfo" class="service-info">
+            <div class="service-info-line">
+              <span>Type</span>
+              <span id="serviceType">—</span>
+            </div>
+
+            <div class="service-info-line">
+              <span>Minimum</span>
+              <span id="serviceMin">—</span>
+            </div>
+
+            <div class="service-info-line">
+              <span>Maximum</span>
+              <span id="serviceMax">—</span>
+            </div>
+
+            <div class="service-info-line">
+              <span>Delivery</span>
+              <span id="serviceDelivery">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="linkInput">Post / Profile Link</label>
+
+          <input
+            class="input"
+            id="linkInput"
+            type="url"
+            placeholder="https://..."
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="field">
+          <label for="quantityInput">Quantity</label>
+
+          <input
+            class="input"
+            id="quantityInput"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            placeholder="Enter quantity"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="price-box">
+
+          <div class="price-row">
+            <span>Provider rate</span>
+            <span id="providerRate">₦0.00</span>
+          </div>
+
+          <div class="price-row">
+            <span>Markup</span>
+            <span id="markupValue">50%</span>
+          </div>
+
+          <div class="price-row">
+            <span>Customer rate</span>
+            <span id="customerRate">₦0.00</span>
+          </div>
+
+          <div class="price-row price-total">
+            <span>Total</span>
+            <span id="totalPrice">₦0.00</span>
+          </div>
+
+        </div>
+
+        <button class="boost-btn" id="boostBtn" disabled>
+          Boost Now
+        </button>
+
+      </section>
+
+      <!-- ORDERS -->
+
+      <section class="card">
+
+        <div class="orders-header">
+          <div class="card-title">My Boosting Orders</div>
+
+          <button class="refresh-btn" id="refreshOrdersBtn">
+            Refresh
+          </button>
+        </div>
+
+        <div id="ordersContainer">
+          <div class="loading">
+            <span class="spinner"></span>
+            Loading orders...
+          </div>
+        </div>
+
+      </section>
+
+      <div class="footer">
+        Delight Vendor Logs — Your digital marketplace
+        <br />
+        All services are provided for educational purposes.
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /*
+      ============================================================
+      DELIGHT VENDOR LOGS — BOOSTING
+      ============================================================
+
+      IMPORTANT:
+      Replace ONLY the anon key below with the same Supabase anon
+      key already used by your existing Delight dashboard.
+
+      Your Edge Function:
+      boosting-api
+
+      Your provider:
+      PawaBoost
+
+      Provider secret remains safely inside the Edge Function:
+      PAWABOOST_API_KEY
+      ============================================================
+    */
+
+    const SUPABASE_URL =
+      "https://hkfhehbhmucymusaytoe.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
+
+    const BOOSTING_API_URL =
+      SUPABASE_URL + "/functions/v1/boosting-api";
+
+    const { createClient } = supabase;
+
+    const supabaseClient = createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    let currentUser = null;
+    let accessToken = null;
+
+    let allServices = [];
+    let selectedPlatform = "Instagram";
+    let selectedService = null;
+    let currentMarkup = 50;
+    let walletBalance = 0;
+
+    const messageEl =
+      document.getElementById("message");
+
+    const walletBalanceEl =
+      document.getElementById("walletBalance");
+
+    const miniBalanceEl =
+      document.getElementById("miniBalance");
+
+    const serviceSelect =
+      document.getElementById("serviceSelect");
+
+    const serviceInfo =
+      document.getElementById("serviceInfo");
+
+    const serviceType =
+      document.getElementById("serviceType");
+
+    const serviceMin =
+      document.getElementById("serviceMin");
+
+    const serviceMax =
+      document.getElementById("serviceMax");
+
+    const serviceDelivery =
+      document.getElementById("serviceDelivery");
+
+    const linkInput =
+      document.getElementById("linkInput");
+
+    const quantityInput =
+      document.getElementById("quantityInput");
+
+    const providerRateEl =
+      document.getElementById("providerRate");
+
+    const markupValueEl =
+      document.getElementById("markupValue");
+
+    const customerRateEl =
+      document.getElementById("customerRate");
+
+    const totalPriceEl =
+      document.getElementById("totalPrice");
+
+    const boostBtn =
+      document.getElementById("boostBtn");
+
+    const ordersContainer =
+      document.getElementById("ordersContainer");
+
+
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+
+    function formatMoney(value) {
+      const number = Number(value || 0);
+
+      return "₦" + number.toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+
+    function formatNumber(value) {
+      return Number(value || 0).toLocaleString("en-NG");
+    }
+
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    function showMessage(text, type = "error") {
+      messageEl.textContent = text;
+      messageEl.className =
+        "message show " + type;
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+
+    function clearMessage() {
+      messageEl.textContent = "";
+      messageEl.className = "message";
+    }
+
+
+    function getServicePlatform(service) {
+      return String(
+        service.platform ||
+        service.Platform ||
+        ""
+      ).trim();
+    }
+
+
+    function getServiceId(service) {
+      return String(
+        service.provider_service_id ??
+        service.providerServiceId ??
+        service.id ??
+        ""
+      );
+    }
+
+
+    function getServiceName(service) {
+      return (
+        service.service_name ??
+        service.serviceName ??
+        service.name ??
+        "Unnamed Service"
+      );
+    }
+
+
+    function getProviderPrice(service) {
+      return Number(
+        service.provider_price ??
+        service.providerPrice ??
+        service.pricePerUnit ??
+        service.price_per_unit ??
+        0
+      );
+    }
+
+
+    function getPriceUnit(service) {
+      return Number(
+        service.price_unit ??
+        service.priceUnit ??
+        1000
+      ) || 1000;
+    }
+
+
+    function getMinQuantity(service) {
+      return Number(
+        service.min_quantity ??
+        service.minQuantity ??
+        1
+      ) || 1;
+    }
+
+
+    function getMaxQuantity(service) {
+      return Number(
+        service.max_quantity ??
+        service.maxQuantity ??
+        1000000
+      ) || 1000000;
+    }
+
+
+    function getServiceType(service) {
+      return (
+        service.service_type ??
+        service.serviceType ??
+        "Boost"
+      );
+    }
+
+
+    function getDelivery(service) {
+      return (
+        service.delivery_time ??
+        service.deliveryTime ??
+        "Varies"
+      );
+    }
+
+
+    function normalizePlatform(platform) {
+      const p =
+        String(platform || "")
+          .toLowerCase()
+          .trim();
+
+      if (p.includes("instagram")) {
+        return "Instagram";
+      }
+
+      if (p.includes("tiktok") || p.includes("tik tok")) {
+        return "TikTok";
+      }
+
+      if (p.includes("youtube") || p.includes("youtube")) {
+        return "YouTube";
+      }
+
+      if (p.includes("facebook")) {
+        return "Facebook";
+      }
+
+      if (
+        p === "x" ||
+        p.includes("twitter")
+      ) {
+        return "X";
+      }
+
+      return "Other";
+    }
+
+
+    /* ============================================================
+       API
+       ============================================================ */
+
+    async function apiRequest(action, payload = {}, method = "POST") {
+
+      if (!accessToken) {
+        throw new Error(
+          "Your login session has expired. Please login again."
+        );
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + accessToken,
+        "apikey": SUPABASE_ANON_KEY
+      };
+
+      let url = BOOSTING_API_URL;
+
+      if (method === "GET") {
+        const params = new URLSearchParams();
+
+        params.set("action", action);
+
+        Object.entries(payload).forEach(([key, value]) => {
+          if (
+            value !== undefined &&
+            value !== null
+          ) {
+            params.set(key, String(value));
+          }
+        });
+
+        url += "?" + params.toString();
+      }
+
+      const response = await fetch(url, {
+        method,
+        headers,
+        body:
+          method === "POST"
+            ? JSON.stringify({
+                action,
+                ...payload
+              })
+            : undefined
+      });
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Request failed."
+        );
+      }
+
+      if (
+        data &&
+        data.success === false
+      ) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Request failed."
+        );
+      }
+
+      return data;
+    }
+
+
+    /* ============================================================
+       SESSION
+       ============================================================ */
+
+    async function loadSession() {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.getSession();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data.session) {
+        window.location.href = "/login.html";
+        return false;
+      }
+
+      currentUser =
+        data.session.user;
+
+      accessToken =
+        data.session.access_token;
+
+      return true;
+    }
+
+
+    /* ============================================================
+       WALLET
+       ============================================================ */
+
+    async function loadWallet() {
+
+      const data =
+        await apiRequest(
+          "wallet-balance"
+        );
+
+      walletBalance = Number(
+        data.balance ??
+        data.wallet_balance ??
+        data.walletBalance ??
+        0
+      );
+
+      updateWalletDisplay();
+    }
+
+
+    function updateWalletDisplay() {
+
+      walletBalanceEl.textContent =
+        formatMoney(walletBalance);
+
+      miniBalanceEl.textContent =
+        formatMoney(walletBalance);
+    }
+
+
+    /* ============================================================
+       SERVICES
+       ============================================================ */
+
+    async function loadServices() {
+
+      serviceSelect.innerHTML =
+        '<option value="">Loading services...</option>';
+
+      try {
+
+        const data =
+          await apiRequest(
+            "services"
+          );
+
+        allServices =
+          Array.isArray(data.services)
+            ? data.services
+            : Array.isArray(data.data)
+              ? data.data
+              : [];
+
+        /*
+          Only display active services.
+        */
+
+        allServices =
+          allServices.filter(service => {
+
+            if (
+              service.is_active === false ||
+              service.isActive === false
+            ) {
+              return false;
+            }
+
+            return true;
+          });
+
+        populateServices();
+
+      } catch (error) {
+
+        console.error(error);
+
+        serviceSelect.innerHTML =
+          '<option value="">Unable to load services</option>';
+
+        showMessage(
+          error.message ||
+          "Unable to load boosting services.",
+          "error"
+        );
+      }
+    }
+
+
+    function populateServices() {
+
+      selectedService = null;
+
+      const services =
+        allServices.filter(service => {
+
+          const platform =
+            normalizePlatform(
+              getServicePlatform(service)
+            );
+
+          if (selectedPlatform === "Other") {
+            return ![
+              "Instagram",
+              "TikTok",
+              "YouTube",
+              "Facebook",
+              "X"
+            ].includes(platform);
+          }
+
+          return platform === selectedPlatform;
+        });
+
+
+      serviceSelect.innerHTML =
+        '<option value="">Select a service</option>';
+
+
+      services.forEach(service => {
+
+        const option =
+          document.createElement("option");
+
+        option.value =
+          getServiceId(service);
+
+        option.textContent =
+          getServiceName(service);
+
+        serviceSelect.appendChild(option);
+      });
+
+
+      if (!services.length) {
+
+        serviceSelect.innerHTML =
+          '<option value="">No services available for this platform</option>';
+
+        hideServiceInfo();
+        updatePrice();
+
+        return;
+      }
+
+      hideServiceInfo();
+      updatePrice();
+    }
+
+
+    /* ============================================================
+       SERVICE SELECTION
+       ============================================================ */
+
+    serviceSelect.addEventListener(
+      "change",
+      function () {
+
+        const id = this.value;
+
+        selectedService =
+          allServices.find(
+            service =>
+              getServiceId(service) === id
+          ) || null;
+
+        if (!selectedService) {
+          hideServiceInfo();
+          updatePrice();
+          return;
+        }
+
+        showServiceInfo(
+          selectedService
+        );
+
+        updateQuantityLimits();
+
+        updatePrice();
+      }
+    );
+
+
+    function showServiceInfo(service) {
+
+      serviceInfo.classList.add("show");
+
+      serviceType.textContent =
+        getServiceType(service);
+
+      serviceMin.textContent =
+        formatNumber(
+          getMinQuantity(service)
+        );
+
+      serviceMax.textContent =
+        formatNumber(
+          getMaxQuantity(service)
+        );
+
+      serviceDelivery.textContent =
+        getDelivery(service);
+    }
+
+
+    function hideServiceInfo() {
+
+      serviceInfo.classList.remove(
+        "show"
+      );
+
+      serviceType.textContent = "—";
+      serviceMin.textContent = "—";
+      serviceMax.textContent = "—";
+      serviceDelivery.textContent = "—";
+    }
+
+
+    function updateQuantityLimits() {
+
+      if (!selectedService) {
+        quantityInput.removeAttribute("min");
+        quantityInput.removeAttribute("max");
+        return;
+      }
+
+      quantityInput.min =
+        getMinQuantity(selectedService);
+
+      quantityInput.max =
+        getMaxQuantity(selectedService);
+
+      if (
+        quantityInput.value &&
+        Number(quantityInput.value) <
+          getMinQuantity(selectedService)
+      ) {
+        quantityInput.value =
+          getMinQuantity(selectedService);
+      }
+    }
+
+
+    /* ============================================================
+       PRICE
+       ============================================================ */
+
+    async function updatePrice() {
+
+      if (!selectedService) {
+
+        providerRateEl.textContent =
+          formatMoney(0);
+
+        customerRateEl.textContent =
+          formatMoney(0);
+
+        totalPriceEl.textContent =
+          formatMoney(0);
+
+        boostBtn.disabled = true;
+
+        return;
+      }
+
+      const providerPrice =
+        getProviderPrice(
+          selectedService
+        );
+
+      const priceUnit =
+        getPriceUnit(
+          selectedService
+        );
+
+      const customerPricePerUnit =
+        providerPrice *
+        (1 + currentMarkup / 100);
+
+      const quantity =
+        Number(
+          quantityInput.value || 0
+        );
+
+      const total =
+        quantity > 0
+          ? (quantity / priceUnit) *
+            customerPricePerUnit
+          : 0;
+
+      providerRateEl.textContent =
+        formatMoney(
+          providerPrice
+        ) +
+        " / " +
+        formatNumber(priceUnit);
+
+      customerRateEl.textContent =
+        formatMoney(
+          customerPricePerUnit
+        ) +
+        " / " +
+        formatNumber(priceUnit);
+
+      markupValueEl.textContent =
+        currentMarkup + "%";
+
+      totalPriceEl.textContent =
+        formatMoney(total);
+
+      boostBtn.disabled =
+        !quantity ||
+        quantity <= 0 ||
+        !selectedService;
+    }
+
+
+    quantityInput.addEventListener(
+      "input",
+      updatePrice
+    );
+
+
+    /* ============================================================
+       PLATFORM BUTTONS
+       ============================================================ */
+
+    document
+      .querySelectorAll(".platform-btn")
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          function () {
+
+            document
+              .querySelectorAll(".platform-btn")
+              .forEach(btn =>
+                btn.classList.remove("active")
+              );
+
+            this.classList.add("active");
+
+            selectedPlatform =
+              this.dataset.platform;
+
+            populateServices();
+          }
+        );
+
+      });
+
+
+    /* ============================================================
+       PLACE ORDER
+       ============================================================ */
+
+    boostBtn.addEventListener(
+      "click",
+      async function () {
+
+        clearMessage();
+
+        if (!selectedService) {
+          showMessage(
+            "Please select a service.",
+            "error"
+          );
+          return;
+        }
+
+        const link =
+          linkInput.value.trim();
+
+        const quantity =
+          Number(
+            quantityInput.value
+          );
+
+        const min =
+          getMinQuantity(
+            selectedService
+          );
+
+        const max =
+          getMaxQuantity(
+            selectedService
+          );
+
+        if (!link) {
+          showMessage(
+            "Please enter the social media link.",
+            "error"
+          );
+          linkInput.focus();
+          return;
+        }
+
+        if (
+          !quantity ||
+          quantity < min ||
+          quantity > max
+        ) {
+
+          showMessage(
+            "Quantity must be between " +
+            formatNumber(min) +
+            " and " +
+            formatNumber(max) +
+            ".",
+            "error"
+          );
+
+          quantityInput.focus();
+
+          return;
+        }
+
+
+        const providerPrice =
+          getProviderPrice(
+            selectedService
+          );
+
+        const priceUnit =
+          getPriceUnit(
+            selectedService
+          );
+
+        const customerPrice =
+          providerPrice *
+          (1 + currentMarkup / 100);
+
+        const total =
+          (quantity / priceUnit) *
+          customerPrice;
+
+
+        if (walletBalance < total) {
+
+          const shortfall =
+            total - walletBalance;
+
+          showMessage(
+            "Insufficient wallet balance. " +
+            "You need " +
+            formatMoney(shortfall) +
+            " more to place this order.",
+            "warning"
+          );
+
+          return;
+        }
+
+
+        const confirmed =
+          confirm(
+            "Confirm Boost Order\n\n" +
+            "Service: " +
+            getServiceName(selectedService) +
+            "\n" +
+            "Quantity: " +
+            formatNumber(quantity) +
+            "\n" +
+            "Total: " +
+            formatMoney(total) +
+            "\n\n" +
+            "Your wallet will be debited after confirmation."
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+
+        const oldText =
+          boostBtn.textContent;
+
+        boostBtn.disabled = true;
+        boostBtn.textContent =
+          "Processing Order...";
+
+
+        try {
+
+          const data =
+            await apiRequest(
+              "place-order",
+              {
+                provider_service_id:
+                  getServiceId(
+                    selectedService
+                  ),
+
+                service_id:
+                  getServiceId(
+                    selectedService
+                  ),
+
+                link,
+
+                quantity
+              }
+            );
+
+
+          /*
+            Refresh wallet immediately after
+            a successful purchase.
+          */
+
+          await loadWallet();
+
+          linkInput.value = "";
+          quantityInput.value = "";
+
+          updatePrice();
+
+
+          const providerOrderId =
+            data.provider_order_id ??
+            data.providerOrderId ??
+            data.order?.provider_order_id ??
+            data.order?.id ??
+            "Pending";
+
+
+          showMessage(
+            "Boost order placed successfully. " +
+            "Order ID: " +
+            providerOrderId,
+            "success"
+          );
+
+
+          await loadOrders();
+
+
+        } catch (error) {
+
+          console.error(
+            "Boost order error:",
+            error
+          );
+
+          showMessage(
+            error.message ||
+            "Unable to place boost order.",
+            "error"
+          );
+
+        } finally {
+
+          boostBtn.disabled = false;
+
+          boostBtn.textContent =
+            oldText;
+        }
+
+      }
+    );
+
+
+    /* ============================================================
+       ORDERS
+       ============================================================ */
+
+    async function loadOrders() {
+
+      ordersContainer.innerHTML =
+        `
+          <div class="loading">
+            <span class="spinner"></span>
+            Loading orders...
+          </div>
+        `;
+
+      try {
+
+        const data =
+          await apiRequest(
+            "my-orders"
+          );
+
+        const orders =
+          Array.isArray(data.orders)
+            ? data.orders
+            : Array.isArray(data.data)
+              ? data.data
+              : [];
+
+        renderOrders(orders);
+
+      } catch (error) {
+
+        console.error(error);
+
+        ordersContainer.innerHTML =
+          `
+            <div class="empty-orders">
+              Unable to load your boosting orders.
+            </div>
+          `;
+      }
+    }
+
+
+    function renderOrders(orders) {
+
+      if (!orders.length) {
+
+        ordersContainer.innerHTML =
+          `
+            <div class="empty-orders">
+              You don't have any boosting orders yet.
+            </div>
+          `;
+
+        return;
+      }
+
+
+      ordersContainer.innerHTML =
+        `
+          <div class="order-list">
+            ${orders.map(renderOrder).join("")}
+          </div>
+        `;
+    }
+
+
+    function renderOrder(order) {
+
+      const serviceName =
+        order.service_name ??
+        order.serviceName ??
+        "Boosting Service";
+
+      const platform =
+        order.platform ??
+        "Social Media";
+
+      const quantity =
+        order.quantity ??
+        0;
+
+      const charge =
+        order.customer_charge ??
+        order.customerCharge ??
+        order.amount ??
+        0;
+
+      const status =
+        String(
+          order.status ??
+          "pending"
+        ).toLowerCase();
+
+      const providerOrderId =
+        order.provider_order_id ??
+        order.providerOrderId ??
+        order.id ??
+        "—";
+
+      const remains =
+        order.remains ??
+        "—";
+
+      const startCount =
+        order.start_count ??
+        order.startCount ??
+        "—";
+
+      const createdAt =
+        order.created_at ??
+        order.createdAt;
+
+
+      let dateText = "—";
+
+      if (createdAt) {
+
+        try {
+
+          dateText =
+            new Date(
+              createdAt
+            ).toLocaleString(
+              "en-NG",
+              {
+                dateStyle: "medium",
+                timeStyle: "short"
+              }
+            );
+
+        } catch {
+          dateText = createdAt;
+        }
+      }
+
+
+      return `
+        <div class="order-item">
+
+          <div class="order-top">
+
+            <div>
+              <div class="order-name">
+                ${escapeHtml(serviceName)}
+              </div>
+
+              <div class="order-platform">
+                ${escapeHtml(platform)}
+              </div>
+            </div>
+
+            <div class="status ${escapeHtml(status)}">
+              ${escapeHtml(status)}
+            </div>
+
+          </div>
+
+          <div class="order-details">
+
+            <div class="order-detail">
+              <span>Order ID</span>
+              <span>
+                ${escapeHtml(providerOrderId)}
+              </span>
+            </div>
+
+            <div class="order-detail">
+              <span>Quantity</span>
+              <span>
+                ${formatNumber(quantity)}
+              </span>
+            </div>
+
+            <div class="order-detail">
+              <span>Amount</span>
+              <span>
+                ${formatMoney(charge)}
+              </span>
+            </div>
+
+            <div class="order-detail">
+              <span>Start Count</span>
+              <span>
+                ${escapeHtml(startCount)}
+              </span>
+            </div>
+
+            <div class="order-detail">
+              <span>Remains</span>
+              <span>
+                ${escapeHtml(remains)}
+              </span>
+            </div>
+
+            <div class="order-detail">
+              <span>Date</span>
+              <span>
+                ${escapeHtml(dateText)}
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+
+    /* ============================================================
+       NAVIGATION
+       ============================================================ */
+
+    document
+      .getElementById("backBtn")
+      .addEventListener(
+        "click",
+        () => {
+          window.location.href =
+            "/dashboard";
+        }
+      );
+
+
+    document
+      .getElementById("fundWalletBtn")
+      .addEventListener(
+        "click",
+        () => {
+          window.location.href =
+            "/wallet.html";
+        }
+      );
+
+
+    document
+      .getElementById("walletHistoryBtn")
+      .addEventListener(
+        "click",
+        () => {
+          window.location.href =
+            "/transactions.html";
+        }
+      );
+
+
+    document
+      .getElementById("refreshOrdersBtn")
+      .addEventListener(
+        "click",
+        async () => {
+
+          clearMessage();
+
+          await Promise.all([
+            loadWallet(),
+            loadOrders()
+          ]);
+
+        }
+      );
+
+
+    /* ============================================================
+       REALTIME AUTH CHANGE
+       ============================================================ */
+
+    supabaseClient.auth.onAuthStateChange(
+      async (event, session) => {
+
+        if (
+          event === "SIGNED_OUT"
+        ) {
+
+          window.location.href =
+            "/login.html";
+
+          return;
+        }
+
+        if (session) {
+
+          currentUser =
+            session.user;
+
+          accessToken =
+            session.access_token;
+        }
+      }
+    );
+
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+
+    async function init() {
+
+      try {
+
+        const loggedIn =
+          await loadSession();
+
+        if (!loggedIn) {
+          return;
+        }
+
+
+        /*
+          Load wallet, services and orders
+          at the same time.
+        */
+
+        await Promise.all([
+          loadWallet(),
+          loadServices(),
+          loadOrders()
+        ]);
+
+
+        /*
+          Set default markup display.
+          Backend remains the authority when
+          calculating the actual purchase.
+        */
+
+        markupValueEl.textContent =
+          currentMarkup + "%";
+
+
+      } catch (error) {
+
+        console.error(
+          "Boosting initialization error:",
+          error
+        );
+
+        showMessage(
+          error.message ||
+          "Unable to load the boosting page.",
+          "error"
+        );
+      }
+    }
+
+
+    init();
+  </script>
+</body>
+</html>
