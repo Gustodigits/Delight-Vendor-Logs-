@@ -331,12 +331,6 @@
       appearance: auto;
     }
 
-    .service-loading {
-      color: var(--muted);
-      font-size: 12px;
-      padding: 12px 0;
-    }
-
     .service-info {
       display: none;
       margin-top: 8px;
@@ -721,40 +715,72 @@
           <label>Platform</label>
 
           <div class="platform-grid" id="platformGrid">
-            <button class="platform-btn active" data-platform="Instagram">
+
+            <button
+              class="platform-btn active"
+              data-platform="Instagram"
+            >
               Instagram
             </button>
 
-            <button class="platform-btn" data-platform="TikTok">
+            <button
+              class="platform-btn"
+              data-platform="TikTok"
+            >
               TikTok
             </button>
 
-            <button class="platform-btn" data-platform="YouTube">
+            <button
+              class="platform-btn"
+              data-platform="YouTube"
+            >
               YouTube
             </button>
 
-            <button class="platform-btn" data-platform="Facebook">
+            <button
+              class="platform-btn"
+              data-platform="Facebook"
+            >
               Facebook
             </button>
 
-            <button class="platform-btn" data-platform="X">
+            <button
+              class="platform-btn"
+              data-platform="X"
+            >
               X / Twitter
             </button>
 
-            <button class="platform-btn" data-platform="Other">
+            <button
+              class="platform-btn"
+              data-platform="Other"
+            >
               Other
             </button>
+
           </div>
         </div>
 
         <div class="field">
-          <label for="serviceSelect">Service</label>
 
-          <select class="select" id="serviceSelect">
-            <option value="">Loading services...</option>
+          <label for="serviceSelect">
+            Service
+          </label>
+
+          <select
+            class="select"
+            id="serviceSelect"
+          >
+            <option value="">
+              Loading services...
+            </option>
           </select>
 
-          <div id="serviceInfo" class="service-info">
+          <div
+            id="serviceInfo"
+            class="service-info"
+          >
+
             <div class="service-info-line">
               <span>Type</span>
               <span id="serviceType">—</span>
@@ -774,11 +800,16 @@
               <span>Delivery</span>
               <span id="serviceDelivery">—</span>
             </div>
+
           </div>
+
         </div>
 
         <div class="field">
-          <label for="linkInput">Post / Profile Link</label>
+
+          <label for="linkInput">
+            Post / Profile Link
+          </label>
 
           <input
             class="input"
@@ -787,10 +818,14 @@
             placeholder="https://..."
             autocomplete="off"
           />
+
         </div>
 
         <div class="field">
-          <label for="quantityInput">Quantity</label>
+
+          <label for="quantityInput">
+            Quantity
+          </label>
 
           <input
             class="input"
@@ -801,6 +836,7 @@
             placeholder="Enter quantity"
             autocomplete="off"
           />
+
         </div>
 
         <div class="price-box">
@@ -827,7 +863,11 @@
 
         </div>
 
-        <button class="boost-btn" id="boostBtn" disabled>
+        <button
+          class="boost-btn"
+          id="boostBtn"
+          disabled
+        >
           Boost Now
         </button>
 
@@ -838,18 +878,27 @@
       <section class="card">
 
         <div class="orders-header">
-          <div class="card-title">My Boosting Orders</div>
 
-          <button class="refresh-btn" id="refreshOrdersBtn">
+          <div class="card-title">
+            My Boosting Orders
+          </div>
+
+          <button
+            class="refresh-btn"
+            id="refreshOrdersBtn"
+          >
             Refresh
           </button>
+
         </div>
 
         <div id="ordersContainer">
+
           <div class="loading">
             <span class="spinner"></span>
             Loading orders...
           </div>
+
         </div>
 
       </section>
@@ -870,17 +919,12 @@
       ============================================================
 
       IMPORTANT:
-      Replace ONLY the anon key below with the same Supabase anon
-      key already used by your existing Delight dashboard.
+      Put the SAME Supabase anon key used by your existing
+      Delight dashboard below.
 
-      Your Edge Function:
-      boosting-api
+      DO NOT put PAWABOOST_API_KEY here.
 
-      Your provider:
-      PawaBoost
-
-      Provider secret remains safely inside the Edge Function:
-      PAWABOOST_API_KEY
+      PawaBoost API key stays inside boosting-api.
       ============================================================
     */
 
@@ -888,17 +932,22 @@
       "https://hkfhehbhmucymusaytoe.supabase.co";
 
     const SUPABASE_ANON_KEY =
-      "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
     const BOOSTING_API_URL =
-      SUPABASE_URL + "/functions/v1/boosting-api";
+      SUPABASE_URL +
+      "/functions/v1/boosting-api";
 
-    const { createClient } = supabase;
+    const {
+      createClient
+    } = supabase;
 
-    const supabaseClient = createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+    const supabaseClient =
+      createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
 
     let currentUser = null;
     let accessToken = null;
@@ -906,59 +955,95 @@
     let allServices = [];
     let selectedPlatform = "Instagram";
     let selectedService = null;
+
     let currentMarkup = 50;
     let walletBalance = 0;
 
+
     const messageEl =
-      document.getElementById("message");
+      document.getElementById(
+        "message"
+      );
 
     const walletBalanceEl =
-      document.getElementById("walletBalance");
+      document.getElementById(
+        "walletBalance"
+      );
 
     const miniBalanceEl =
-      document.getElementById("miniBalance");
+      document.getElementById(
+        "miniBalance"
+      );
 
     const serviceSelect =
-      document.getElementById("serviceSelect");
+      document.getElementById(
+        "serviceSelect"
+      );
 
     const serviceInfo =
-      document.getElementById("serviceInfo");
+      document.getElementById(
+        "serviceInfo"
+      );
 
     const serviceType =
-      document.getElementById("serviceType");
+      document.getElementById(
+        "serviceType"
+      );
 
     const serviceMin =
-      document.getElementById("serviceMin");
+      document.getElementById(
+        "serviceMin"
+      );
 
     const serviceMax =
-      document.getElementById("serviceMax");
+      document.getElementById(
+        "serviceMax"
+      );
 
     const serviceDelivery =
-      document.getElementById("serviceDelivery");
+      document.getElementById(
+        "serviceDelivery"
+      );
 
     const linkInput =
-      document.getElementById("linkInput");
+      document.getElementById(
+        "linkInput"
+      );
 
     const quantityInput =
-      document.getElementById("quantityInput");
+      document.getElementById(
+        "quantityInput"
+      );
 
     const providerRateEl =
-      document.getElementById("providerRate");
+      document.getElementById(
+        "providerRate"
+      );
 
     const markupValueEl =
-      document.getElementById("markupValue");
+      document.getElementById(
+        "markupValue"
+      );
 
     const customerRateEl =
-      document.getElementById("customerRate");
+      document.getElementById(
+        "customerRate"
+      );
 
     const totalPriceEl =
-      document.getElementById("totalPrice");
+      document.getElementById(
+        "totalPrice"
+      );
 
     const boostBtn =
-      document.getElementById("boostBtn");
+      document.getElementById(
+        "boostBtn"
+      );
 
     const ordersContainer =
-      document.getElementById("ordersContainer");
+      document.getElementById(
+        "ordersContainer"
+      );
 
 
     /* ============================================================
@@ -966,34 +1051,72 @@
        ============================================================ */
 
     function formatMoney(value) {
-      const number = Number(value || 0);
 
-      return "₦" + number.toLocaleString("en-NG", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+      const number =
+        Number(value || 0);
+
+      return (
+        "₦" +
+        number.toLocaleString(
+          "en-NG",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        )
+      );
     }
 
 
     function formatNumber(value) {
-      return Number(value || 0).toLocaleString("en-NG");
+
+      return Number(
+        value || 0
+      ).toLocaleString(
+        "en-NG"
+      );
     }
 
 
     function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+      return String(
+        value ?? ""
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
     }
 
 
-    function showMessage(text, type = "error") {
-      messageEl.textContent = text;
+    function showMessage(
+      text,
+      type = "error"
+    ) {
+
+      messageEl.textContent =
+        text;
+
       messageEl.className =
-        "message show " + type;
+        "message show " +
+        type;
 
       window.scrollTo({
         top: 0,
@@ -1003,88 +1126,120 @@
 
 
     function clearMessage() {
-      messageEl.textContent = "";
-      messageEl.className = "message";
+
+      messageEl.textContent =
+        "";
+
+      messageEl.className =
+        "message";
     }
 
 
-    function getServicePlatform(service) {
+    function getServicePlatform(
+      service
+    ) {
+
       return String(
         service.platform ||
-        service.Platform ||
         ""
       ).trim();
     }
 
 
-    function getServiceId(service) {
+    function getServiceId(
+      service
+    ) {
+
       return String(
         service.provider_service_id ??
-        service.providerServiceId ??
         service.id ??
         ""
       );
     }
 
 
-    function getServiceName(service) {
+    function getServiceName(
+      service
+    ) {
+
       return (
         service.service_name ??
-        service.serviceName ??
         service.name ??
         "Unnamed Service"
       );
     }
 
 
-    function getProviderPrice(service) {
+    function getProviderPrice(
+      service
+    ) {
+
       return Number(
         service.provider_price ??
-        service.providerPrice ??
-        service.pricePerUnit ??
-        service.price_per_unit ??
         0
       );
     }
 
 
-    function getPriceUnit(service) {
+    function getCustomerPrice(
+      service
+    ) {
+
+      return Number(
+        service.customer_price_per_unit ??
+        0
+      );
+    }
+
+
+    function getPriceUnit(
+      service
+    ) {
+
       return Number(
         service.price_unit ??
-        service.priceUnit ??
         1000
       ) || 1000;
     }
 
 
-    function getMinQuantity(service) {
+    function getMinQuantity(
+      service
+    ) {
+
       return Number(
         service.min_quantity ??
-        service.minQuantity ??
         1
       ) || 1;
     }
 
 
-    function getMaxQuantity(service) {
+    function getMaxQuantity(
+      service
+    ) {
+
       return Number(
         service.max_quantity ??
-        service.maxQuantity ??
         1000000
       ) || 1000000;
     }
 
 
-    function getServiceType(service) {
+    function getServiceType(
+      service
+    ) {
+
       return (
         service.service_type ??
-        service.serviceType ??
         "Boost"
       );
     }
 
 
-    function getDelivery(service) {
+    function getDelivery(
+      service
+    ) {
+
       return (
         service.delivery_time ??
         service.deliveryTime ??
@@ -1093,27 +1248,46 @@
     }
 
 
-    function normalizePlatform(platform) {
+    function normalizePlatform(
+      platform
+    ) {
+
       const p =
-        String(platform || "")
+        String(
+          platform || ""
+        )
           .toLowerCase()
           .trim();
 
-      if (p.includes("instagram")) {
+
+      if (
+        p.includes("instagram")
+      ) {
         return "Instagram";
       }
 
-      if (p.includes("tiktok") || p.includes("tik tok")) {
+
+      if (
+        p.includes("tiktok") ||
+        p.includes("tik tok")
+      ) {
         return "TikTok";
       }
 
-      if (p.includes("youtube") || p.includes("youtube")) {
+
+      if (
+        p.includes("youtube")
+      ) {
         return "YouTube";
       }
 
-      if (p.includes("facebook")) {
+
+      if (
+        p.includes("facebook")
+      ) {
         return "Facebook";
       }
+
 
       if (
         p === "x" ||
@@ -1122,85 +1296,91 @@
         return "X";
       }
 
+
       return "Other";
     }
 
 
     /* ============================================================
-       API
+       API REQUEST
        ============================================================ */
 
-    async function apiRequest(action, payload = {}, method = "POST") {
+    async function apiRequest(
+      endpoint,
+      options = {}
+    ) {
 
       if (!accessToken) {
+
         throw new Error(
           "Your login session has expired. Please login again."
         );
       }
 
+
       const headers = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + accessToken,
-        "apikey": SUPABASE_ANON_KEY
+        "Content-Type":
+          "application/json",
+
+        "Authorization":
+          "Bearer " +
+          accessToken,
+
+        "apikey":
+          SUPABASE_ANON_KEY
       };
 
-      let url = BOOSTING_API_URL;
 
-      if (method === "GET") {
-        const params = new URLSearchParams();
+      const response =
+        await fetch(
+          BOOSTING_API_URL +
+          endpoint,
+          {
+            ...options,
 
-        params.set("action", action);
-
-        Object.entries(payload).forEach(([key, value]) => {
-          if (
-            value !== undefined &&
-            value !== null
-          ) {
-            params.set(key, String(value));
+            headers: {
+              ...headers,
+              ...(options.headers || {})
+            }
           }
-        });
+        );
 
-        url += "?" + params.toString();
-      }
-
-      const response = await fetch(url, {
-        method,
-        headers,
-        body:
-          method === "POST"
-            ? JSON.stringify({
-                action,
-                ...payload
-              })
-            : undefined
-      });
 
       let data = {};
 
       try {
-        data = await response.json();
+
+        data =
+          await response.json();
+
       } catch {
+
         data = {};
       }
 
+
       if (!response.ok) {
+
         throw new Error(
           data.error ||
           data.message ||
           "Request failed."
         );
       }
+
 
       if (
         data &&
         data.success === false
       ) {
+
         throw new Error(
           data.error ||
           data.message ||
           "Request failed."
         );
       }
+
 
       return data;
     }
@@ -1218,20 +1398,27 @@
       } =
         await supabaseClient.auth.getSession();
 
+
       if (error) {
         throw error;
       }
 
+
       if (!data.session) {
-        window.location.href = "/login.html";
+
+        window.location.href =
+          "/login.html";
+
         return false;
       }
+
 
       currentUser =
         data.session.user;
 
       accessToken =
         data.session.access_token;
+
 
       return true;
     }
@@ -1245,15 +1432,19 @@
 
       const data =
         await apiRequest(
-          "wallet-balance"
+          "/wallet",
+          {
+            method: "GET"
+          }
         );
 
-      walletBalance = Number(
-        data.balance ??
-        data.wallet_balance ??
-        data.walletBalance ??
-        0
-      );
+
+      walletBalance =
+        Number(
+          data.balance ??
+          0
+        );
+
 
       updateWalletDisplay();
     }
@@ -1262,10 +1453,14 @@
     function updateWalletDisplay() {
 
       walletBalanceEl.textContent =
-        formatMoney(walletBalance);
+        formatMoney(
+          walletBalance
+        );
 
       miniBalanceEl.textContent =
-        formatMoney(walletBalance);
+        formatMoney(
+          walletBalance
+        );
     }
 
 
@@ -1276,47 +1471,76 @@
     async function loadServices() {
 
       serviceSelect.innerHTML =
-        '<option value="">Loading services...</option>';
+        `
+          <option value="">
+            Loading services...
+          </option>
+        `;
+
 
       try {
 
         const data =
           await apiRequest(
-            "services"
+            "/services",
+            {
+              method: "GET"
+            }
           );
 
+
         allServices =
-          Array.isArray(data.services)
+          Array.isArray(
+            data.services
+          )
             ? data.services
-            : Array.isArray(data.data)
-              ? data.data
-              : [];
+            : [];
+
 
         /*
-          Only display active services.
-        */
+         * Use the markup returned by
+         * the Edge Function.
+         */
+
+        currentMarkup =
+          Number(
+            data.markup_percent ??
+            50
+          );
+
+
+        markupValueEl.textContent =
+          currentMarkup + "%";
+
+
+        /*
+         * Only active services are displayed.
+         */
 
         allServices =
-          allServices.filter(service => {
+          allServices.filter(
+            service =>
+              service.is_active !== false
+          );
 
-            if (
-              service.is_active === false ||
-              service.isActive === false
-            ) {
-              return false;
-            }
-
-            return true;
-          });
 
         populateServices();
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "Services error:",
+          error
+        );
+
 
         serviceSelect.innerHTML =
-          '<option value="">Unable to load services</option>';
+          `
+            <option value="">
+              Unable to load services
+            </option>
+          `;
+
 
         showMessage(
           error.message ||
@@ -1329,61 +1553,103 @@
 
     function populateServices() {
 
-      selectedService = null;
+      selectedService =
+        null;
+
 
       const services =
-        allServices.filter(service => {
+        allServices.filter(
+          service => {
 
-          const platform =
-            normalizePlatform(
-              getServicePlatform(service)
+            const platform =
+              normalizePlatform(
+                getServicePlatform(
+                  service
+                )
+              );
+
+
+            if (
+              selectedPlatform ===
+              "Other"
+            ) {
+
+              return ![
+                "Instagram",
+                "TikTok",
+                "YouTube",
+                "Facebook",
+                "X"
+              ].includes(
+                platform
+              );
+            }
+
+
+            return (
+              platform ===
+              selectedPlatform
             );
-
-          if (selectedPlatform === "Other") {
-            return ![
-              "Instagram",
-              "TikTok",
-              "YouTube",
-              "Facebook",
-              "X"
-            ].includes(platform);
           }
-
-          return platform === selectedPlatform;
-        });
+        );
 
 
       serviceSelect.innerHTML =
-        '<option value="">Select a service</option>';
+        `
+          <option value="">
+            Select a service
+          </option>
+        `;
 
 
-      services.forEach(service => {
+      services.forEach(
+        service => {
 
-        const option =
-          document.createElement("option");
+          const option =
+            document.createElement(
+              "option"
+            );
 
-        option.value =
-          getServiceId(service);
 
-        option.textContent =
-          getServiceName(service);
+          option.value =
+            getServiceId(
+              service
+            );
 
-        serviceSelect.appendChild(option);
-      });
+
+          option.textContent =
+            getServiceName(
+              service
+            );
+
+
+          serviceSelect.appendChild(
+            option
+          );
+        }
+      );
 
 
       if (!services.length) {
 
         serviceSelect.innerHTML =
-          '<option value="">No services available for this platform</option>';
+          `
+            <option value="">
+              No services available for this platform
+            </option>
+          `;
+
 
         hideServiceInfo();
+
         updatePrice();
 
         return;
       }
 
+
       hideServiceInfo();
+
       updatePrice();
     }
 
@@ -1396,23 +1662,35 @@
       "change",
       function () {
 
-        const id = this.value;
+        const id =
+          this.value;
+
 
         selectedService =
           allServices.find(
             service =>
-              getServiceId(service) === id
+              getServiceId(
+                service
+              ) === id
           ) || null;
 
-        if (!selectedService) {
+
+        if (
+          !selectedService
+        ) {
+
           hideServiceInfo();
+
           updatePrice();
+
           return;
         }
+
 
         showServiceInfo(
           selectedService
         );
+
 
         updateQuantityLimits();
 
@@ -1421,25 +1699,41 @@
     );
 
 
-    function showServiceInfo(service) {
+    function showServiceInfo(
+      service
+    ) {
 
-      serviceInfo.classList.add("show");
+      serviceInfo.classList.add(
+        "show"
+      );
+
 
       serviceType.textContent =
-        getServiceType(service);
+        getServiceType(
+          service
+        );
+
 
       serviceMin.textContent =
         formatNumber(
-          getMinQuantity(service)
+          getMinQuantity(
+            service
+          )
         );
+
 
       serviceMax.textContent =
         formatNumber(
-          getMaxQuantity(service)
+          getMaxQuantity(
+            service
+          )
         );
 
+
       serviceDelivery.textContent =
-        getDelivery(service);
+        getDelivery(
+          service
+        );
     }
 
 
@@ -1449,35 +1743,49 @@
         "show"
       );
 
-      serviceType.textContent = "—";
-      serviceMin.textContent = "—";
-      serviceMax.textContent = "—";
-      serviceDelivery.textContent = "—";
+
+      serviceType.textContent =
+        "—";
+
+      serviceMin.textContent =
+        "—";
+
+      serviceMax.textContent =
+        "—";
+
+      serviceDelivery.textContent =
+        "—";
     }
 
 
     function updateQuantityLimits() {
 
-      if (!selectedService) {
-        quantityInput.removeAttribute("min");
-        quantityInput.removeAttribute("max");
+      if (
+        !selectedService
+      ) {
+
+        quantityInput.removeAttribute(
+          "min"
+        );
+
+        quantityInput.removeAttribute(
+          "max"
+        );
+
         return;
       }
 
+
       quantityInput.min =
-        getMinQuantity(selectedService);
+        getMinQuantity(
+          selectedService
+        );
+
 
       quantityInput.max =
-        getMaxQuantity(selectedService);
-
-      if (
-        quantityInput.value &&
-        Number(quantityInput.value) <
-          getMinQuantity(selectedService)
-      ) {
-        quantityInput.value =
-          getMinQuantity(selectedService);
-      }
+        getMaxQuantity(
+          selectedService
+        );
     }
 
 
@@ -1485,9 +1793,11 @@
        PRICE
        ============================================================ */
 
-    async function updatePrice() {
+    function updatePrice() {
 
-      if (!selectedService) {
+      if (
+        !selectedService
+      ) {
 
         providerRateEl.textContent =
           formatMoney(0);
@@ -1498,55 +1808,77 @@
         totalPriceEl.textContent =
           formatMoney(0);
 
-        boostBtn.disabled = true;
+        boostBtn.disabled =
+          true;
 
         return;
       }
+
 
       const providerPrice =
         getProviderPrice(
           selectedService
         );
 
+
       const priceUnit =
         getPriceUnit(
           selectedService
         );
 
-      const customerPricePerUnit =
-        providerPrice *
-        (1 + currentMarkup / 100);
+
+      const customerPrice =
+        getCustomerPrice(
+          selectedService
+        );
+
 
       const quantity =
         Number(
-          quantityInput.value || 0
+          quantityInput.value ||
+          0
         );
+
 
       const total =
         quantity > 0
-          ? (quantity / priceUnit) *
-            customerPricePerUnit
+          ? (
+              quantity /
+              priceUnit
+            ) *
+            customerPrice
           : 0;
+
 
       providerRateEl.textContent =
         formatMoney(
           providerPrice
         ) +
         " / " +
-        formatNumber(priceUnit);
+        formatNumber(
+          priceUnit
+        );
+
 
       customerRateEl.textContent =
         formatMoney(
-          customerPricePerUnit
+          customerPrice
         ) +
         " / " +
-        formatNumber(priceUnit);
+        formatNumber(
+          priceUnit
+        );
+
 
       markupValueEl.textContent =
         currentMarkup + "%";
 
+
       totalPriceEl.textContent =
-        formatMoney(total);
+        formatMoney(
+          total
+        );
+
 
       boostBtn.disabled =
         !quantity ||
@@ -1566,29 +1898,42 @@
        ============================================================ */
 
     document
-      .querySelectorAll(".platform-btn")
-      .forEach(button => {
+      .querySelectorAll(
+        ".platform-btn"
+      )
+      .forEach(
+        button => {
 
-        button.addEventListener(
-          "click",
-          function () {
+          button.addEventListener(
+            "click",
+            function () {
 
-            document
-              .querySelectorAll(".platform-btn")
-              .forEach(btn =>
-                btn.classList.remove("active")
+              document
+                .querySelectorAll(
+                  ".platform-btn"
+                )
+                .forEach(
+                  btn =>
+                    btn.classList.remove(
+                      "active"
+                    )
+                );
+
+
+              this.classList.add(
+                "active"
               );
 
-            this.classList.add("active");
 
-            selectedPlatform =
-              this.dataset.platform;
+              selectedPlatform =
+                this.dataset.platform;
 
-            populateServices();
-          }
-        );
 
-      });
+              populateServices();
+            }
+          );
+        }
+      );
 
 
     /* ============================================================
@@ -1601,43 +1946,60 @@
 
         clearMessage();
 
-        if (!selectedService) {
+
+        if (
+          !selectedService
+        ) {
+
           showMessage(
             "Please select a service.",
             "error"
           );
+
           return;
         }
 
+
         const link =
           linkInput.value.trim();
+
 
         const quantity =
           Number(
             quantityInput.value
           );
 
+
         const min =
           getMinQuantity(
             selectedService
           );
+
 
         const max =
           getMaxQuantity(
             selectedService
           );
 
+
         if (!link) {
+
           showMessage(
             "Please enter the social media link.",
             "error"
           );
+
           linkInput.focus();
+
           return;
         }
 
+
         if (
           !quantity ||
+          !Number.isInteger(
+            quantity
+          ) ||
           quantity < min ||
           quantity > max
         ) {
@@ -1657,37 +2019,46 @@
         }
 
 
-        const providerPrice =
-          getProviderPrice(
+        const customerPrice =
+          getCustomerPrice(
             selectedService
           );
+
 
         const priceUnit =
           getPriceUnit(
             selectedService
           );
 
-        const customerPrice =
-          providerPrice *
-          (1 + currentMarkup / 100);
 
         const total =
-          (quantity / priceUnit) *
+          (
+            quantity /
+            priceUnit
+          ) *
           customerPrice;
 
 
-        if (walletBalance < total) {
+        if (
+          walletBalance <
+          total
+        ) {
 
           const shortfall =
-            total - walletBalance;
+            total -
+            walletBalance;
+
 
           showMessage(
             "Insufficient wallet balance. " +
             "You need " +
-            formatMoney(shortfall) +
+            formatMoney(
+              shortfall
+            ) +
             " more to place this order.",
             "warning"
           );
+
 
           return;
         }
@@ -1697,16 +2068,23 @@
           confirm(
             "Confirm Boost Order\n\n" +
             "Service: " +
-            getServiceName(selectedService) +
+            getServiceName(
+              selectedService
+            ) +
             "\n" +
             "Quantity: " +
-            formatNumber(quantity) +
+            formatNumber(
+              quantity
+            ) +
             "\n" +
             "Total: " +
-            formatMoney(total) +
+            formatMoney(
+              total
+            ) +
             "\n\n" +
             "Your wallet will be debited after confirmation."
           );
+
 
         if (!confirmed) {
           return;
@@ -1716,52 +2094,91 @@
         const oldText =
           boostBtn.textContent;
 
-        boostBtn.disabled = true;
+
+        boostBtn.disabled =
+          true;
+
         boostBtn.textContent =
           "Processing Order...";
 
 
         try {
 
+          /*
+           * IMPORTANT:
+           *
+           * Your Edge Function expects:
+           * POST /order
+           *
+           * with:
+           * serviceId
+           * link
+           * quantity
+           */
+
           const data =
             await apiRequest(
-              "place-order",
+              "/order",
               {
-                provider_service_id:
-                  getServiceId(
-                    selectedService
-                  ),
+                method: "POST",
 
-                service_id:
-                  getServiceId(
-                    selectedService
-                  ),
+                body:
+                  JSON.stringify({
+                    serviceId:
+                      getServiceId(
+                        selectedService
+                      ),
 
-                link,
+                    link:
+                      link,
 
-                quantity
+                    quantity:
+                      quantity
+                  })
               }
             );
 
 
           /*
-            Refresh wallet immediately after
-            a successful purchase.
-          */
+           * Use the balance returned
+           * directly by the Edge Function.
+           */
 
-          await loadWallet();
+          if (
+            data.balance !==
+            undefined
+          ) {
 
-          linkInput.value = "";
-          quantityInput.value = "";
+            walletBalance =
+              Number(
+                data.balance
+              );
+
+            updateWalletDisplay();
+
+          } else {
+
+            await loadWallet();
+          }
+
+
+          linkInput.value =
+            "";
+
+          quantityInput.value =
+            "";
+
 
           updatePrice();
 
 
+          const order =
+            data.order ||
+            {};
+
+
           const providerOrderId =
-            data.provider_order_id ??
-            data.providerOrderId ??
-            data.order?.provider_order_id ??
-            data.order?.id ??
+            order.provider_order_id ??
             "Pending";
 
 
@@ -1783,6 +2200,33 @@
             error
           );
 
+
+          /*
+           * If the backend says the
+           * balance is insufficient,
+           * use its exact shortfall.
+           */
+
+          try {
+
+            const responseText =
+              error.message || "";
+
+
+            if (
+              responseText
+                .toLowerCase()
+                .includes(
+                  "insufficient wallet"
+                )
+            ) {
+
+              await loadWallet();
+            }
+
+          } catch {}
+
+
           showMessage(
             error.message ||
             "Unable to place boost order.",
@@ -1791,7 +2235,8 @@
 
         } finally {
 
-          boostBtn.disabled = false;
+          boostBtn.disabled =
+            false;
 
           boostBtn.textContent =
             oldText;
@@ -1815,25 +2260,43 @@
           </div>
         `;
 
+
       try {
+
+        /*
+         * Your Edge Function:
+         *
+         * GET /my-orders
+         */
 
         const data =
           await apiRequest(
-            "my-orders"
+            "/my-orders",
+            {
+              method: "GET"
+            }
           );
 
-        const orders =
-          Array.isArray(data.orders)
-            ? data.orders
-            : Array.isArray(data.data)
-              ? data.data
-              : [];
 
-        renderOrders(orders);
+        const orders =
+          Array.isArray(
+            data.orders
+          )
+            ? data.orders
+            : [];
+
+
+        renderOrders(
+          orders
+        );
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "Orders error:",
+          error
+        );
+
 
         ordersContainer.innerHTML =
           `
@@ -1845,9 +2308,13 @@
     }
 
 
-    function renderOrders(orders) {
+    function renderOrders(
+      orders
+    ) {
 
-      if (!orders.length) {
+      if (
+        !orders.length
+      ) {
 
         ordersContainer.innerHTML =
           `
@@ -1863,32 +2330,41 @@
       ordersContainer.innerHTML =
         `
           <div class="order-list">
-            ${orders.map(renderOrder).join("")}
+            ${
+              orders
+                .map(
+                  renderOrder
+                )
+                .join("")
+            }
           </div>
         `;
     }
 
 
-    function renderOrder(order) {
+    function renderOrder(
+      order
+    ) {
 
       const serviceName =
         order.service_name ??
-        order.serviceName ??
         "Boosting Service";
+
 
       const platform =
         order.platform ??
         "Social Media";
 
+
       const quantity =
         order.quantity ??
         0;
 
+
       const charge =
         order.customer_charge ??
-        order.customerCharge ??
-        order.amount ??
         0;
+
 
       const status =
         String(
@@ -1896,27 +2372,30 @@
           "pending"
         ).toLowerCase();
 
+
       const providerOrderId =
         order.provider_order_id ??
-        order.providerOrderId ??
         order.id ??
         "—";
+
 
       const remains =
         order.remains ??
         "—";
 
+
       const startCount =
         order.start_count ??
-        order.startCount ??
         "—";
 
+
       const createdAt =
-        order.created_at ??
-        order.createdAt;
+        order.created_at;
 
 
-      let dateText = "—";
+      let dateText =
+        "—";
+
 
       if (createdAt) {
 
@@ -1928,13 +2407,18 @@
             ).toLocaleString(
               "en-NG",
               {
-                dateStyle: "medium",
-                timeStyle: "short"
+                dateStyle:
+                  "medium",
+
+                timeStyle:
+                  "short"
               }
             );
 
         } catch {
-          dateText = createdAt;
+
+          dateText =
+            createdAt;
         }
       }
 
@@ -1945,62 +2429,90 @@
           <div class="order-top">
 
             <div>
+
               <div class="order-name">
-                ${escapeHtml(serviceName)}
+                ${escapeHtml(
+                  serviceName
+                )}
               </div>
 
               <div class="order-platform">
-                ${escapeHtml(platform)}
+                ${escapeHtml(
+                  platform
+                )}
               </div>
+
             </div>
 
-            <div class="status ${escapeHtml(status)}">
-              ${escapeHtml(status)}
+            <div class="status ${escapeHtml(
+              status
+            )}">
+              ${escapeHtml(
+                status
+              )}
             </div>
 
           </div>
+
 
           <div class="order-details">
 
             <div class="order-detail">
               <span>Order ID</span>
               <span>
-                ${escapeHtml(providerOrderId)}
+                ${escapeHtml(
+                  providerOrderId
+                )}
               </span>
             </div>
+
 
             <div class="order-detail">
               <span>Quantity</span>
               <span>
-                ${formatNumber(quantity)}
+                ${formatNumber(
+                  quantity
+                )}
               </span>
             </div>
+
 
             <div class="order-detail">
               <span>Amount</span>
               <span>
-                ${formatMoney(charge)}
+                ${formatMoney(
+                  charge
+                )}
               </span>
             </div>
+
 
             <div class="order-detail">
               <span>Start Count</span>
               <span>
-                ${escapeHtml(startCount)}
+                ${escapeHtml(
+                  startCount
+                )}
               </span>
             </div>
+
 
             <div class="order-detail">
               <span>Remains</span>
               <span>
-                ${escapeHtml(remains)}
+                ${escapeHtml(
+                  remains
+                )}
               </span>
             </div>
+
 
             <div class="order-detail">
               <span>Date</span>
               <span>
-                ${escapeHtml(dateText)}
+                ${escapeHtml(
+                  dateText
+                )}
               </span>
             </div>
 
@@ -2016,10 +2528,13 @@
        ============================================================ */
 
     document
-      .getElementById("backBtn")
+      .getElementById(
+        "backBtn"
+      )
       .addEventListener(
         "click",
         () => {
+
           window.location.href =
             "/dashboard";
         }
@@ -2027,10 +2542,13 @@
 
 
     document
-      .getElementById("fundWalletBtn")
+      .getElementById(
+        "fundWalletBtn"
+      )
       .addEventListener(
         "click",
         () => {
+
           window.location.href =
             "/wallet.html";
         }
@@ -2038,10 +2556,13 @@
 
 
     document
-      .getElementById("walletHistoryBtn")
+      .getElementById(
+        "walletHistoryBtn"
+      )
       .addEventListener(
         "click",
         () => {
+
           window.location.href =
             "/transactions.html";
         }
@@ -2049,31 +2570,46 @@
 
 
     document
-      .getElementById("refreshOrdersBtn")
+      .getElementById(
+        "refreshOrdersBtn"
+      )
       .addEventListener(
         "click",
         async () => {
 
           clearMessage();
 
-          await Promise.all([
-            loadWallet(),
-            loadOrders()
-          ]);
 
+          try {
+
+            await Promise.all([
+              loadWallet(),
+              loadOrders()
+            ]);
+
+          } catch (error) {
+
+            console.error(
+              error
+            );
+          }
         }
       );
 
 
     /* ============================================================
-       REALTIME AUTH CHANGE
+       AUTH STATE
        ============================================================ */
 
     supabaseClient.auth.onAuthStateChange(
-      async (event, session) => {
+      async (
+        event,
+        session
+      ) => {
 
         if (
-          event === "SIGNED_OUT"
+          event ===
+          "SIGNED_OUT"
         ) {
 
           window.location.href =
@@ -2081,6 +2617,7 @@
 
           return;
         }
+
 
         if (session) {
 
@@ -2105,15 +2642,16 @@
         const loggedIn =
           await loadSession();
 
+
         if (!loggedIn) {
           return;
         }
 
 
         /*
-          Load wallet, services and orders
-          at the same time.
-        */
+         * Load all three from the
+         * correct endpoints.
+         */
 
         await Promise.all([
           loadWallet(),
@@ -2122,22 +2660,13 @@
         ]);
 
 
-        /*
-          Set default markup display.
-          Backend remains the authority when
-          calculating the actual purchase.
-        */
-
-        markupValueEl.textContent =
-          currentMarkup + "%";
-
-
       } catch (error) {
 
         console.error(
           "Boosting initialization error:",
           error
         );
+
 
         showMessage(
           error.message ||
