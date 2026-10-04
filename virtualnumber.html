@@ -509,12 +509,14 @@ input:focus{
   font-weight:bold;
   color:#f4f4f4;
   letter-spacing:.2px;
+  word-break:break-word;
 }
 
 .order-meta{
   font-size:13px;
   color:#858585;
   margin-top:5px;
+  word-break:break-word;
 }
 
 .status{
@@ -1810,7 +1812,7 @@ function showPortalNotice(){
 
 
 /* ============================================================
-   ONLY FIXED: COUNTRY NAME
+   COUNTRY
 ============================================================ */
 
 function countryName(country){
@@ -1858,10 +1860,6 @@ function countryName(country){
     }
 
   }
-
-  /*
-    Do NOT display country IDs here.
-  */
 
   return "";
 
@@ -2204,7 +2202,7 @@ async function selectCountry(country){
 
 
 /* ============================================================
-   ONLY FIXED: SERVICE NAME
+   SERVICE
 ============================================================ */
 
 function serviceCode(service){
@@ -2279,11 +2277,6 @@ function serviceName(service){
     }
 
   }
-
-  /*
-    IMPORTANT:
-    Never show the service ID/code as the service name.
-  */
 
   return "";
 
@@ -2563,7 +2556,7 @@ async function selectService(service){
 
 
 /* ============================================================
-   ONLY DISPLAY FIX: SERVER LABEL
+   SERVER
 ============================================================ */
 
 function serverId(server){
@@ -3051,8 +3044,9 @@ async function buyNumber(){
     }
 
     message.textContent =
-      data.message ||
-      "Number successfully purchased.";
+      typeof data.message === "string"
+        ? data.message
+        : "Number successfully purchased.";
 
     showPortalNotice();
 
@@ -3068,6 +3062,380 @@ async function buyNumber(){
     button.disabled = false;
 
   }
+
+}
+
+
+/* ============================================================
+   ORDER NORMALIZATION FIX
+============================================================ */
+
+/*
+  Grizzly V2 returns:
+
+  {
+    activationId: ...,
+    phoneNumber: ...
+  }
+
+  and getStatusV2 returns:
+
+  {
+    sms: {
+      code: ...,
+      text: ...
+    }
+  }
+
+  The order endpoint may wrap these values in different
+  objects. These helpers safely find the values without
+  allowing an object itself to become "[object Object]".
+*/
+
+function firstOrderValue(
+  sources,
+  keys
+){
+
+  for(const source of sources){
+
+    if(!source || typeof source !== "object"){
+      continue;
+    }
+
+    for(const key of keys){
+
+      const value =
+        source?.[key];
+
+      if(
+        value !== null &&
+        value !== undefined &&
+        typeof value !== "object" &&
+        String(value).trim() !== ""
+      ){
+
+        return String(value).trim();
+
+      }
+
+    }
+
+  }
+
+  return "";
+
+}
+
+function collectOrderSources(
+  order
+){
+
+  const sources = [];
+
+  function add(value){
+
+    if(
+      value &&
+      typeof value === "object" &&
+      !sources.includes(value)
+    ){
+
+      sources.push(value);
+
+    }
+
+  }
+
+  add(order);
+
+  add(order?.data);
+  add(order?.result);
+  add(order?.response);
+  add(order?.provider_response);
+  add(order?.providerResponse);
+  add(order?.provider_result);
+  add(order?.providerResult);
+  add(order?.grizzly);
+  add(order?.grizzly_response);
+  add(order?.grizzlyResponse);
+  add(order?.activation);
+  add(order?.number_data);
+  add(order?.numberData);
+
+  const nested = [
+    order?.data,
+    order?.result,
+    order?.response,
+    order?.provider_response,
+    order?.providerResponse,
+    order?.provider_result,
+    order?.providerResult,
+    order?.grizzly,
+    order?.grizzly_response,
+    order?.grizzlyResponse,
+    order?.activation,
+    order?.number_data,
+    order?.numberData
+  ];
+
+  nested.forEach(
+    value => {
+
+      if(value && typeof value === "object"){
+
+        add(value.data);
+        add(value.result);
+        add(value.response);
+        add(value.activation);
+        add(value.number);
+        add(value.number_data);
+        add(value.numberData);
+
+      }
+
+    }
+  );
+
+  return sources;
+
+}
+
+function orderNumber(
+  order
+){
+
+  const sources =
+    collectOrderSources(order);
+
+  const number =
+    firstOrderValue(
+      sources,
+      [
+        "number",
+        "phoneNumber",
+        "phone_number",
+        "phone",
+        "phoneNumberFormatted",
+        "phone_number_formatted",
+        "activationNumber",
+        "activation_number",
+        "mobile",
+        "mobile_number",
+        "msisdn"
+      ]
+    );
+
+  if(number){
+    return number;
+  }
+
+  return "";
+
+}
+
+function orderActivationId(
+  order
+){
+
+  const sources =
+    collectOrderSources(order);
+
+  return firstOrderValue(
+    sources,
+    [
+      "activationId",
+      "activation_id",
+      "activationID",
+      "activation",
+      "provider_activation_id",
+      "providerActivationId"
+    ]
+  );
+
+}
+
+function orderOtp(
+  order
+){
+
+  const sources =
+    collectOrderSources(order);
+
+  const directCode =
+    firstOrderValue(
+      sources,
+      [
+        "otp_code",
+        "otpCode",
+        "code",
+        "sms_code",
+        "smsCode"
+      ]
+    );
+
+  if(directCode){
+    return directCode;
+  }
+
+  for(const source of sources){
+
+    const sms =
+      source?.sms;
+
+    if(
+      sms &&
+      typeof sms === "object"
+    ){
+
+      const code =
+        firstOrderValue(
+          [sms],
+          [
+            "code",
+            "otp_code",
+            "otpCode",
+            "sms_code",
+            "smsCode"
+          ]
+        );
+
+      if(code){
+        return code;
+      }
+
+    }
+
+  }
+
+  return "";
+
+}
+
+function orderSmsText(
+  order
+){
+
+  const sources =
+    collectOrderSources(order);
+
+  const directText =
+    firstOrderValue(
+      sources,
+      [
+        "sms_text",
+        "smsText",
+        "text",
+        "message"
+      ]
+    );
+
+  if(directText){
+    return directText;
+  }
+
+  for(const source of sources){
+
+    const sms =
+      source?.sms;
+
+    if(
+      sms &&
+      typeof sms === "object"
+    ){
+
+      const text =
+        firstOrderValue(
+          [sms],
+          [
+            "text",
+            "message"
+          ]
+        );
+
+      if(text){
+        return text;
+      }
+
+    }
+
+  }
+
+  return "";
+
+}
+
+function orderStatus(
+  order
+){
+
+  const sources =
+    collectOrderSources(order);
+
+  const direct =
+    firstOrderValue(
+      sources,
+      [
+        "status",
+        "state",
+        "activation_status",
+        "activationStatus"
+      ]
+    );
+
+  if(direct){
+    return direct.toLowerCase();
+  }
+
+  if(orderOtp(order)){
+    return "received";
+  }
+
+  return "waiting";
+
+}
+
+function normalizeOrder(
+  order,
+  providerName
+){
+
+  const normalized = {
+    ...(
+      order &&
+      typeof order === "object"
+        ? order
+        : {}
+    )
+  };
+
+  normalized.provider =
+    order?.provider ||
+    providerName;
+
+  normalized.number =
+    orderNumber(order) ||
+    order?.number ||
+    "";
+
+  normalized.activation_id =
+    orderActivationId(order) ||
+    order?.activation_id ||
+    order?.activationId ||
+    "";
+
+  normalized.otp_code =
+    orderOtp(order) ||
+    "";
+
+  normalized.sms_text =
+    orderSmsText(order) ||
+    "";
+
+  normalized.status =
+    orderStatus(order);
+
+  return normalized;
 
 }
 
@@ -3089,7 +3457,8 @@ function statusLabel(status){
       String(status || "")
         .toLowerCase()
     ] ||
-    status
+    status ||
+    "Pending"
   );
 
 }
@@ -3122,11 +3491,73 @@ function orderProvider(order){
 
 function orderUniqueKey(order){
 
+  const providerName =
+    orderProvider(order);
+
+  const databaseId =
+    order?.id ??
+    order?.order_id ??
+    order?.orderId ??
+    "";
+
+  const activationId =
+    order?.activation_id ||
+    order?.activationId ||
+    orderActivationId(order) ||
+    "";
+
+  if(databaseId !== ""){
+    return (
+      providerName +
+      ":db:" +
+      String(databaseId)
+    );
+  }
+
+  if(activationId !== ""){
+    return (
+      providerName +
+      ":activation:" +
+      String(activationId)
+    );
+  }
+
   return (
-    orderProvider(order) +
-    ":" +
-    String(order?.id ?? "")
+    providerName +
+    ":unknown:" +
+    JSON.stringify(order || {})
   );
+
+}
+
+function orderActionId(
+  order
+){
+
+  const databaseId =
+    order?.id ??
+    order?.order_id ??
+    order?.orderId ??
+    null;
+
+  if(
+    databaseId !== null &&
+    databaseId !== undefined &&
+    String(databaseId).trim() !== ""
+  ){
+
+    return String(databaseId);
+
+  }
+
+  const activationId =
+    order?.activation_id ||
+    order?.activationId ||
+    orderActivationId(order);
+
+  return activationId
+    ? String(activationId)
+    : "";
 
 }
 
@@ -3135,24 +3566,61 @@ function renderOrder(
   showActions = true
 ){
 
+  const normalized =
+    normalizeOrder(
+      order,
+      orderProvider(order)
+    );
+
   const status =
     String(
-      order.status || ""
+      normalized.status || ""
     ).toLowerCase();
 
   const number =
-    order.number ||
+    normalized.number ||
     "Number unavailable";
+
+  const activationId =
+    normalized.activation_id ||
+    "";
+
+  const otp =
+    normalized.otp_code ||
+    "";
+
+  const smsText =
+    normalized.sms_text ||
+    "";
 
   let otpHTML = "";
 
-  if(order.otp_code){
+  if(otp){
 
     otpHTML = `
       <div class="otp">
-        OTP: ${escapeHTML(
-          order.otp_code
-        )}
+        OTP: ${escapeHTML(otp)}
+      </div>
+    `;
+
+  }else if(smsText){
+
+    otpHTML = `
+      <div class="otp">
+        SMS: ${escapeHTML(smsText)}
+      </div>
+    `;
+
+  }
+
+  let activationHTML = "";
+
+  if(activationId){
+
+    activationHTML = `
+      <div class="order-meta">
+        Activation ID:
+        ${escapeHTML(activationId)}
       </div>
     `;
 
@@ -3160,12 +3628,16 @@ function renderOrder(
 
   let actionsHTML = "";
 
+  const actionId =
+    orderActionId(normalized);
+
   if(
     showActions &&
     (
       status === "waiting" ||
       status === "pending"
-    )
+    ) &&
+    actionId
   ){
 
     actionsHTML = `
@@ -3173,20 +3645,25 @@ function renderOrder(
 
         <button
           class="small-button check"
-          onclick="checkOrder(
-            ${Number(order.id)},
-            '${orderProvider(order)}'
-          )"
+          data-action="check"
+          data-order-id="${escapeHTML(actionId)}"
+          data-provider="${escapeHTML(
+            orderProvider(normalized)
+          )}"
         >
           Check Code / Get Code
         </button>
 
         <button
           class="small-button cancel"
-          onclick="cancelOrder(
-            ${Number(order.id)},
-            '${orderProvider(order)}'
-          )"
+          data-action="cancel"
+          data-order-id="${escapeHTML(actionId)}"
+          data-activation-id="${escapeHTML(
+            activationId
+          )}"
+          data-provider="${escapeHTML(
+            orderProvider(normalized)
+          )}"
         >
           Cancel
         </button>
@@ -3197,29 +3674,36 @@ function renderOrder(
   }
 
   return `
-    <div class="order">
+    <div
+      class="order"
+      data-order-key="${escapeHTML(
+        orderUniqueKey(normalized)
+      )}"
+    >
 
       <div class="order-number">
         ${escapeHTML(number)}
       </div>
 
+      ${activationHTML}
+
       <div class="order-meta">
         ${escapeHTML(
-          order.service_name ||
-          order.service_code ||
+          normalized.service_name ||
+          normalized.service_code ||
           ""
         )}
         ·
         ${escapeHTML(
-          order.country_name ||
-          order.country_key ||
+          normalized.country_name ||
+          normalized.country_key ||
           ""
         )}
       </div>
 
       <div class="order-meta">
         ${naira(
-          order.customer_price_ngn
+          normalized.customer_price_ngn
         )}
       </div>
 
@@ -3239,6 +3723,58 @@ function renderOrder(
   `;
 
 }
+
+function attachOrderActions(){
+
+  document
+    .querySelectorAll(
+      '[data-action="check"]'
+    )
+    .forEach(
+      button => {
+
+        button.onclick = () => {
+
+          checkOrder(
+            button.dataset.orderId,
+            button.dataset.provider,
+            button.closest(".order")
+              ?.dataset.orderKey || ""
+          );
+
+        };
+
+      }
+    );
+
+  document
+    .querySelectorAll(
+      '[data-action="cancel"]'
+    )
+    .forEach(
+      button => {
+
+        button.onclick = () => {
+
+          cancelOrder(
+            button.dataset.orderId,
+            button.dataset.provider,
+            button.dataset.activationId || "",
+            button.closest(".order")
+              ?.dataset.orderKey || ""
+          );
+
+        };
+
+      }
+    );
+
+}
+
+
+/* ============================================================
+   ORDERS FIX
+============================================================ */
 
 async function loadAllOrders(){
 
@@ -3278,12 +3814,11 @@ async function loadAllOrders(){
       )
         ? results[0].value.orders
             .map(
-              order => ({
-                ...order,
-                provider:
-                  order.provider ||
+              order =>
+                normalizeOrder(
+                  order,
                   "grizzly"
-              })
+                )
             )
         : [];
 
@@ -3294,12 +3829,11 @@ async function loadAllOrders(){
       )
         ? results[1].value.orders
             .map(
-              order => ({
-                ...order,
-                provider:
-                  order.provider ||
+              order =>
+                normalizeOrder(
+                  order,
                   "smsbower"
-              })
+                )
             )
         : [];
 
@@ -3345,15 +3879,44 @@ async function loadAllOrders(){
 
     orders = combined;
 
+    /*
+      Keep every active/pending order available.
+      The newest one is the Current / New Order.
+      Older active orders remain in Previous Orders
+      and retain their own status/details.
+    */
+
+    const activeOrders =
+      orders.filter(
+        order => {
+
+          const status =
+            String(
+              order.status || ""
+            ).toLowerCase();
+
+          return (
+            status === "waiting" ||
+            status === "pending" ||
+            status === "received"
+          );
+
+        }
+      );
+
     const active =
-      orders.length > 0
-        ? orders[0]
-        : null;
+      activeOrders.length > 0
+        ? activeOrders[0]
+        : (
+            orders.length > 0
+              ? orders[0]
+              : null
+          );
 
     if(active){
 
       currentOrderId =
-        Number(active.id);
+        orderActionId(active) || null;
 
       currentOrderProvider =
         orderProvider(active);
@@ -3382,6 +3945,12 @@ async function loadAllOrders(){
         ? orderUniqueKey(active)
         : null;
 
+    /*
+      Do NOT remove the other Grizzly purchases.
+      This is what allows both previously purchased
+      numbers to remain visible.
+    */
+
     const previousOrders =
       orders.filter(
         order =>
@@ -3405,12 +3974,14 @@ async function loadAllOrders(){
             order =>
               renderOrder(
                 order,
-                false
+                true
               )
           )
           .join("");
 
     }
+
+    attachOrderActions();
 
   }catch(error){
 
@@ -3432,13 +4003,93 @@ async function loadAllOrders(){
 
 async function checkOrder(
   orderId,
-  providerName
+  providerName,
+  orderKey = ""
 ){
 
   const current =
     document.getElementById(
       "currentOrder"
     );
+
+  const target =
+    orders.find(
+      order =>
+        (
+          orderKey &&
+          orderUniqueKey(order) ===
+          orderKey
+        ) ||
+        (
+          !orderKey &&
+          String(
+            orderActionId(order)
+          ) ===
+          String(orderId) &&
+          orderProvider(order) ===
+          providerName
+        )
+    );
+
+  if(target){
+
+    const container =
+      document.querySelector(
+        `[data-order-key="${CSS.escape(
+          orderUniqueKey(target)
+        )}"]`
+      );
+
+    if(container){
+
+      const oldHTML =
+        container.innerHTML;
+
+      container.innerHTML = `
+        <div class="loading">
+          Checking for SMS code...
+        </div>
+      `;
+
+      try{
+
+        await api(
+          "check",
+          {
+            order_id:
+              orderId,
+
+            activation_id:
+              target.activation_id ||
+              orderActivationId(target) ||
+              null
+          },
+          providerName
+        );
+
+        await loadAllOrders();
+
+        return;
+
+      }catch(error){
+
+        container.innerHTML =
+          oldHTML;
+
+        alert(
+          "Unable to check code: " +
+          error.message
+        );
+
+        attachOrderActions();
+
+        return;
+
+      }
+
+    }
+
+  }
 
   current.innerHTML = `
     <div class="loading">
@@ -3473,7 +4124,9 @@ async function checkOrder(
 
 async function cancelOrder(
   orderId,
-  providerName
+  providerName,
+  activationId = "",
+  orderKey = ""
 ){
 
   if(
@@ -3486,16 +4139,68 @@ async function cancelOrder(
 
   }
 
+  const target =
+    orders.find(
+      order =>
+        (
+          orderKey &&
+          orderUniqueKey(order) ===
+          orderKey
+        ) ||
+        (
+          !orderKey &&
+          String(
+            orderActionId(order)
+          ) ===
+          String(orderId) &&
+          orderProvider(order) ===
+          providerName
+        )
+    );
+
+  let container = null;
+
+  if(target){
+
+    try{
+
+      container =
+        document.querySelector(
+          `[data-order-key="${CSS.escape(
+            orderUniqueKey(target)
+          )}"]`
+        );
+
+    }catch{
+
+      container = null;
+
+    }
+
+  }
+
   const current =
     document.getElementById(
       "currentOrder"
     );
 
-  current.innerHTML = `
-    <div class="loading">
-      Cancelling number...
-    </div>
-  `;
+  if(container){
+
+    container.innerHTML = `
+      <div class="loading">
+        Cancelling number...
+      </div>
+    `;
+
+  }else{
+
+    current.innerHTML = `
+      <div class="loading">
+        Cancelling number...
+      </div>
+    `;
+
+  }
 
   try{
 
@@ -3504,14 +4209,21 @@ async function cancelOrder(
         "cancel",
         {
           order_id:
-            orderId
+            orderId,
+
+          activation_id:
+            activationId ||
+            target?.activation_id ||
+            orderActivationId(target) ||
+            null
         },
         providerName
       );
 
     alert(
-      data.message ||
-      "Number cancelled."
+      typeof data.message === "string"
+        ? data.message
+        : "Number cancelled."
     );
 
     await loadAllOrders();
@@ -3594,73 +4306,4 @@ async function init(){
     .getElementById(
       "verificationPopup"
     )
-    .style.display = "flex";
-
-  await loadWatermark();
-  await loadCountries();
-  await loadWallet();
-  await loadAllOrders();
-
-}
-
-setInterval(
-  async () => {
-
-    if(
-      currentOrderId &&
-      currentOrderProvider
-    ){
-
-      try{
-
-        const current =
-          orders.find(
-            order =>
-              orderUniqueKey(order) ===
-              (
-                currentOrderProvider +
-                ":" +
-                String(currentOrderId)
-              )
-          );
-
-        const status =
-          String(
-            current?.status || ""
-          ).toLowerCase();
-
-        if(
-          status === "waiting" ||
-          status === "pending" ||
-          status === "received"
-        ){
-
-          await api(
-            "check",
-            {
-              order_id:
-                currentOrderId
-            },
-            currentOrderProvider
-          );
-
-          await loadAllOrders();
-
-        }
-
-      }catch{
-
-      }
-
-    }
-
-  },
-  15000
-);
-
-init();
-
-</script>
-
-</body>
-</html>
+    .style.display =
