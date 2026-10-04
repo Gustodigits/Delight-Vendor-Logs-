@@ -1521,7 +1521,7 @@ async function getAuthToken(){
       data: refreshed,
       error: refreshError
     } =
-      await supabaseClient.auth.refreshSession();
+    await supabaseClient.auth.refreshSession();
 
     if(
       refreshError ||
@@ -3488,27 +3488,33 @@ async function buyNumber(){
       currentOrderProvider =
         provider;
 
-      const current =
-        document.getElementById(
-          "currentOrder"
-        );
-
-      current.innerHTML =
-        renderOrder(
-          immediateOrder,
-          true
-        );
-
-      orders = [
-        immediateOrder,
-        ...orders.filter(
+      const existingIndex =
+        orders.findIndex(
           existing =>
-            !ordersRepresentSameOrder(
+            ordersRepresentSameOrder(
               existing,
               immediateOrder
             )
-        )
-      ];
+        );
+
+      if(existingIndex === -1){
+
+        orders = [
+          immediateOrder,
+          ...orders
+        ];
+
+      }else{
+
+        orders[existingIndex] =
+          mergeOrderRecords(
+            orders[existingIndex],
+            immediateOrder
+          );
+
+      }
+
+      renderOrderSections();
 
       attachOrderActions();
 
@@ -3516,6 +3522,11 @@ async function buyNumber(){
 
     showPortalNotice();
 
+    /*
+      Reload the provider/database records, but the
+      new loadAllOrders() preserves the local order
+      state and any OTP/status already received.
+    */
     await loadAllOrders();
     await loadWallet();
     await loadServers();
@@ -3820,7 +3831,29 @@ function orderStatus(
     );
 
   if(direct){
-    return direct.toLowerCase();
+
+    const clean =
+      direct.toLowerCase();
+
+    /*
+      If an OTP exists, the order must never remain
+      visually pending even if an older database copy
+      still says waiting/pending.
+    */
+    if(
+      orderOtp(order) &&
+      (
+        clean === "waiting" ||
+        clean === "pending"
+      )
+    ){
+
+      return "received";
+
+    }
+
+    return clean;
+
   }
 
   if(orderOtp(order)){
@@ -3857,16 +3890,37 @@ function normalizeOrder(
     orderActivationId(order) ||
     "";
 
+  normalized.activationId =
+    normalized.activation_id;
+
   normalized.otp_code =
     orderOtp(order) ||
     "";
+
+  normalized.sms_code =
+    normalized.otp_code;
+
+  normalized.code =
+    normalized.otp_code;
 
   normalized.sms_text =
     orderSmsText(order) ||
     "";
 
   normalized.status =
-    orderStatus(order);
+    orderStatus(normalized);
+
+  /*
+    An order that already has an OTP is received,
+    regardless of whether the old database copy
+    still reports waiting.
+  */
+  if(normalized.otp_code){
+
+    normalized.status =
+      "received";
+
+  }
 
   return normalized;
 
@@ -3932,32 +3986,55 @@ function orderUniqueKey(order){
   const providerName =
     orderProvider(order);
 
-  const databaseId =
-    order?.id ??
-    order?.order_id ??
-    order?.orderId ??
-    "";
-
   const activationId =
     order?.activation_id ||
     order?.activationId ||
     orderActivationId(order) ||
     "";
 
-  if(databaseId !== ""){
-    return (
-      providerName +
-      ":db:" +
-      String(databaseId)
-    );
-  }
-
+  /*
+    Activation ID is the strongest provider-side
+    identity for Grizzly. Use it before the local
+    database ID so two copies of the same activation
+    are always treated as one order.
+  */
   if(activationId !== ""){
+
     return (
       providerName +
       ":activation:" +
       String(activationId)
     );
+
+  }
+
+  const databaseId =
+    order?.id ??
+    order?.order_id ??
+    order?.orderId ??
+    "";
+
+  if(databaseId !== ""){
+
+    return (
+      providerName +
+      ":db:" +
+      String(databaseId)
+    );
+
+  }
+
+  const number =
+    orderNumber(order);
+
+  if(number){
+
+    return (
+      providerName +
+      ":number:" +
+      String(number)
+    );
+
   }
 
   return (
@@ -4065,9 +4142,534 @@ function ordersRepresentSameOrder(
 
 }
 
+
+/* ============================================================
+   ORDER MERGING FIX
+============================================================ */
+
+/*
+  Merge two copies of the same order.
+
+  The important rule here is:
+  if either copy already contains an OTP/status,
+  never replace that information with an older
+  pending database copy.
+*/
+function mergeOrderRecords(
+  existing,
+  incoming
+){
+
+  const oldOrder =
+    normalizeOrder(
+      existing,
+      orderProvider(existing)
+    );
+
+  const newOrder =
+    normalizeOrder(
+      incoming,
+      orderProvider(incoming)
+    );
+
+  const oldOtp =
+    orderOtp(oldOrder);
+
+  const newOtp =
+    orderOtp(newOrder);
+
+  const oldText =
+    orderSmsText(oldOrder);
+
+  const newText =
+    orderSmsText(newOrder);
+
+  const oldStatus =
+    String(
+      orderStatus(oldOrder) || ""
+    ).toLowerCase();
+
+  const newStatus =
+    String(
+      orderStatus(newOrder) || ""
+    ).toLowerCase();
+
+  const oldHasFinal =
+    !!oldOtp ||
+    [
+      "received",
+      "completed",
+      "finished",
+      "cancelled",
+      "refunded",
+      "failed"
+    ].includes(oldStatus);
+
+  const newHasFinal =
+    !!newOtp ||
+    [
+      "received",
+      "completed",
+      "finished",
+      "cancelled",
+      "refunded",
+      "failed"
+    ].includes(newStatus);
+
+  const merged = {
+    ...oldOrder,
+    ...newOrder
+  };
+
+  /*
+    Preserve the strongest identity.
+  */
+  merged.id =
+    oldOrder.id ??
+    newOrder.id ??
+    oldOrder.order_id ??
+    newOrder.order_id ??
+    "";
+
+  merged.order_id =
+    oldOrder.order_id ??
+    newOrder.order_id ??
+    oldOrder.id ??
+    newOrder.id ??
+    "";
+
+  merged.activation_id =
+    orderActivationId(oldOrder) ||
+    orderActivationId(newOrder) ||
+    "";
+
+  merged.activationId =
+    merged.activation_id;
+
+  merged.number =
+    orderNumber(oldOrder) ||
+    orderNumber(newOrder) ||
+    "";
+
+  merged.phone_number =
+    oldOrder.phone_number ||
+    newOrder.phone_number ||
+    merged.number;
+
+  merged.phoneNumber =
+    oldOrder.phoneNumber ||
+    newOrder.phoneNumber ||
+    merged.number;
+
+  /*
+    OTP always wins over a missing OTP.
+  */
+  merged.otp_code =
+    oldOtp ||
+    newOtp ||
+    "";
+
+  merged.sms_code =
+    merged.otp_code;
+
+  merged.code =
+    merged.otp_code;
+
+  /*
+    Preserve SMS text too.
+  */
+  merged.sms_text =
+    oldText ||
+    newText ||
+    "";
+
+  /*
+    If either copy has a final/received state,
+    do not allow a stale waiting/pending copy
+    to overwrite it.
+  */
+  if(oldHasFinal && !newHasFinal){
+
+    merged.status =
+      oldOtp
+        ? "received"
+        : oldStatus;
+
+  }else if(newHasFinal){
+
+    merged.status =
+      newOtp
+        ? "received"
+        : newStatus;
+
+  }else{
+
+    merged.status =
+      newStatus ||
+      oldStatus ||
+      "waiting";
+
+  }
+
+  /*
+    An OTP is always received visually.
+  */
+  if(merged.otp_code){
+
+    merged.status =
+      "received";
+
+  }
+
+  /*
+    Preserve the original purchase time where
+    available so sorting doesn't jump around.
+  */
+  merged.created_at =
+    oldOrder.created_at ||
+    newOrder.created_at ||
+    oldOrder.purchased_at ||
+    newOrder.purchased_at ||
+    new Date().toISOString();
+
+  /*
+    Fill missing metadata from either copy.
+  */
+  merged.country =
+    oldOrder.country ||
+    newOrder.country ||
+    "";
+
+  merged.country_id =
+    oldOrder.country_id ||
+    newOrder.country_id ||
+    "";
+
+  merged.country_name =
+    oldOrder.country_name ||
+    newOrder.country_name ||
+    "";
+
+  merged.service =
+    oldOrder.service ||
+    newOrder.service ||
+    "";
+
+  merged.service_code =
+    oldOrder.service_code ||
+    newOrder.service_code ||
+    "";
+
+  merged.service_name =
+    oldOrder.service_name ||
+    newOrder.service_name ||
+    "";
+
+  merged.provider =
+    orderProvider(oldOrder);
+
+  merged.customer_price_ngn =
+    Number(
+      oldOrder.customer_price_ngn ||
+      newOrder.customer_price_ngn ||
+      oldOrder.price ||
+      newOrder.price ||
+      0
+    );
+
+  merged.price =
+    Number(
+      oldOrder.price ||
+      newOrder.price ||
+      oldOrder.customer_price_ngn ||
+      newOrder.customer_price_ngn ||
+      0
+    );
+
+  return normalizeOrder(
+    merged,
+    orderProvider(merged)
+  );
+
+}
+
+
+/*
+  Merge a provider status response directly into
+  the existing order.
+
+  This fixes the exact issue where Grizzly had
+  already received the SMS but the frontend called
+  loadAllOrders() and then discarded the returned OTP.
+*/
+function mergeProviderStatusIntoOrder(
+  order,
+  data
+){
+
+  if(!order){
+    return order;
+  }
+
+  const providerName =
+    orderProvider(order);
+
+  const result =
+    data &&
+    typeof data === "object"
+      ? data
+      : {};
+
+  const resultSources = [
+    result,
+    result.data,
+    result.result,
+    result.response,
+    result.provider_response,
+    result.providerResponse,
+    result.grizzly,
+    result.grizzly_response,
+    result.grizzlyResponse
+  ].filter(
+    value =>
+      value &&
+      typeof value === "object"
+  );
+
+  let otp = "";
+  let smsText = "";
+  let returnedStatus = "";
+
+  for(const source of resultSources){
+
+    const directOtp =
+      firstOrderValue(
+        [source],
+        [
+          "otp_code",
+          "otpCode",
+          "sms_code",
+          "smsCode",
+          "code"
+        ]
+      );
+
+    if(directOtp && !otp){
+      otp = directOtp;
+    }
+
+    const directText =
+      firstOrderValue(
+        [source],
+        [
+          "sms_text",
+          "smsText",
+          "text",
+          "message"
+        ]
+      );
+
+    if(directText && !smsText){
+      smsText = directText;
+    }
+
+    const directStatus =
+      firstOrderValue(
+        [source],
+        [
+          "status",
+          "state",
+          "activation_status",
+          "activationStatus"
+        ]
+      );
+
+    if(directStatus && !returnedStatus){
+
+      returnedStatus =
+        directStatus.toLowerCase();
+
+    }
+
+    const sms =
+      source?.sms;
+
+    if(
+      sms &&
+      typeof sms === "object"
+    ){
+
+      const smsCode =
+        firstOrderValue(
+          [sms],
+          [
+            "code",
+            "otp_code",
+            "otpCode",
+            "sms_code",
+            "smsCode"
+          ]
+        );
+
+      if(smsCode && !otp){
+        otp = smsCode;
+      }
+
+      const smsMessage =
+        firstOrderValue(
+          [sms],
+          [
+            "text",
+            "message"
+          ]
+        );
+
+      if(
+        smsMessage &&
+        !smsText
+      ){
+
+        smsText =
+          smsMessage;
+
+      }
+
+    }
+
+  }
+
+  const activationId =
+    firstOrderValue(
+      resultSources,
+      [
+        "activation_id",
+        "activationId",
+        "activationID",
+        "provider_activation_id",
+        "providerActivationId"
+      ]
+    );
+
+  const number =
+    firstOrderValue(
+      resultSources,
+      [
+        "phone_number",
+        "phoneNumber",
+        "number",
+        "phone",
+        "msisdn"
+      ]
+    );
+
+  const update = {
+    ...order
+  };
+
+  if(activationId){
+
+    update.activation_id =
+      activationId;
+
+    update.activationId =
+      activationId;
+
+  }
+
+  if(number){
+
+    update.number =
+      number;
+
+    update.phone_number =
+      number;
+
+    update.phoneNumber =
+      number;
+
+  }
+
+  if(otp){
+
+    update.otp_code =
+      otp;
+
+    update.sms_code =
+      otp;
+
+    update.code =
+      otp;
+
+    update.status =
+      "received";
+
+  }else if(smsText){
+
+    update.sms_text =
+      smsText;
+
+  }
+
+  if(
+    returnedStatus &&
+    !otp
+  ){
+
+    update.status =
+      returnedStatus;
+
+  }
+
+  /*
+    If the provider returned completed/received,
+    keep that status. If it returned waiting,
+    leave an existing OTP untouched.
+  */
+  if(
+    orderOtp(update)
+  ){
+
+    update.status =
+      "received";
+
+  }
+
+  update.provider =
+    providerName;
+
+  return normalizeOrder(
+    update,
+    providerName
+  );
+
+}
+
+
+/* ============================================================
+   ORDER ACTION ID
+============================================================ */
+
 function orderActionId(
   order
 ){
+
+  const activationId =
+    order?.activation_id ||
+    order?.activationId ||
+    orderActivationId(order);
+
+  /*
+    For provider status checking, the activation ID
+    is preferred because that is what identifies the
+    Grizzly activation.
+  */
+  if(activationId){
+
+    return String(
+      activationId
+    );
+
+  }
 
   const databaseId =
     order?.id ??
@@ -4085,16 +4687,14 @@ function orderActionId(
 
   }
 
-  const activationId =
-    order?.activation_id ||
-    order?.activationId ||
-    orderActivationId(order);
-
-  return activationId
-    ? String(activationId)
-    : "";
+  return "";
 
 }
+
+
+/* ============================================================
+   ORDER RENDERING
+============================================================ */
 
 function renderOrder(
   order,
@@ -4264,6 +4864,203 @@ function renderOrder(
 
 }
 
+
+/*
+  One central renderer for Current and Previous.
+
+  CURRENT:
+  - Only ONE newest active waiting/pending order.
+  - An order with an OTP is never considered current.
+
+  PREVIOUS:
+  - Everything else.
+  - The current order is explicitly excluded.
+  - Same activation/order can only exist once.
+*/
+function renderOrderSections(){
+
+  const current =
+    document.getElementById(
+      "currentOrder"
+    );
+
+  const previous =
+    document.getElementById(
+      "previousOrders"
+    );
+
+  if(!current || !previous){
+    return;
+  }
+
+  /*
+    Normalize and deduplicate the local list again
+    before rendering. This prevents the same order
+    from being rendered twice even if provider data
+    returned duplicate records.
+  */
+  const uniqueOrders = [];
+
+  for(const rawOrder of orders){
+
+    const normalized =
+      normalizeOrder(
+        rawOrder,
+        orderProvider(rawOrder)
+      );
+
+    const existingIndex =
+      uniqueOrders.findIndex(
+        existing =>
+          ordersRepresentSameOrder(
+            existing,
+            normalized
+          )
+      );
+
+    if(existingIndex === -1){
+
+      uniqueOrders.push(
+        normalized
+      );
+
+    }else{
+
+      uniqueOrders[existingIndex] =
+        mergeOrderRecords(
+          uniqueOrders[existingIndex],
+          normalized
+        );
+
+    }
+
+  }
+
+  uniqueOrders.sort(
+    (a,b) =>
+      new Date(
+        b.created_at ||
+        b.purchased_at ||
+        b.updated_at ||
+        0
+      ) -
+      new Date(
+        a.created_at ||
+        a.purchased_at ||
+        a.updated_at ||
+        0
+      )
+  );
+
+  orders =
+    uniqueOrders;
+
+  /*
+    Only waiting/pending orders WITHOUT an OTP
+    can be the active order.
+  */
+  const activeOrders =
+    orders.filter(
+      order => {
+
+        const status =
+          String(
+            orderStatus(order) || ""
+          ).toLowerCase();
+
+        const otp =
+          orderOtp(order);
+
+        return (
+          (
+            status === "waiting" ||
+            status === "pending"
+          ) &&
+          !otp
+        );
+
+      }
+    );
+
+  const active =
+    activeOrders.length > 0
+      ? activeOrders[0]
+      : null;
+
+  if(active){
+
+    currentOrderId =
+      orderActionId(active) || null;
+
+    currentOrderProvider =
+      orderProvider(active);
+
+    current.innerHTML =
+      renderOrder(
+        active,
+        true
+      );
+
+  }else{
+
+    currentOrderId = null;
+    currentOrderProvider = null;
+
+    current.innerHTML = `
+      <div class="empty">
+        No current order.
+      </div>
+    `;
+
+  }
+
+  /*
+    If there is an active order, explicitly remove
+    that exact order from Previous Orders.
+  */
+  const previousOrders =
+    active
+      ? orders.filter(
+          order =>
+            !ordersRepresentSameOrder(
+              order,
+              active
+            )
+        )
+      : orders;
+
+  if(previousOrders.length === 0){
+
+    previous.innerHTML = `
+      <div class="empty">
+        No previous orders.
+      </div>
+    `;
+
+  }else{
+
+    previous.innerHTML =
+      previousOrders
+        .map(
+          order =>
+            renderOrder(
+              order,
+              true
+            )
+        )
+        .join("");
+
+  }
+
+  attachOrderActions();
+
+}
+
+
+/* ============================================================
+   ORDER ACTIONS
+============================================================ */
+
 function attachOrderActions(){
 
   document
@@ -4314,7 +5111,7 @@ function attachOrderActions(){
 
 
 /* ============================================================
-   ORDERS FIX
+   LOAD ALL ORDERS - FIXED
 ============================================================ */
 
 async function loadAllOrders(){
@@ -4330,6 +5127,21 @@ async function loadAllOrders(){
     );
 
   try{
+
+    /*
+      IMPORTANT:
+
+      Keep the existing in-memory orders before
+      requesting fresh database/provider data.
+
+      This means an OTP returned by Grizzly during
+      a status check is not immediately lost when
+      the database still contains "waiting".
+    */
+    const previousLocalOrders =
+      Array.isArray(orders)
+        ? [...orders]
+        : [];
 
     const results =
       await Promise.allSettled([
@@ -4378,7 +5190,15 @@ async function loadAllOrders(){
             )
         : [];
 
+    /*
+      Put local orders FIRST.
+
+      That allows an already-received OTP to win
+      over a stale database copy that still says
+      waiting/pending.
+    */
     const merged = [
+      ...previousLocalOrders,
       ...grizzlyOrders,
       ...smsOrders
     ];
@@ -4388,86 +5208,40 @@ async function loadAllOrders(){
     merged.forEach(
       order => {
 
+        const normalized =
+          normalizeOrder(
+            order,
+            orderProvider(order)
+          );
+
         const existingIndex =
           uniqueOrders.findIndex(
             existing =>
               ordersRepresentSameOrder(
                 existing,
-                order
+                normalized
               )
           );
 
         if(existingIndex === -1){
 
-          uniqueOrders.push(order);
+          uniqueOrders.push(
+            normalized
+          );
 
         }else{
 
-          const existing =
-            uniqueOrders[existingIndex];
-
-          const existingActivation =
-            orderActivationId(existing);
-
-          const newActivation =
-            orderActivationId(order);
-
-          const existingNumber =
-            orderNumber(existing);
-
-          const newNumber =
-            orderNumber(order);
-
-          const existingOtp =
-            orderOtp(existing);
-
-          const newOtp =
-            orderOtp(order);
-
-          const existingText =
-            orderSmsText(existing);
-
-          const newText =
-            orderSmsText(order);
-
-          /*
-            Prefer the copy containing the newest
-            status/code/number information.
-          */
-          if(
-            (!existingActivation && newActivation) ||
-            (!existingNumber && newNumber) ||
-            (!existingOtp && newOtp) ||
-            (!existingText && newText) ||
-            (
-              new Date(
-                order.updated_at ||
-                order.created_at ||
-                order.purchased_at ||
-                0
-              ) >
-              new Date(
-                existing.updated_at ||
-                existing.created_at ||
-                existing.purchased_at ||
-                0
-              )
-            )
-          ){
-
-            uniqueOrders[existingIndex] =
-              order;
-
-          }
+          uniqueOrders[existingIndex] =
+            mergeOrderRecords(
+              uniqueOrders[existingIndex],
+              normalized
+            );
 
         }
 
       }
     );
 
-    /*
-      Always sort newest purchase first.
-    */
     uniqueOrders.sort(
       (a,b) =>
         new Date(
@@ -4488,118 +5262,40 @@ async function loadAllOrders(){
       uniqueOrders;
 
     /*
-      CURRENT ORDER:
-      Only the newest still-active/pending order
-      belongs here.
-
-      Completed/received/cancelled/refunded
-      orders go to Previous Orders.
+      Render from the merged local state instead of
+      rebuilding Current/Previous directly from the
+      raw provider responses.
     */
-    const activeOrders =
-      orders.filter(
-        order => {
-
-          const status =
-            String(
-              orderStatus(order) || ""
-            ).toLowerCase();
-
-          return (
-            status === "waiting" ||
-            status === "pending"
-          );
-
-        }
-      );
-
-    const active =
-      activeOrders.length > 0
-        ? activeOrders[0]
-        : null;
-
-    if(active){
-
-      currentOrderId =
-        orderActionId(active) || null;
-
-      currentOrderProvider =
-        orderProvider(active);
-
-      current.innerHTML =
-        renderOrder(
-          active,
-          true
-        );
-
-    }else{
-
-      currentOrderId = null;
-      currentOrderProvider = null;
-
-      current.innerHTML = `
-        <div class="empty">
-          No current order.
-        </div>
-      `;
-
-    }
-
-    /*
-      Previous Orders contains every order that is
-      NOT the one currently active.
-
-      This prevents the same pending order from
-      appearing in both sections.
-    */
-    const previousOrders =
-      active
-        ? orders.filter(
-            order =>
-              !ordersRepresentSameOrder(
-                order,
-                active
-              )
-          )
-        : orders;
-
-    if(previousOrders.length === 0){
-
-      previous.innerHTML = `
-        <div class="empty">
-          No previous orders.
-        </div>
-      `;
-
-    }else{
-
-      previous.innerHTML =
-        previousOrders
-          .map(
-            order =>
-              renderOrder(
-                order,
-                true
-              )
-          )
-          .join("");
-
-    }
-
-    attachOrderActions();
+    renderOrderSections();
 
   }catch(error){
 
-    current.innerHTML = `
-      <div class="empty">
-        ${escapeHTML(error.message)}
-      </div>
-    `;
+    /*
+      If loading fails, don't destroy a valid local
+      order/OTP that is already on screen.
+    */
+    if(
+      Array.isArray(orders) &&
+      orders.length > 0
+    ){
 
-    previous.innerHTML = `
-      <div class="empty">
-        Unable to load orders.
-      </div>
-    `;
+      renderOrderSections();
+
+    }else{
+
+      current.innerHTML = `
+        <div class="empty">
+          ${escapeHTML(error.message)}
+        </div>
+      `;
+
+      previous.innerHTML = `
+        <div class="empty">
+          Unable to load orders.
+        </div>
+      `;
+
+    }
 
   }
 
@@ -4669,6 +5365,11 @@ async function checkProviderStatus(
 
 }
 
+
+/* ============================================================
+   CHECK ONE ORDER - FIXED
+============================================================ */
+
 async function checkOrder(
   orderId,
   providerName,
@@ -4676,27 +5377,13 @@ async function checkOrder(
   activationId = ""
 ){
 
-  const current =
-    document.getElementById(
-      "currentOrder"
-    );
-
-  const target =
-    orders.find(
+  const targetIndex =
+    orders.findIndex(
       order =>
         (
           orderKey &&
           orderUniqueKey(order) ===
           orderKey
-        ) ||
-        (
-          !orderKey &&
-          String(
-            orderActionId(order)
-          ) ===
-          String(orderId) &&
-          orderProvider(order) ===
-          providerName
         ) ||
         (
           activationId &&
@@ -4706,113 +5393,116 @@ async function checkOrder(
           String(activationId) &&
           orderProvider(order) ===
           providerName
+        ) ||
+        (
+          !orderKey &&
+          !activationId &&
+          String(
+            orderActionId(order)
+          ) ===
+          String(orderId) &&
+          orderProvider(order) ===
+          providerName
         )
     );
 
-  if(target){
+  if(targetIndex === -1){
 
-    let container = null;
+    alert(
+      "Order could not be found."
+    );
 
-    try{
-
-      container =
-        document.querySelector(
-          `[data-order-key="${CSS.escape(
-            orderUniqueKey(target)
-          )}"]`
-        );
-
-    }catch{
-
-      container = null;
-
-    }
-
-    if(container){
-
-      const oldHTML =
-        container.innerHTML;
-
-      container.innerHTML = `
-        <div class="loading">
-          Checking for SMS code...
-        </div>
-      `;
-
-      try{
-
-        const data =
-          await checkProviderStatus(
-            target,
-            providerName,
-            orderId
-          );
-
-        /*
-          The provider Edge Function returns the
-          actual status response. loadAllOrders()
-          then reloads the order and uses the
-          saved/provider-returned code.
-        */
-        console.log(
-          "Provider status:",
-          data
-        );
-
-        await loadAllOrders();
-
-        return;
-
-      }catch(error){
-
-        container.innerHTML =
-          oldHTML;
-
-        alert(
-          "Unable to check code: " +
-          error.message
-        );
-
-        attachOrderActions();
-
-        return;
-
-      }
-
-    }
+    return;
 
   }
 
-  current.innerHTML = `
-    <div class="loading">
-      Checking for SMS code...
-    </div>
-  `;
+  const target =
+    orders[targetIndex];
+
+  let container = null;
 
   try{
 
-    const targetFallback = {
-      id:orderId,
-      order_id:orderId,
-      activation_id:activationId,
-      provider:providerName
-    };
+    container =
+      document.querySelector(
+        `[data-order-key="${CSS.escape(
+          orderUniqueKey(target)
+        )}"]`
+      );
 
-    await checkProviderStatus(
-      targetFallback,
-      providerName,
-      orderId
+  }catch{
+
+    container = null;
+
+  }
+
+  let oldHTML = "";
+
+  if(container){
+
+    oldHTML =
+      container.innerHTML;
+
+    container.innerHTML = `
+      <div class="loading">
+        Checking for SMS code...
+      </div>
+    `;
+
+  }
+
+  try{
+
+    const data =
+      await checkProviderStatus(
+        target,
+        providerName,
+        orderId
+      );
+
+    console.log(
+      "Provider status:",
+      data
     );
 
-    await loadAllOrders();
+    /*
+      THIS IS THE MAIN FIX.
+
+      Previously the response was received but then
+      discarded.
+
+      Now the returned OTP/status is merged directly
+      into the same existing order.
+    */
+    orders[targetIndex] =
+      mergeProviderStatusIntoOrder(
+        target,
+        data
+      );
+
+    /*
+      Re-render from the local merged state.
+
+      Do NOT immediately replace it with stale
+      database data.
+    */
+    renderOrderSections();
 
   }catch(error){
 
-    current.innerHTML = `
-      <div class="empty">
-        ${escapeHTML(error.message)}
-      </div>
-    `;
+    if(container){
+
+      container.innerHTML =
+        oldHTML;
+
+    }
+
+    alert(
+      "Unable to check code: " +
+      error.message
+    );
+
+    attachOrderActions();
 
   }
 
@@ -4911,8 +5601,8 @@ async function cancelOrder(
 
   }
 
-  const target =
-    orders.find(
+  const targetIndex =
+    orders.findIndex(
       order =>
         (
           orderKey &&
@@ -4938,6 +5628,11 @@ async function cancelOrder(
           providerName
         )
     );
+
+  const target =
+    targetIndex >= 0
+      ? orders[targetIndex]
+      : null;
 
   let container = null;
 
@@ -5024,11 +5719,30 @@ async function cancelOrder(
         providerName
       );
 
+    /*
+      Update the same local order immediately so
+      it doesn't briefly appear as pending/current.
+    */
+    if(targetIndex >= 0){
+
+      orders[targetIndex] =
+        normalizeOrder(
+          {
+            ...orders[targetIndex],
+            status:"cancelled"
+          },
+          providerName
+        );
+
+    }
+
     alert(
       typeof data.message === "string"
         ? data.message
         : "Number cancelled."
     );
+
+    renderOrderSections();
 
     await loadAllOrders();
     await loadWallet();
@@ -5040,7 +5754,7 @@ async function cancelOrder(
       error.message
     );
 
-    await loadAllOrders();
+    renderOrderSections();
 
   }
 
@@ -5090,17 +5804,19 @@ async function loadWallet(){
 
 }
 
+
+/* ============================================================
+   AUTOMATIC PENDING STATUS REFRESH - FIXED
+============================================================ */
+
 async function refreshPendingOrderStatuses(){
 
   /*
     Check ALL pending/waiting orders.
 
-    This is important for an older purchase that
-    already has an SMS on Grizzly. Previously only
-    currentOrderId was checked, so older pending
-    activations could remain stuck.
+    An order with an OTP is NOT checked again because
+    it has already received its code.
   */
-
   const pendingOrders =
     orders.filter(
       order => {
@@ -5110,9 +5826,15 @@ async function refreshPendingOrderStatuses(){
             orderStatus(order) || ""
           ).toLowerCase();
 
+        const otp =
+          orderOtp(order);
+
         return (
-          status === "waiting" ||
-          status === "pending"
+          (
+            status === "waiting" ||
+            status === "pending"
+          ) &&
+          !otp
         );
 
       }
@@ -5138,9 +5860,6 @@ async function refreshPendingOrderStatuses(){
       const orderId =
         orderActionId(order);
 
-      const activationId =
-        orderActivationId(order);
-
       const data =
         await checkProviderStatus(
           order,
@@ -5149,19 +5868,63 @@ async function refreshPendingOrderStatuses(){
         );
 
       /*
-        We don't need to create another order here.
-        The existing order is reloaded from the
-        database/provider after the status request.
+        Find the SAME order again because the array
+        can contain merged copies.
       */
+      const index =
+        orders.findIndex(
+          existing =>
+            ordersRepresentSameOrder(
+              existing,
+              order
+            )
+        );
+
+      if(index === -1){
+        continue;
+      }
+
+      const beforeOtp =
+        orderOtp(
+          orders[index]
+        );
+
+      const beforeStatus =
+        String(
+          orderStatus(
+            orders[index]
+          ) || ""
+        ).toLowerCase();
+
+      /*
+        Merge the provider response into the existing
+        order instead of throwing the response away.
+      */
+      orders[index] =
+        mergeProviderStatusIntoOrder(
+          orders[index],
+          data
+        );
+
+      const afterOtp =
+        orderOtp(
+          orders[index]
+        );
+
+      const afterStatus =
+        String(
+          orderStatus(
+            orders[index]
+          ) || ""
+        ).toLowerCase();
+
       if(
-        data &&
-        (
-          data.otp_code ||
-          data.sms_code ||
-          data.code ||
-          data.status === "received" ||
-          data.status === "completed"
-        )
+        beforeOtp !== afterOtp ||
+        beforeStatus !== afterStatus ||
+        afterOtp ||
+        afterStatus === "received" ||
+        afterStatus === "completed" ||
+        afterStatus === "cancelled"
       ){
 
         changed = true;
@@ -5180,18 +5943,25 @@ async function refreshPendingOrderStatuses(){
   }
 
   /*
-    Reload after checking all pending orders.
-    This moves completed orders to Previous Orders
-    and leaves only the newest pending order in
-    Current / New Order.
-  */
-  if(changed || pendingOrders.length > 0){
+    IMPORTANT:
+    Render the local merged orders directly.
 
-    await loadAllOrders();
+    We intentionally do NOT call loadAllOrders()
+    here because that could replace the freshly
+    retrieved OTP with an older database status.
+  */
+  if(changed){
+
+    renderOrderSections();
 
   }
 
 }
+
+
+/* ============================================================
+   INIT
+============================================================ */
 
 async function init(){
 
@@ -5211,8 +5981,7 @@ async function init(){
 
   /*
     Verification popup opens when the page
-    first loads, but it can now always be
-    closed permanently for that page session.
+    first loads.
   */
   forceOpenPopup(
     "verificationPopup"
@@ -5225,9 +5994,9 @@ async function init(){
 
   /*
     Immediately check existing pending orders
-    after they have been loaded. This is what
-    allows an already-purchased Grizzly number
-    to retrieve an SMS that has already arrived.
+    after they have been loaded. This allows an
+    already-purchased Grizzly number to retrieve
+    an SMS that has already arrived.
   */
   await refreshPendingOrderStatuses();
 
