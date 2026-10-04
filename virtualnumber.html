@@ -1114,25 +1114,15 @@ class="message"
 
 </section>
 
-<section class="card">
-
-<h2>Current / New Order</h2>
-
-<div id="currentOrder">
-
-<div class="empty">
-No current order.
-</div>
-
-</div>
-
-</section>
+<!-- =========================
+     ONE UNIFIED ORDERS SECTION
+========================= -->
 
 <section class="card">
 
-<h2>Previous Orders</h2>
+<h2>Orders</h2>
 
-<div id="previousOrders">
+<div id="ordersList">
 
 <div class="loading">
 Loading orders...
@@ -3976,19 +3966,6 @@ function orderProvider(order){
    GRIZZLY-ONLY ORDER IDENTITY FIX
 ============================================================ */
 
-/*
-  Grizzly numbers can sometimes arrive in different
-  formats, for example:
-
-  18127761715
-  +18127761715
-  +1 812 776 1715
-
-  They are the same number.
-
-  This normalization is used ONLY for Grizzly
-  deduplication. SMSBower does not use it.
-*/
 function grizzlyCanonicalNumber(
   order
 ){
@@ -4006,19 +3983,6 @@ function grizzlyCanonicalNumber(
 
 }
 
-
-/*
-  Grizzly activation IDs are normalized to a
-  simple string so numeric/string copies cannot
-  become separate orders.
-
-  Example:
-
-  636962620
-  "636962620"
-
-  Both become the same identity.
-*/
 function grizzlyCanonicalActivation(
   order
 ){
@@ -4036,28 +4000,6 @@ function grizzlyCanonicalActivation(
 
 }
 
-
-/*
-  IMPORTANT:
-
-  This function is ONLY used when the order provider
-  is Grizzly.
-
-  Rules:
-
-  1. Same activation ID = same order.
-  2. If one copy has activation ID and the other
-     doesn't, compare their number.
-  3. If both have different activation IDs,
-     they remain separate.
-  4. If activation ID is unavailable, same normalized
-     phone number = same order.
-
-  This stops one Grizzly purchase from appearing
-  twice even when one record came from the immediate
-  purchase response and another came from the
-  provider/database response.
-*/
 function grizzlyOrdersRepresentSameOrder(
   first,
   second
@@ -4114,13 +4056,6 @@ function grizzlyOrdersRepresentSameOrder(
 
 }
 
-
-/*
-  Grizzly-only unique key.
-
-  This is deliberately separate from the existing
-  SMSBower identity function.
-*/
 function grizzlyOrderUniqueKey(
   order
 ){
@@ -4178,11 +4113,6 @@ function orderUniqueKey(order){
   const providerName =
     orderProvider(order);
 
-  /*
-    Use the stronger Grizzly identity ONLY for
-    Grizzly. Existing SMSBower behavior below
-    remains unchanged.
-  */
   if(providerName === "grizzly"){
 
     return grizzlyOrderUniqueKey(
@@ -4263,10 +4193,6 @@ function ordersRepresentSameOrder(
     return false;
   }
 
-  /*
-    Grizzly uses the dedicated identity logic above.
-    SMSBower continues using the original logic.
-  */
   if(firstProvider === "grizzly"){
 
     return grizzlyOrdersRepresentSameOrder(
@@ -4927,12 +4853,24 @@ function renderOrder(
   const actionId =
     orderActionId(normalized);
 
-  if(
-    showActions &&
+  /*
+    IMPORTANT:
+    Received/completed/cancelled/refunded/failed orders
+    NEVER receive a Cancel button.
+
+    Only waiting/pending orders without OTP can be
+    cancelled or checked.
+  */
+  const canCancel =
     (
       status === "waiting" ||
       status === "pending"
     ) &&
+    !otp;
+
+  if(
+    showActions &&
+    canCancel &&
     actionId
   ){
 
@@ -4974,10 +4912,6 @@ function renderOrder(
 
   }
 
-  /*
-    Grizzly gets its stronger unique key.
-    SMSBower continues using its existing key.
-  */
   const renderedOrderKey =
     orderProvider(normalized) === "grizzly"
       ? grizzlyOrderUniqueKey(normalized)
@@ -5036,27 +4970,29 @@ function renderOrder(
 
 
 /* ============================================================
-   ORDER RENDERING
+   ONE UNIFIED ORDER RENDERING
 ============================================================ */
 
 function renderOrderSections(){
 
-  const current =
+  const ordersList =
     document.getElementById(
-      "currentOrder"
+      "ordersList"
     );
 
-  const previous =
-    document.getElementById(
-      "previousOrders"
-    );
-
-  if(!current || !previous){
+  if(!ordersList){
     return;
   }
 
   const uniqueOrders = [];
 
+  /*
+    Deduplicate every order before rendering.
+
+    This means the same purchase cannot appear once
+    from the immediate purchase response and again
+    from the provider orders response.
+  */
   for(const rawOrder of orders){
 
     const normalized =
@@ -5105,6 +5041,9 @@ function renderOrderSections(){
 
   }
 
+  /*
+    Newest purchase always comes first.
+  */
   uniqueOrders.sort(
     (a,b) =>
       new Date(
@@ -5125,121 +5064,52 @@ function renderOrderSections(){
     uniqueOrders;
 
   /*
-    Only waiting/pending WITHOUT OTP can be current.
+    There is now ONLY ONE Orders section.
+    Every order is rendered exactly once.
+
+    Pending/new order:
+      appears at the top if newest.
+
+    OTP received:
+      same order stays in the same position.
+
+    No separate Current/New Order copy.
+    No separate Previous Orders copy.
   */
-  const activeOrders =
-    orders.filter(
-      order => {
+  if(orders.length === 0){
 
-        const status =
-          String(
-            orderStatus(order) || ""
-          ).toLowerCase();
-
-        const otp =
-          orderOtp(order);
-
-        return (
-          (
-            status === "waiting" ||
-            status === "pending"
-          ) &&
-          !otp
-        );
-
-      }
-    );
-
-  /*
-    Current/New Order is deliberately singular.
-  */
-  const active =
-    activeOrders.length > 0
-      ? activeOrders[0]
-      : null;
-
-  if(active){
-
-    currentOrderId =
-      orderActionId(active) || null;
-
-    currentOrderProvider =
-      orderProvider(active);
-
-    current.innerHTML =
-      renderOrder(
-        active,
-        true
-      );
-
-  }else{
+    ordersList.innerHTML = `
+      <div class="empty">
+        No orders yet.
+      </div>
+    `;
 
     currentOrderId = null;
     currentOrderProvider = null;
 
-    current.innerHTML = `
-      <div class="empty">
-        No current order.
-      </div>
-    `;
+    return;
 
   }
 
-  /*
-    Grizzly previous filtering uses the same strong
-    Grizzly identity, so the active Grizzly order
-    can NEVER also appear in Previous.
-  */
-  const previousOrders =
-    active
-      ? orders.filter(
-          order => {
+  const newestOrder =
+    orders[0];
 
-            if(
-              orderProvider(order) ===
-              "grizzly" &&
-              orderProvider(active) ===
-              "grizzly"
-            ){
+  currentOrderId =
+    orderActionId(newestOrder) || null;
 
-              return !grizzlyOrdersRepresentSameOrder(
-                order,
-                active
-              );
+  currentOrderProvider =
+    orderProvider(newestOrder);
 
-            }
-
-            return !ordersRepresentSameOrder(
-              order,
-              active
-            );
-
-          }
-        )
-      : orders;
-
-  if(previousOrders.length === 0){
-
-    previous.innerHTML = `
-      <div class="empty">
-        No previous orders.
-      </div>
-    `;
-
-  }else{
-
-    previous.innerHTML =
-      previousOrders
-        .map(
-          order =>
-            renderOrder(
-              order,
-              true
-            )
-        )
-        .join("");
-
-  }
+  ordersList.innerHTML =
+    orders
+      .map(
+        order =>
+          renderOrder(
+            order,
+            true
+          )
+      )
+      .join("");
 
   attachOrderActions();
 
@@ -5305,14 +5175,9 @@ function attachOrderActions(){
 
 async function loadAllOrders(){
 
-  const current =
+  const ordersList =
     document.getElementById(
-      "currentOrder"
-    );
-
-  const previous =
-    document.getElementById(
-      "previousOrders"
+      "ordersList"
     );
 
   try{
@@ -5390,13 +5255,6 @@ async function loadAllOrders(){
           orderProvider(normalized) ===
           "grizzly";
 
-        /*
-          ONLY Grizzly uses the new stronger
-          duplicate identity here.
-
-          SMSBower continues with the original
-          ordersRepresentSameOrder() behavior.
-        */
         const existingIndex =
           uniqueOrders.findIndex(
             existing =>
@@ -5466,17 +5324,15 @@ async function loadAllOrders(){
 
     }else{
 
-      current.innerHTML = `
-        <div class="empty">
-          ${escapeHTML(error.message)}
-        </div>
-      `;
+      if(ordersList){
 
-      previous.innerHTML = `
-        <div class="empty">
-          Unable to load orders.
-        </div>
-      `;
+        ordersList.innerHTML = `
+          <div class="empty">
+            ${escapeHTML(error.message)}
+          </div>
+        `;
+
+      }
 
     }
 
@@ -5501,10 +5357,6 @@ async function checkProviderStatus(
     orderActivationId(order) ||
     "";
 
-  /*
-    GRIZZLY ONLY:
-    Existing Grizzly status flow remains the same.
-  */
   if(providerName === "grizzly"){
 
     return await api(
@@ -5524,9 +5376,6 @@ async function checkProviderStatus(
 
   }
 
-  /*
-    SMSBower code remains untouched.
-  */
   return await api(
     "check",
     {
@@ -5591,9 +5440,6 @@ async function checkOrder(
 
         }
 
-        /*
-          Existing SMSBower lookup unchanged.
-        */
         return (
           (
             orderKey &&
@@ -5715,7 +5561,7 @@ async function checkOrder(
 
 
 /* ============================================================
-   SMSBOWER CANCELLATION FIX ONLY
+   SMSBOWER CANCELLATION FIX
 ============================================================ */
 
 function smsBowerCancellationActivationId(
@@ -5784,6 +5630,11 @@ function smsBowerCancellationActivationId(
 
 }
 
+
+/* ============================================================
+   CANCEL ONE EXACT ORDER
+============================================================ */
+
 async function cancelOrder(
   orderId,
   providerName,
@@ -5791,6 +5642,170 @@ async function cancelOrder(
   orderKey = ""
 ){
 
+  /*
+    FIND THE EXACT ORDER FIRST.
+
+    We do this BEFORE showing the confirmation popup
+    so a received order cannot accidentally be cancelled.
+  */
+  const targetIndex =
+    orders.findIndex(
+      order => {
+
+        if(providerName === "grizzly"){
+
+          /*
+            If an activation ID was supplied, it is
+            the strongest identity and MUST match exactly.
+          */
+          if(activationId){
+
+            return (
+              orderProvider(order) ===
+              "grizzly" &&
+              String(
+                grizzlyCanonicalActivation(order)
+              ) ===
+              String(activationId).trim()
+            );
+
+          }
+
+          if(orderKey){
+
+            return (
+              orderProvider(order) ===
+              "grizzly" &&
+              grizzlyOrderUniqueKey(order) ===
+              orderKey
+            );
+
+          }
+
+          return (
+            String(
+              orderActionId(order)
+            ) ===
+            String(orderId) &&
+            orderProvider(order) ===
+            "grizzly"
+          );
+
+        }
+
+        /*
+          SMSBower:
+          activation ID is preferred when available.
+        */
+        if(activationId){
+
+          return (
+            orderProvider(order) ===
+            providerName &&
+            String(
+              orderActivationId(order)
+            ) ===
+            String(activationId).trim()
+          );
+
+        }
+
+        if(orderKey){
+
+          return (
+            orderProvider(order) ===
+            providerName &&
+            orderUniqueKey(order) ===
+            orderKey
+          );
+
+        }
+
+        return (
+          String(
+            orderActionId(order)
+          ) ===
+          String(orderId) &&
+          orderProvider(order) ===
+          providerName
+        );
+
+      }
+    );
+
+  if(targetIndex === -1){
+
+    alert(
+      "Order could not be found."
+    );
+
+    return;
+
+  }
+
+  const target =
+    normalizeOrder(
+      orders[targetIndex],
+      providerName
+    );
+
+  /*
+    CRITICAL SAFETY CHECK:
+
+    If the order has already received an OTP,
+    cancellation is completely blocked.
+
+    This also protects against a stale Cancel button
+    or a status update arriving immediately before
+    the user presses Cancel.
+  */
+  const targetStatus =
+    String(
+      orderStatus(target) || ""
+    ).toLowerCase();
+
+  const targetOtp =
+    orderOtp(target);
+
+  if(
+    targetOtp ||
+    targetStatus === "received" ||
+    targetStatus === "completed" ||
+    targetStatus === "finished"
+  ){
+
+    renderOrderSections();
+
+    alert(
+      "This order has already received its code and cannot be cancelled."
+    );
+
+    return;
+
+  }
+
+  /*
+    Only waiting/pending orders can reach cancellation.
+  */
+  if(
+    targetStatus !== "waiting" &&
+    targetStatus !== "pending"
+  ){
+
+    renderOrderSections();
+
+    alert(
+      "This order cannot be cancelled."
+    );
+
+    return;
+
+  }
+
+  /*
+    Confirm only after the exact order has been
+    identified and verified as cancellable.
+  */
   if(
     !confirm(
       "Cancel this number? Your refund will only be issued after the provider successfully cancels the number."
@@ -5801,104 +5816,28 @@ async function cancelOrder(
 
   }
 
-  const targetIndex =
-    orders.findIndex(
-      order => {
-
-        if(providerName === "grizzly"){
-
-          return (
-            (
-              orderKey &&
-              grizzlyOrderUniqueKey(order) ===
-              orderKey
-            ) ||
-            (
-              !orderKey &&
-              String(
-                orderActionId(order)
-              ) ===
-              String(orderId) &&
-              orderProvider(order) ===
-              "grizzly"
-            ) ||
-            (
-              activationId &&
-              String(
-                grizzlyCanonicalActivation(order)
-              ) ===
-              String(activationId).trim() &&
-              orderProvider(order) ===
-              "grizzly"
-            )
-          );
-
-        }
-
-        /*
-          Existing SMSBower cancellation lookup
-          remains unchanged.
-        */
-        return (
-          (
-            orderKey &&
-            orderUniqueKey(order) ===
-            orderKey
-          ) ||
-          (
-            !orderKey &&
-            String(
-              orderActionId(order)
-            ) ===
-            String(orderId) &&
-            orderProvider(order) ===
-            providerName
-          ) ||
-          (
-            activationId &&
-            String(
-              orderActivationId(order)
-            ) ===
-            String(activationId) &&
-            orderProvider(order) ===
-            providerName
-          )
-        );
-
-      }
-    );
-
-  const target =
-    targetIndex >= 0
-      ? orders[targetIndex]
-      : null;
-
   let container = null;
 
-  if(target){
+  try{
 
-    try{
+    container =
+      document.querySelector(
+        `[data-order-key="${CSS.escape(
+          providerName === "grizzly"
+            ? grizzlyOrderUniqueKey(target)
+            : orderUniqueKey(target)
+        )}"]`
+      );
 
-      container =
-        document.querySelector(
-          `[data-order-key="${CSS.escape(
-            providerName === "grizzly"
-              ? grizzlyOrderUniqueKey(target)
-              : orderUniqueKey(target)
-          )}"]`
-        );
+  }catch{
 
-    }catch{
-
-      container = null;
-
-    }
+    container = null;
 
   }
 
-  const current =
+  const ordersList =
     document.getElementById(
-      "currentOrder"
+      "ordersList"
     );
 
   if(container){
@@ -5909,9 +5848,9 @@ async function cancelOrder(
       </div>
     `;
 
-  }else{
+  }else if(ordersList){
 
-    current.innerHTML = `
+    ordersList.innerHTML = `
       <div class="loading">
         Cancelling number...
       </div>
@@ -5921,9 +5860,47 @@ async function cancelOrder(
 
   try{
 
+    /*
+      Re-read the target from the array before sending
+      cancellation so we do not accidentally send a
+      different order's activation ID.
+    */
+    const exactTarget =
+      orders[targetIndex];
+
+    /*
+      Check once more immediately before API call.
+      This prevents cancellation if the OTP arrived
+      while the confirmation dialog was open.
+    */
+    const latestStatus =
+      String(
+        orderStatus(exactTarget) || ""
+      ).toLowerCase();
+
+    const latestOtp =
+      orderOtp(exactTarget);
+
+    if(
+      latestOtp ||
+      latestStatus === "received" ||
+      latestStatus === "completed" ||
+      latestStatus === "finished"
+    ){
+
+      renderOrderSections();
+
+      alert(
+        "This order has already received its code and cannot be cancelled."
+      );
+
+      return;
+
+    }
+
     let cancellationActivationId =
       activationId ||
-      target?.activation_id ||
+      exactTarget?.activation_id ||
       "";
 
     if(
@@ -5932,7 +5909,7 @@ async function cancelOrder(
 
       cancellationActivationId =
         smsBowerCancellationActivationId(
-          target,
+          exactTarget,
           cancellationActivationId ||
           orderId
         );
@@ -5941,11 +5918,15 @@ async function cancelOrder(
 
       cancellationActivationId =
         cancellationActivationId ||
-        orderActivationId(target) ||
+        orderActivationId(exactTarget) ||
         null;
 
     }
 
+    /*
+      Exact order ID + exact activation ID are sent.
+      No other order can be substituted.
+    */
     const data =
       await api(
         "cancel",
@@ -5960,18 +5941,18 @@ async function cancelOrder(
         providerName
       );
 
-    if(targetIndex >= 0){
-
-      orders[targetIndex] =
-        normalizeOrder(
-          {
-            ...orders[targetIndex],
-            status:"cancelled"
-          },
-          providerName
-        );
-
-    }
+    /*
+      Only mark the exact target as cancelled after
+      the provider confirms successful cancellation.
+    */
+    orders[targetIndex] =
+      normalizeOrder(
+        {
+          ...orders[targetIndex],
+          status:"cancelled"
+        },
+        providerName
+      );
 
     alert(
       typeof data.message === "string"
