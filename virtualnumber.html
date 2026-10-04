@@ -631,7 +631,6 @@ input:focus{
   z-index:9999;
 }
 
-/* FIX: force a closed popup to disappear */
 .popup.popup-closed{
   display:none !important;
   visibility:hidden !important;
@@ -3013,6 +3012,332 @@ function selectServer(server){
 
 }
 
+
+/* ============================================================
+   IMMEDIATE PURCHASE ORDER
+============================================================ */
+
+function buildImmediatePurchaseOrder(
+  data,
+  providerName
+){
+
+  if(
+    !data ||
+    typeof data !== "object"
+  ){
+
+    return null;
+
+  }
+
+  const number =
+    firstOrderValue(
+      [
+        data,
+        data.data,
+        data.result,
+        data.response
+      ],
+      [
+        "phone_number",
+        "phoneNumber",
+        "number",
+        "phone",
+        "msisdn"
+      ]
+    );
+
+  const activationId =
+    firstOrderValue(
+      [
+        data,
+        data.data,
+        data.result,
+        data.response
+      ],
+      [
+        "activation_id",
+        "activationId",
+        "activationID",
+        "provider_activation_id",
+        "providerActivationId"
+      ]
+    );
+
+  if(!number && !activationId){
+    return null;
+  }
+
+  return {
+
+    id:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "order_id",
+          "orderId",
+          "id"
+        ]
+      ) ||
+      activationId,
+
+    order_id:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "order_id",
+          "orderId",
+          "id"
+        ]
+      ) ||
+      activationId,
+
+    activation_id:
+      activationId,
+
+    activationId:
+      activationId,
+
+    phone_number:
+      number,
+
+    phoneNumber:
+      number,
+
+    number:
+      number,
+
+    country:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "country",
+          "country_id",
+          "country_key"
+        ]
+      ) ||
+      countryKey(
+        selectedCountry
+      ),
+
+    country_id:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "country_id",
+          "country"
+        ]
+      ) ||
+      String(
+        countryId(
+          selectedCountry
+        ) ?? ""
+      ),
+
+    country_name:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "country_name",
+          "countryName"
+        ]
+      ) ||
+      countryName(
+        selectedCountry
+      ),
+
+    service:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "service",
+          "service_code",
+          "product"
+        ]
+      ) ||
+      serviceCode(
+        selectedService
+      ),
+
+    service_code:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "service_code",
+          "service"
+        ]
+      ) ||
+      serviceCode(
+        selectedService
+      ),
+
+    service_name:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "service_name",
+          "serviceName"
+        ]
+      ) ||
+      serviceName(
+        selectedService
+      ),
+
+    provider:
+      providerName,
+
+    provider_id:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "provider_id",
+          "server_id",
+          "operator_id"
+        ]
+      ) ||
+      serverId(
+        selectedServer
+      ),
+
+    server_id:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "server_id",
+          "provider_id",
+          "operator_id"
+        ]
+      ) ||
+      serverId(
+        selectedServer
+      ),
+
+    server_name:
+      firstOrderValue(
+        [
+          data,
+          data.data,
+          data.result,
+          data.response
+        ],
+        [
+          "server_name",
+          "serverName",
+          "operator"
+        ]
+      ) ||
+      serverLabel(
+        selectedServer
+      ),
+
+    customer_price_ngn:
+      Number(
+        firstOrderValue(
+          [
+            data,
+            data.data,
+            data.result,
+            data.response
+          ],
+          [
+            "customer_price_ngn",
+            "selling_price_ngn",
+            "price_ngn",
+            "price"
+          ]
+        )
+      ) ||
+      serverPrice(
+        selectedServer
+      ),
+
+    price:
+      Number(
+        firstOrderValue(
+          [
+            data,
+            data.data,
+            data.result,
+            data.response
+          ],
+          [
+            "customer_price_ngn",
+            "selling_price_ngn",
+            "price_ngn",
+            "price"
+          ]
+        )
+      ) ||
+      serverPrice(
+        selectedServer
+      ),
+
+    status:
+      "waiting",
+
+    created_at:
+      new Date().toISOString()
+
+  };
+
+}
+
+
+/* ============================================================
+   BUY
+============================================================ */
+
 async function buyNumber(){
 
   const button =
@@ -3146,6 +3471,53 @@ async function buyNumber(){
       typeof data.message === "string"
         ? data.message
         : "Number successfully purchased.";
+
+    /*
+      Immediately render a successfully purchased
+      number from the provider response.
+
+      This prevents the number from disappearing
+      while the orders list is being refreshed.
+    */
+    const immediateOrder =
+      buildImmediatePurchaseOrder(
+        data,
+        provider
+      );
+
+    if(immediateOrder){
+
+      currentOrderId =
+        orderActionId(
+          immediateOrder
+        ) || null;
+
+      currentOrderProvider =
+        provider;
+
+      const current =
+        document.getElementById(
+          "currentOrder"
+        );
+
+      current.innerHTML =
+        renderOrder(
+          immediateOrder,
+          true
+        );
+
+      orders = [
+        immediateOrder,
+        ...orders.filter(
+          existing =>
+            orderUniqueKey(existing) !==
+            orderUniqueKey(immediateOrder)
+        )
+      ];
+
+      attachOrderActions();
+
+    }
 
     showPortalNotice();
 
