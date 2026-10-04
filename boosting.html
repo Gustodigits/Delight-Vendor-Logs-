@@ -265,19 +265,19 @@
     .platform-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 9px;
-      margin-bottom: 18px;
+      gap: 11px;
+      margin-bottom: 20px;
     }
 
     .platform-btn {
-      min-height: 54px;
+      min-height: 62px;
       background: var(--black-3);
-      border: 1px solid #242424;
-      border-radius: 12px;
+      border: 1px solid #292929;
+      border-radius: 14px;
       color: #ddd;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
-      padding: 8px 5px;
+      padding: 10px 7px;
       transition: 0.18s;
     }
 
@@ -285,6 +285,7 @@
       background: rgba(201, 154, 36, 0.13);
       border-color: var(--gold);
       color: var(--gold-light);
+      box-shadow: 0 0 0 1px rgba(201, 154, 36, 0.08);
     }
 
     .platform-btn:active {
@@ -306,11 +307,10 @@
       color: #dddddd;
       font-size: 12px;
       font-weight: 800;
-      margin-bottom: 7px;
+      margin-bottom: 8px;
     }
 
-    .input,
-    .select {
+    .input {
       width: 100%;
       min-height: 48px;
       background: #0a0a0a;
@@ -322,20 +322,188 @@
       font-size: 13px;
     }
 
-    .input:focus,
-    .select:focus {
+    .input:focus {
       border-color: var(--gold);
     }
 
-    .select {
-      appearance: auto;
+    /* SERVICE CARDS */
+
+    .service-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding: 2px 3px 4px 2px;
+      margin-bottom: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--gold-dark) #0a0a0a;
     }
+
+    .service-grid::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .service-grid::-webkit-scrollbar-track {
+      background: #0a0a0a;
+      border-radius: 10px;
+    }
+
+    .service-grid::-webkit-scrollbar-thumb {
+      background: var(--gold-dark);
+      border-radius: 10px;
+    }
+
+    .service-card {
+      width: 100%;
+      min-height: 112px;
+      padding: 15px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.025),
+          rgba(255, 255, 255, 0)
+        ),
+        #0b0b0b;
+      border: 1px solid #292929;
+      border-radius: 15px;
+      color: white;
+      text-align: left;
+      transition:
+        border-color 0.18s,
+        background 0.18s,
+        transform 0.18s,
+        box-shadow 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card:hover {
+      border-color: rgba(201, 154, 36, 0.55);
+    }
+
+    .service-card:active {
+      transform: scale(0.985);
+    }
+
+    .service-card.selected {
+      border-color: var(--gold);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(201, 154, 36, 0.15),
+          rgba(201, 154, 36, 0.035)
+        ),
+        #0b0b0b;
+      box-shadow:
+        0 0 0 1px rgba(201, 154, 36, 0.12),
+        0 8px 22px rgba(0, 0, 0, 0.25);
+    }
+
+    .service-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .service-card-name {
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 900;
+      color: #ffffff;
+      word-break: break-word;
+      padding-right: 4px;
+    }
+
+    .service-check {
+      width: 25px;
+      height: 25px;
+      min-width: 25px;
+      border-radius: 50%;
+      border: 1px solid #353535;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+      font-size: 13px;
+      font-weight: 900;
+      background: #111111;
+    }
+
+    .service-card.selected .service-check {
+      border-color: var(--gold);
+      background: var(--gold);
+      color: #050505;
+    }
+
+    .service-card-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .service-meta-box {
+      min-width: 0;
+      padding: 8px 9px;
+      background: #101010;
+      border: 1px solid #202020;
+      border-radius: 9px;
+    }
+
+    .service-meta-label {
+      display: block;
+      color: #777;
+      font-size: 9px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .service-meta-value {
+      display: block;
+      color: #ddd;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .service-price {
+      color: var(--gold-light);
+    }
+
+    .service-empty {
+      padding: 25px 14px;
+      text-align: center;
+      border: 1px dashed #303030;
+      border-radius: 14px;
+      background: #0a0a0a;
+      color: #777;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .service-loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 110px;
+      border: 1px solid #222;
+      border-radius: 14px;
+      background: #0a0a0a;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* SERVICE INFO */
 
     .service-info {
       display: none;
-      margin-top: 8px;
-      padding: 11px;
-      border-radius: 10px;
+      margin-top: 11px;
+      padding: 12px;
+      border-radius: 11px;
       background: #0a0a0a;
       border: 1px solid #222;
     }
@@ -349,7 +517,7 @@
       justify-content: space-between;
       gap: 10px;
       font-size: 11px;
-      padding: 3px 0;
+      padding: 4px 0;
     }
 
     .service-info-line span:first-child {
@@ -639,6 +807,11 @@
 
       .platform-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .platform-btn {
+        min-height: 60px;
       }
 
       .wallet-balance {
@@ -648,6 +821,19 @@
       .card {
         padding: 15px;
       }
+
+      .service-grid {
+        max-height: 560px;
+      }
+
+      .service-card {
+        min-height: 118px;
+        padding: 14px;
+      }
+
+      .service-card-name {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
@@ -656,7 +842,14 @@
   <div class="page">
 
     <header class="topbar">
-      <button class="back-btn" id="backBtn" aria-label="Back">‹</button>
+
+      <button
+        class="back-btn"
+        id="backBtn"
+        aria-label="Back"
+      >
+        ‹
+      </button>
 
       <div class="brand">
         <span class="delight">Delight</span>
@@ -665,56 +858,95 @@
 
       <div class="wallet-mini">
         <span class="wallet-mini-label">Wallet</span>
-        <span class="wallet-mini-value" id="miniBalance">₦0.00</span>
+        <span
+          class="wallet-mini-value"
+          id="miniBalance"
+        >
+          ₦0.00
+        </span>
       </div>
+
     </header>
 
     <main class="container">
 
       <section class="page-heading">
-        <h1>Social Media <span>Boosting</span></h1>
+
+        <h1>
+          Social Media <span>Boosting</span>
+        </h1>
+
         <p>
           Boost your social media content with fast and reliable delivery.
         </p>
+
       </section>
 
-      <div id="message" class="message"></div>
+      <div
+        id="message"
+        class="message"
+      ></div>
 
       <!-- WALLET -->
 
       <section class="wallet-card">
-        <div class="wallet-title">Available Wallet Balance</div>
 
-        <div class="wallet-balance" id="walletBalance">
+        <div class="wallet-title">
+          Available Wallet Balance
+        </div>
+
+        <div
+          class="wallet-balance"
+          id="walletBalance"
+        >
           ₦0.00
         </div>
 
         <div class="wallet-actions">
-          <button class="wallet-action primary" id="fundWalletBtn">
+
+          <button
+            class="wallet-action primary"
+            id="fundWalletBtn"
+          >
             Fund Wallet
           </button>
 
-          <button class="wallet-action" id="walletHistoryBtn">
+          <button
+            class="wallet-action"
+            id="walletHistoryBtn"
+          >
             History
           </button>
+
         </div>
+
       </section>
 
       <!-- BOOSTING -->
 
       <section class="card">
 
-        <div class="card-title">Create Boost</div>
+        <div class="card-title">
+          Create Boost
+        </div>
 
         <div class="card-subtitle">
           Select a platform, choose the service, enter your link and quantity,
           then place your order.
         </div>
 
-        <div class="field">
-          <label>Platform</label>
+        <!-- PLATFORM -->
 
-          <div class="platform-grid" id="platformGrid">
+        <div class="field">
+
+          <label>
+            Platform
+          </label>
+
+          <div
+            class="platform-grid"
+            id="platformGrid"
+          >
 
             <button
               class="platform-btn active"
@@ -759,22 +991,30 @@
             </button>
 
           </div>
+
         </div>
+
+        <!-- SERVICES -->
 
         <div class="field">
 
-          <label for="serviceSelect">
-            Service
+          <label>
+            Choose Service
           </label>
 
-          <select
-            class="select"
-            id="serviceSelect"
+          <div
+            id="serviceGrid"
+            class="service-grid"
           >
-            <option value="">
+
+            <div class="service-loading">
+              <span
+                class="spinner"
+              ></span>
               Loading services...
-            </option>
-          </select>
+            </div>
+
+          </div>
 
           <div
             id="serviceInfo"
@@ -805,6 +1045,8 @@
 
         </div>
 
+        <!-- LINK -->
+
         <div class="field">
 
           <label for="linkInput">
@@ -820,6 +1062,8 @@
           />
 
         </div>
+
+        <!-- QUANTITY -->
 
         <div class="field">
 
@@ -838,6 +1082,8 @@
           />
 
         </div>
+
+        <!-- PRICE -->
 
         <div class="price-box">
 
@@ -910,6 +1156,7 @@
       </div>
 
     </main>
+
   </div>
 
   <script>
@@ -932,7 +1179,7 @@
       "https://hkfhehbhmucymusaytoe.supabase.co";
 
     const SUPABASE_ANON_KEY =
-      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
+      "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
 
     const BOOSTING_API_URL =
       SUPABASE_URL +
@@ -975,9 +1222,9 @@
         "miniBalance"
       );
 
-    const serviceSelect =
+    const serviceGrid =
       document.getElementById(
-        "serviceSelect"
+        "serviceGrid"
       );
 
     const serviceInfo =
@@ -1356,6 +1603,7 @@
       } catch {
 
         data = {};
+
       }
 
 
@@ -1470,11 +1718,12 @@
 
     async function loadServices() {
 
-      serviceSelect.innerHTML =
+      serviceGrid.innerHTML =
         `
-          <option value="">
+          <div class="service-loading">
+            <span class="spinner"></span>
             Loading services...
-          </option>
+          </div>
         `;
 
 
@@ -1534,11 +1783,11 @@
         );
 
 
-        serviceSelect.innerHTML =
+        serviceGrid.innerHTML =
           `
-            <option value="">
-              Unable to load services
-            </option>
+            <div class="service-empty">
+              Unable to load services.
+            </div>
           `;
 
 
@@ -1594,62 +1843,166 @@
         );
 
 
-      serviceSelect.innerHTML =
-        `
-          <option value="">
-            Select a service
-          </option>
-        `;
-
-
-      services.forEach(
-        service => {
-
-          const option =
-            document.createElement(
-              "option"
-            );
-
-
-          option.value =
-            getServiceId(
-              service
-            );
-
-
-          option.textContent =
-            getServiceName(
-              service
-            );
-
-
-          serviceSelect.appendChild(
-            option
-          );
-        }
-      );
+      serviceGrid.innerHTML =
+        "";
 
 
       if (!services.length) {
 
-        serviceSelect.innerHTML =
+        serviceGrid.innerHTML =
           `
-            <option value="">
-              No services available for this platform
-            </option>
+            <div class="service-empty">
+              No services available for this platform.
+            </div>
           `;
 
-
         hideServiceInfo();
-
         updatePrice();
 
         return;
       }
 
 
-      hideServiceInfo();
+      services.forEach(
+        service => {
 
+          const button =
+            document.createElement(
+              "button"
+            );
+
+          button.type =
+            "button";
+
+          button.className =
+            "service-card";
+
+          button.dataset.serviceId =
+            getServiceId(
+              service
+            );
+
+
+          const name =
+            getServiceName(
+              service
+            );
+
+          const type =
+            getServiceType(
+              service
+            );
+
+          const providerPrice =
+            getProviderPrice(
+              service
+            );
+
+          const priceUnit =
+            getPriceUnit(
+              service
+            );
+
+          const customerPrice =
+            getCustomerPrice(
+              service
+            );
+
+          const min =
+            getMinQuantity(
+              service
+            );
+
+          const max =
+            getMaxQuantity(
+              service
+            );
+
+
+          button.innerHTML =
+            `
+              <div class="service-card-top">
+
+                <div class="service-card-name">
+                  ${escapeHtml(name)}
+                </div>
+
+                <div class="service-check">
+                  ✓
+                </div>
+
+              </div>
+
+              <div class="service-card-meta">
+
+                <div class="service-meta-box">
+                  <span class="service-meta-label">
+                    Type
+                  </span>
+
+                  <span class="service-meta-value">
+                    ${escapeHtml(type)}
+                  </span>
+                </div>
+
+                <div class="service-meta-box">
+                  <span class="service-meta-label">
+                    Customer Rate
+                  </span>
+
+                  <span class="service-meta-value service-price">
+                    ${formatMoney(customerPrice)}
+                    /
+                    ${formatNumber(priceUnit)}
+                  </span>
+                </div>
+
+                <div class="service-meta-box">
+                  <span class="service-meta-label">
+                    Minimum
+                  </span>
+
+                  <span class="service-meta-value">
+                    ${formatNumber(min)}
+                  </span>
+                </div>
+
+                <div class="service-meta-box">
+                  <span class="service-meta-label">
+                    Maximum
+                  </span>
+
+                  <span class="service-meta-value">
+                    ${formatNumber(max)}
+                  </span>
+                </div>
+
+              </div>
+            `;
+
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              selectService(
+                service,
+                button
+              );
+
+            }
+          );
+
+
+          serviceGrid.appendChild(
+            button
+          );
+
+        }
+      );
+
+
+      hideServiceInfo();
       updatePrice();
     }
 
@@ -1658,45 +2011,65 @@
        SERVICE SELECTION
        ============================================================ */
 
-    serviceSelect.addEventListener(
-      "change",
-      function () {
+    function selectService(
+      service,
+      selectedButton
+    ) {
 
-        const id =
-          this.value;
-
-
-        selectedService =
-          allServices.find(
-            service =>
-              getServiceId(
-                service
-              ) === id
-          ) || null;
+      selectedService =
+        service;
 
 
-        if (
-          !selectedService
-        ) {
-
-          hideServiceInfo();
-
-          updatePrice();
-
-          return;
-        }
-
-
-        showServiceInfo(
-          selectedService
+      document
+        .querySelectorAll(
+          ".service-card"
+        )
+        .forEach(
+          card =>
+            card.classList.remove(
+              "selected"
+            )
         );
 
 
-        updateQuantityLimits();
+      selectedButton.classList.add(
+        "selected"
+      );
 
-        updatePrice();
-      }
-    );
+
+      showServiceInfo(
+        selectedService
+      );
+
+
+      updateQuantityLimits();
+
+
+      /*
+       * Clear quantity when switching
+       * between services so the user
+       * enters a valid amount for the
+       * newly selected service.
+       */
+
+      quantityInput.value =
+        "";
+
+
+      updatePrice();
+
+
+      /*
+       * Bring the selected service
+       * into view on smaller screens.
+       */
+
+      selectedButton.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+
+    }
 
 
     function showServiceInfo(
@@ -2059,7 +2432,6 @@
             "warning"
           );
 
-
           return;
         }
 
@@ -2159,6 +2531,7 @@
           } else {
 
             await loadWallet();
+
           }
 
 
@@ -2204,7 +2577,7 @@
           /*
            * If the backend says the
            * balance is insufficient,
-           * use its exact shortfall.
+           * refresh wallet balance.
            */
 
           try {
@@ -2289,6 +2662,7 @@
         renderOrders(
           orders
         );
+
 
       } catch (error) {
 
@@ -2537,6 +2911,7 @@
 
           window.location.href =
             "/dashboard";
+
         }
       );
 
@@ -2551,6 +2926,7 @@
 
           window.location.href =
             "/wallet.html";
+
         }
       );
 
@@ -2565,6 +2941,7 @@
 
           window.location.href =
             "/transactions.html";
+
         }
       );
 
@@ -2592,7 +2969,9 @@
             console.error(
               error
             );
+
           }
+
         }
       );
 
@@ -2626,7 +3005,9 @@
 
           accessToken =
             session.access_token;
+
         }
+
       }
     );
 
@@ -2679,5 +3060,6 @@
 
     init();
   </script>
+
 </body>
 </html>
