@@ -6153,18 +6153,16 @@ async function init(){
     )  
     .classList.remove("active");  
   
-  forceOpenPopup(  
-    "verificationPopup"  
-  );  
-  
-  await loadWatermark();  
-  await loadCountries();  
-  await loadWallet();  
-  await loadAllOrders();  
-  
-  await refreshPendingOrderStatuses();  
-  
-}  
+  await loadWatermark();
+await loadCountries();
+await loadWallet();
+await loadAllOrders();
+
+await refreshPendingOrderStatuses();
+
+forceOpenPopup(
+  "verificationPopup"
+);
   
 setInterval(  
   async () => {  
