@@ -6145,7 +6145,6 @@ async function refreshPendingOrderStatuses(){
 /* ============================================================  
    INIT  
 ============================================================ */  
-  document.getElementById("verificationPopup").hidden = false;
   
 async function init(){  
   
@@ -6162,6 +6161,8 @@ async function init(){
       "smsbowerProviderTab"  
     )  
     .classList.remove("active");  
+  
+  forceOpenPopup("verificationPopup");
   
   await loadWatermark();
 await loadCountries();
