@@ -6142,6 +6142,7 @@ async function refreshPendingOrderStatuses(){
 /* ============================================================  
    INIT  
 ============================================================ */  
+  document.getElementById("verificationPopup").hidden = false;
   
 async function init(){  
   
@@ -6166,9 +6167,7 @@ await loadAllOrders();
 
 await refreshPendingOrderStatuses();
 
-forceOpenPopup(
-  "verificationPopup"
-);
+
   
 setInterval(  
   async () => {  
