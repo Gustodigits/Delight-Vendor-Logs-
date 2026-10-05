@@ -3533,20 +3533,25 @@ function providerActivationId(
   ];
 
   for(const source of providerSources){
-    if(!source || typeof source !== "object"){
-      continue;
-    }
-
-    const candidate = source?.id;
-
-    if(
-      candidate !== null &&
-      candidate !== undefined &&
-      String(candidate).trim() !== ""
-    ){
-      return String(candidate).trim();
-    }
+  if(!source || typeof source !== "object"){
+    continue;
   }
+
+  const candidate =
+    source?.activation_id ||
+    source?.activationId ||
+    source?.activationID ||
+    source?.provider_activation_id ||
+    source?.providerActivationId;
+
+  if(
+    candidate !== null &&
+    candidate !== undefined &&
+    String(candidate).trim() !== ""
+  ){
+    return String(candidate).trim();
+  }
+}
 
   return "";
 
@@ -5156,58 +5161,41 @@ async function loadAllOrders(){
         ? [...orders]  
         : [];  
   
-    const results =  
-      await Promise.allSettled([  
-  
-        api(  
-          "orders",  
-          {},  
-          "grizzly"  
-        ),  
-  
-        api(  
-          "orders",  
-          {},  
-          "smsbower"  
-        )  
-  
-      ]);  
-  
-    const grizzlyOrders =  
-      results[0].status === "fulfilled" &&  
-      Array.isArray(  
-        results[0].value?.orders  
-      )  
-        ? results[0].value.orders  
-            .map(  
-              order =>  
-                normalizeOrder(  
-                  order,  
-                  "grizzly"  
-                )  
-            )  
-        : [];  
-  
-    const smsOrders =  
-      results[1].status === "fulfilled" &&  
-      Array.isArray(  
-        results[1].value?.orders  
-      )  
-        ? results[1].value.orders  
-            .map(  
-              order =>  
-                normalizeOrder(  
-                  order,  
-                  "smsbower"  
-                )  
-            )  
-        : [];  
-  
-    const merged = [  
-      ...previousLocalOrders,  
-      ...grizzlyOrders,  
-      ...smsOrders  
-    ];  
+    const activeProvider =
+  provider === "smsbower"
+    ? "smsbower"
+    : "grizzly";
+
+const results =
+  await Promise.allSettled([
+
+    api(
+      "orders",
+      {},
+      activeProvider
+    )
+
+  ]);
+
+const providerOrders =
+  results[0].status === "fulfilled" &&
+  Array.isArray(
+    results[0].value?.orders
+  )
+    ? results[0].value.orders
+        .map(
+          order =>
+            normalizeOrder(
+              order,
+              activeProvider
+            )
+        )
+    : [];
+
+const merged = [
+  ...previousLocalOrders,
+  ...providerOrders
+];
   
     const uniqueOrders = [];  
   
