@@ -1638,11 +1638,31 @@
 
       if (!response.ok) {
 
-        throw new Error(
-          data.error ||
-          data.message ||
-          "Request failed."
-        );
+        const error =
+          new Error(
+            data.error ||
+            data.message ||
+            "Request failed."
+          );
+
+        /*
+         * Keep the complete backend response
+         * internally so the order handler can
+         * distinguish the customer's wallet
+         * from the provider wallet.
+         *
+         * Nothing from this object is shown
+         * directly to the customer unless it
+         * passes through the safe error handler.
+         */
+
+        error.apiData =
+          data;
+
+        error.status =
+          response.status;
+
+        throw error;
       }
 
 
@@ -1651,15 +1671,335 @@
         data.success === false
       ) {
 
-        throw new Error(
-          data.error ||
-          data.message ||
-          "Request failed."
-        );
+        const error =
+          new Error(
+            data.error ||
+            data.message ||
+            "Request failed."
+          );
+
+        error.apiData =
+          data;
+
+        throw error;
       }
 
 
       return data;
+    }
+
+
+    /* ============================================================
+       BALANCE ERROR HANDLING
+       ============================================================ */
+
+    function getErrorText(
+      error
+    ) {
+
+      const apiData =
+        error?.apiData || {};
+
+
+      return [
+        error?.message,
+        apiData?.error,
+        apiData?.message,
+        apiData?.details,
+        apiData?.reason,
+        apiData?.code,
+        apiData?.type
+      ]
+        .filter(
+          value =>
+            value !== undefined &&
+            value !== null
+        )
+        .join(" ")
+        .toLowerCase();
+    }
+
+
+    function isCustomerInsufficientBalance(
+      error
+    ) {
+
+      const text =
+        getErrorText(
+          error
+        );
+
+
+      /*
+       * These are customer-wallet
+       * indicators.
+       */
+
+      if (
+        text.includes(
+          "insufficient wallet"
+        ) ||
+        text.includes(
+          "wallet balance"
+        ) ||
+        text.includes(
+          "customer balance"
+        ) ||
+        text.includes(
+          "user balance"
+        ) ||
+        text.includes(
+          "your balance"
+        ) ||
+        text.includes(
+          "customer wallet"
+        ) ||
+        text.includes(
+          "user wallet"
+        )
+      ) {
+
+        return true;
+      }
+
+
+      /*
+       * Do not automatically treat a generic
+       * "insufficient balance" provider error
+       * as the customer's balance.
+       *
+       * The generic case is handled separately
+       * below.
+       */
+
+      return false;
+    }
+
+
+    function isProviderInsufficientBalance(
+      error
+    ) {
+
+      const text =
+        getErrorText(
+          error
+        );
+
+
+      /*
+       * Provider-side indicators.
+       *
+       * These errors are deliberately converted
+       * to a safe customer-facing message.
+       */
+
+      const providerIndicators = [
+        "pawaboost",
+        "pawa boost",
+        "provider balance",
+        "provider wallet",
+        "provider funds",
+        "provider balance is insufficient",
+        "provider wallet is insufficient",
+        "provider has insufficient",
+        "insufficient provider",
+        "api provider",
+        "supplier balance",
+        "supplier wallet",
+        "supplier funds",
+        "service provider balance",
+        "service provider wallet",
+        "service provider funds"
+      ];
+
+
+      if (
+        providerIndicators.some(
+          indicator =>
+            text.includes(
+              indicator
+            )
+        )
+      ) {
+
+        return true;
+      }
+
+
+      /*
+       * If the backend explicitly labels the
+       * balance as a provider-side balance,
+       * treat it as provider insufficiency.
+       */
+
+      if (
+        (
+          text.includes(
+            "insufficient"
+          ) ||
+          text.includes(
+            "not enough"
+          ) ||
+          text.includes(
+            "insufficient funds"
+          )
+        ) &&
+        (
+          text.includes(
+            "provider"
+          ) ||
+          text.includes(
+            "supplier"
+          ) ||
+          text.includes(
+            "api"
+          )
+        )
+      ) {
+
+        return true;
+      }
+
+
+      return false;
+    }
+
+
+    function getSafeOrderErrorMessage(
+      error
+    ) {
+
+      /*
+       * CUSTOMER WALLET
+       *
+       * Never mention provider support here.
+       */
+
+      if (
+        isCustomerInsufficientBalance(
+          error
+        )
+      ) {
+
+        return {
+          text:
+            "Insufficient wallet balance. Please fund your wallet.",
+          type:
+            "warning"
+        };
+      }
+
+
+      /*
+       * PROVIDER WALLET
+       *
+       * Never expose the provider name,
+       * provider balance, API details, or
+       * internal provider error.
+       */
+
+      if (
+        isProviderInsufficientBalance(
+          error
+        )
+      ) {
+
+        return {
+          text:
+            "Please fund wallet and contact support.",
+          type:
+            "warning"
+        };
+      }
+
+
+      const text =
+        getErrorText(
+          error
+        );
+
+
+      /*
+       * If the backend returns a generic
+       * "insufficient balance/funds" error
+       * without identifying whose balance it is,
+       * do NOT expose the backend's raw message.
+       *
+       * The customer has already passed the
+       * frontend wallet check, so this is treated
+       * as a provider-side failure.
+       */
+
+      if (
+        (
+          text.includes(
+            "insufficient balance"
+          ) ||
+          text.includes(
+            "insufficient funds"
+          ) ||
+          text.includes(
+            "not enough balance"
+          ) ||
+          text.includes(
+            "not enough funds"
+          ) ||
+          text.includes(
+            "balance is too low"
+          )
+        ) &&
+        !isCustomerInsufficientBalance(
+          error
+        )
+      ) {
+
+        return {
+          text:
+            "Please fund wallet and contact support.",
+          type:
+            "warning"
+        };
+      }
+
+
+      /*
+       * Any raw provider name or provider
+       * reference is also hidden from customers.
+       */
+
+      if (
+        text.includes(
+          "pawaboost"
+        ) ||
+        text.includes(
+          "pawa boost"
+        ) ||
+        text.includes(
+          "provider"
+        )
+      ) {
+
+        return {
+          text:
+            "Unable to complete the boost right now. Please contact support.",
+          type:
+            "error"
+        };
+      }
+
+
+      /*
+       * Normal application errors can still
+       * be shown as before.
+       */
+
+      return {
+        text:
+          error?.message ||
+          "Unable to place boost order.",
+        type:
+          "error"
+      };
     }
 
 
@@ -2418,23 +2758,24 @@
           customerPrice;
 
 
+        /*
+         * CUSTOMER BALANCE CHECK
+         *
+         * If the customer does not have enough
+         * money, stop here.
+         *
+         * The customer should NEVER see anything
+         * about the provider wallet/support in
+         * this situation.
+         */
+
         if (
           walletBalance <
           total
         ) {
 
-          const shortfall =
-            total -
-            walletBalance;
-
-
           showMessage(
-            "Insufficient wallet balance. " +
-            "You need " +
-            formatMoney(
-              shortfall
-            ) +
-            " more to place this order.",
+            "Insufficient wallet balance. Please fund your wallet.",
             "warning"
           );
 
@@ -2563,30 +2904,45 @@
           );
 
 
+          /*
+           * Refresh the customer's wallet when
+           * the backend reports a customer-wallet
+           * problem. This does not affect the
+           * provider-wallet handling.
+           */
+
           try {
 
-            const responseText =
-              error.message || "";
-
-
             if (
-              responseText
-                .toLowerCase()
-                .includes(
-                  "insufficient wallet"
-                )
+              isCustomerInsufficientBalance(
+                error
+              )
             ) {
 
               await loadWallet();
+
             }
 
           } catch {}
 
 
+          /*
+           * Convert backend/provider errors into
+           * safe customer-facing messages.
+           *
+           * Provider name, provider balance,
+           * API details, etc. are never exposed.
+           */
+
+          const safeError =
+            getSafeOrderErrorMessage(
+              error
+            );
+
+
           showMessage(
-            error.message ||
-            "Unable to place boost order.",
-            "error"
+            safeError.text,
+            safeError.type
           );
 
         } finally {
