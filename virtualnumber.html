@@ -1549,44 +1549,48 @@ function toggleMenu(){
    POPUP FIX  
 ============================================================ */  
   
-function forceClosePopup(id){  
-  
-  const popup =  
-    document.getElementById(id);  
-  
-  if(!popup){  
-    return;  
-  }  
-  
-  popup.classList.add(  
-    "popup-closed"  
-  );  
-  
-  popup.style.setProperty(  
-    "display",  
-    "none",  
-    "important"  
-  );  
-  
-  popup.style.setProperty(  
-    "visibility",  
-    "hidden",  
-    "important"  
-  );  
-  
-  popup.style.setProperty(  
-    "opacity",  
-    "0",  
-    "important"  
-  );  
-  
-  popup.style.setProperty(  
-    "pointer-events",  
-    "none",  
-    "important"  
-  );  
-  
-}  
+function closeVerificationPopup(event){
+
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  const popup =
+    document.getElementById("verificationPopup");
+
+  if(!popup){
+    return;
+  }
+
+  popup.classList.add("popup-closed");
+
+  popup.hidden = true;
+
+  popup.style.setProperty(
+    "display",
+    "none",
+    "important"
+  );
+
+  popup.style.setProperty(
+    "visibility",
+    "hidden",
+    "important"
+  );
+
+  popup.style.setProperty(
+    "opacity",
+    "0",
+    "important"
+  );
+
+  popup.style.setProperty(
+    "pointer-events",
+    "none",
+    "important"
+  );
+}
   
 function forceOpenPopup(id){  
   
@@ -1600,6 +1604,8 @@ function forceOpenPopup(id){
   popup.classList.remove(  
     "popup-closed"  
   );  
+
+    popup.hidden = false;
   
   popup.style.removeProperty(  
     "display"  
