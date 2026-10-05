@@ -1088,16 +1088,6 @@
         <div class="price-box">
 
           <div class="price-row">
-            <span>Provider rate</span>
-            <span id="providerRate">₦0.00</span>
-          </div>
-
-          <div class="price-row">
-            <span>Markup</span>
-            <span id="markupValue">50%</span>
-          </div>
-
-          <div class="price-row">
             <span>Customer rate</span>
             <span id="customerRate">₦0.00</span>
           </div>
@@ -1172,6 +1162,9 @@
       DO NOT put PAWABOOST_API_KEY here.
 
       PawaBoost API key stays inside boosting-api.
+
+      Provider rates are NEVER displayed to customers.
+      Markup is NEVER displayed to customers.
       ============================================================
     */
 
@@ -1267,16 +1260,6 @@
         "quantityInput"
       );
 
-    const providerRateEl =
-      document.getElementById(
-        "providerRate"
-      );
-
-    const markupValueEl =
-      document.getElementById(
-        "markupValue"
-      );
-
     const customerRateEl =
       document.getElementById(
         "customerRate"
@@ -1358,41 +1341,6 @@
     }
 
 
-    /*
-     * Detect the site the page is currently
-     * running on and build the correct path.
-     *
-     * GitHub Pages:
-     * /Delight-Vendor-Logs-/...
-     *
-     * Netlify:
-     * /...
-     */
-
-    function sitePath(path) {
-
-      const cleanPath =
-        String(path || "")
-          .replace(/^\/+/, "");
-
-
-      if (
-        window.location.hostname.endsWith(
-          "github.io"
-        )
-      ) {
-
-        return (
-          "/Delight-Vendor-Logs-/" +
-          cleanPath
-        );
-      }
-
-
-      return "/" + cleanPath;
-    }
-
-
     function showMessage(
       text,
       type = "error"
@@ -1456,6 +1404,13 @@
       );
     }
 
+
+    /*
+     * Provider price is intentionally
+     * kept available internally because
+     * the backend/service data may contain it,
+     * but it is NEVER rendered to customers.
+     */
 
     function getProviderPrice(
       service
@@ -1585,6 +1540,40 @@
 
 
       return "Other";
+    }
+
+
+    /* ============================================================
+       SITE PATH
+       ============================================================ */
+
+    function sitePath(
+      path
+    ) {
+
+      const cleanPath =
+        String(
+          path || ""
+        ).replace(
+          /^\/+/,
+          ""
+        );
+
+
+      if (
+        window.location.hostname.endsWith(
+          "github.io"
+        )
+      ) {
+
+        return (
+          "/Delight-Vendor-Logs-/" +
+          cleanPath
+        );
+      }
+
+
+      return "/" + cleanPath;
     }
 
 
@@ -1800,7 +1789,9 @@
 
         /*
          * Use the markup returned by
-         * the Edge Function.
+         * the Edge Function internally.
+         *
+         * It is NOT displayed to customers.
          */
 
         currentMarkup =
@@ -1808,10 +1799,6 @@
             data.markup_percent ??
             50
           );
-
-
-        markupValueEl.textContent =
-          currentMarkup + "%";
 
 
         /*
@@ -1945,18 +1932,13 @@
               service
             );
 
-          const providerPrice =
-            getProviderPrice(
+          const customerPrice =
+            getCustomerPrice(
               service
             );
 
           const priceUnit =
             getPriceUnit(
-              service
-            );
-
-          const customerPrice =
-            getCustomerPrice(
               service
             );
 
@@ -2219,9 +2201,6 @@
         !selectedService
       ) {
 
-        providerRateEl.textContent =
-          formatMoney(0);
-
         customerRateEl.textContent =
           formatMoney(0);
 
@@ -2233,12 +2212,6 @@
 
         return;
       }
-
-
-      const providerPrice =
-        getProviderPrice(
-          selectedService
-        );
 
 
       const priceUnit =
@@ -2270,16 +2243,6 @@
           : 0;
 
 
-      providerRateEl.textContent =
-        formatMoney(
-          providerPrice
-        ) +
-        " / " +
-        formatNumber(
-          priceUnit
-        );
-
-
       customerRateEl.textContent =
         formatMoney(
           customerPrice
@@ -2288,10 +2251,6 @@
         formatNumber(
           priceUnit
         );
-
-
-      markupValueEl.textContent =
-        currentMarkup + "%";
 
 
       totalPriceEl.textContent =
@@ -2926,12 +2885,6 @@
       .addEventListener(
         "click",
         () => {
-
-          /*
-           * Automatically detects whether
-           * this page is running on GitHub Pages
-           * or Netlify.
-           */
 
           window.location.href =
             sitePath("dashboard");
