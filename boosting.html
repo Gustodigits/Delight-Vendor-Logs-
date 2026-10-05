@@ -1565,7 +1565,7 @@
       if (!accessToken) {
 
         throw new Error(
-          "Your login session has expired. Please login again."
+          "Your current session could not be found. Please return to the dashboard and open Boosting again."
         );
       }
 
@@ -1657,10 +1657,22 @@
       }
 
 
+      /*
+       * IMPORTANT:
+       *
+       * Do NOT redirect to /login.html here.
+       *
+       * Users are already authenticated from
+       * the main dashboard. The Boosting page
+       * simply uses the existing Supabase session.
+       */
+
       if (!data.session) {
 
-        window.location.href =
-          "/login.html";
+        showMessage(
+          "Your current login session could not be found. Please return to the dashboard and open Boosting again.",
+          "warning"
+        );
 
         return false;
       }
@@ -3002,13 +3014,21 @@
         session
       ) => {
 
+        /*
+         * Do NOT redirect to /login.html.
+         *
+         * The user is expected to already
+         * have an authenticated Supabase
+         * session from the dashboard.
+         */
+
         if (
           event ===
           "SIGNED_OUT"
         ) {
 
-          window.location.href =
-            "/login.html";
+          accessToken = null;
+          currentUser = null;
 
           return;
         }
