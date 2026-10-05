@@ -1166,8 +1166,8 @@
       ============================================================
 
       IMPORTANT:
-      Put the SAME Supabase anon key used by your existing
-      Delight dashboard below.
+      The same Supabase publishable key used by your
+      Delight dashboard is included below.
 
       DO NOT put PAWABOOST_API_KEY here.
 
@@ -1179,7 +1179,7 @@
       "https://hkfhehbhmucymusaytoe.supabase.co";
 
     const SUPABASE_ANON_KEY =
-      "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
+      "sb_publishable_O-aPnRtG3EZ6-Lwo8_sRuw_ZQqSQSF_";
 
     const BOOSTING_API_URL =
       SUPABASE_URL +
@@ -1355,6 +1355,41 @@
           /'/g,
           "&#039;"
         );
+    }
+
+
+    /*
+     * Detect the site the page is currently
+     * running on and build the correct path.
+     *
+     * GitHub Pages:
+     * /Delight-Vendor-Logs-/...
+     *
+     * Netlify:
+     * /...
+     */
+
+    function sitePath(path) {
+
+      const cleanPath =
+        String(path || "")
+          .replace(/^\/+/, "");
+
+
+      if (
+        window.location.hostname.endsWith(
+          "github.io"
+        )
+      ) {
+
+        return (
+          "/Delight-Vendor-Logs-/" +
+          cleanPath
+        );
+      }
+
+
+      return "/" + cleanPath;
     }
 
 
@@ -2062,28 +2097,12 @@
       updateQuantityLimits();
 
 
-      /*
-       * Clear quantity when switching
-       * between services so the user
-       * enters a valid amount for the
-       * newly selected service.
-       */
-
       quantityInput.value =
         "";
 
 
       updatePrice();
 
-
-      /*
-       * Automatically take the user
-       * down to the next section after
-       * selecting a service.
-       *
-       * This prevents the user from
-       * having to scroll manually again.
-       */
 
       setTimeout(
         () => {
@@ -2504,18 +2523,6 @@
 
         try {
 
-          /*
-           * IMPORTANT:
-           *
-           * Your Edge Function expects:
-           * POST /order
-           *
-           * with:
-           * serviceId
-           * link
-           * quantity
-           */
-
           const data =
             await apiRequest(
               "/order",
@@ -2538,11 +2545,6 @@
               }
             );
 
-
-          /*
-           * Use the balance returned
-           * directly by the Edge Function.
-           */
 
           if (
             data.balance !==
@@ -2602,12 +2604,6 @@
           );
 
 
-          /*
-           * If the backend says the
-           * balance is insufficient,
-           * refresh wallet balance.
-           */
-
           try {
 
             const responseText =
@@ -2663,12 +2659,6 @@
 
 
       try {
-
-        /*
-         * Your Edge Function:
-         *
-         * GET /my-orders
-         */
 
         const data =
           await apiRequest(
@@ -2937,8 +2927,14 @@
         "click",
         () => {
 
+          /*
+           * Automatically detects whether
+           * this page is running on GitHub Pages
+           * or Netlify.
+           */
+
           window.location.href =
-            "/dashboard";
+            sitePath("dashboard");
 
         }
       );
@@ -2953,7 +2949,7 @@
         () => {
 
           window.location.href =
-            "/wallet.html";
+            sitePath("wallet.html");
 
         }
       );
@@ -2968,7 +2964,7 @@
         () => {
 
           window.location.href =
-            "/transactions.html";
+            sitePath("transactions.html");
 
         }
       );
@@ -3064,11 +3060,6 @@
           return;
         }
 
-
-        /*
-         * Load all three from the
-         * correct endpoints.
-         */
 
         await Promise.all([
           loadWallet(),
