@@ -1545,25 +1545,22 @@ function toggleMenu(){
   
 }  
   
-/* ============================================================  
-   POPUP FIX  
-============================================================ */  
-  
-function closeVerificationPopup(event){
+/* ============================================================
+   POPUP FIX
+============================================================ */
 
-  if(event){
-    event.preventDefault();
-    event.stopPropagation();
-  }
+function forceClosePopup(id){
 
   const popup =
-    document.getElementById("verificationPopup");
+    document.getElementById(id);
 
   if(!popup){
     return;
   }
 
-  popup.classList.add("popup-closed");
+  popup.classList.add(
+    "popup-closed"
+  );
 
   popup.hidden = true;
 
@@ -1590,77 +1587,83 @@ function closeVerificationPopup(event){
     "none",
     "important"
   );
-}
-  
-function forceOpenPopup(id){  
-  
-  const popup =  
-    document.getElementById(id);  
-  
-  if(!popup){  
-    return;  
-  }  
-  
-  popup.classList.remove(  
-    "popup-closed"  
-  );  
 
-    popup.hidden = false;
-  
-  popup.style.removeProperty(  
-    "display"  
-  );  
-  
-  popup.style.removeProperty(  
-    "visibility"  
-  );  
-  
-  popup.style.removeProperty(  
-    "opacity"  
-  );  
-  
-  popup.style.removeProperty(  
-    "pointer-events"  
-  );  
-  
-  popup.style.display =  
-    "flex";  
-  
-}  
-  
-function closeVerificationPopup(event){  
-  
-  if(event){  
-    event.preventDefault();  
-    event.stopPropagation();  
-  }  
-  
-  forceClosePopup(  
-    "verificationPopup"  
-  );  
-  
-}  
-  
-function closePortalNotice(event){  
-  
-  if(event){  
-    event.preventDefault();  
-    event.stopPropagation();  
-  }  
-  
-  forceClosePopup(  
-    "portalNoticePopup"  
-  );  
-  
-}  
-  
-function showPortalNotice(){  
-  
-  forceOpenPopup(  
-    "portalNoticePopup"  
-  );  
-  
-}  
+}
+
+
+function forceOpenPopup(id){
+
+  const popup =
+    document.getElementById(id);
+
+  if(!popup){
+    return;
+  }
+
+  popup.classList.remove(
+    "popup-closed"
+  );
+
+  popup.hidden = false;
+
+  popup.style.removeProperty(
+    "display"
+  );
+
+  popup.style.removeProperty(
+    "visibility"
+  );
+
+  popup.style.removeProperty(
+    "opacity"
+  );
+
+  popup.style.removeProperty(
+    "pointer-events"
+  );
+
+  popup.style.display =
+    "flex";
+
+}
+
+
+function closeVerificationPopup(event){
+
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  forceClosePopup(
+    "verificationPopup"
+  );
+
+}
+
+
+function closePortalNotice(event){
+
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  forceClosePopup(
+    "portalNoticePopup"
+  );
+
+}
+
+
+function showPortalNotice(){
+
+  forceOpenPopup(
+    "portalNoticePopup"
+  );
+
+}
+    
   
   
 /* ============================================================  
