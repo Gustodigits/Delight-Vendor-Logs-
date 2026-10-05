@@ -5156,10 +5156,19 @@ async function loadAllOrders(){
   
   try{  
   
-    const previousLocalOrders =  
-      Array.isArray(orders)  
-        ? [...orders]  
-        : [];  
+    const activeProvider =
+  provider === "smsbower"
+    ? "smsbower"
+    : "grizzly";
+
+const previousLocalOrders =
+  Array.isArray(orders)
+    ? orders.filter(
+        order =>
+          orderProvider(order) ===
+          activeProvider
+      )
+    : [];
   
     const activeProvider =
   provider === "smsbower"
