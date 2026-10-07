@@ -532,7 +532,6 @@ function showMessage(message, type){
 /* ================================
    PASSWORD TOGGLE
 ================================ */
-
 function togglePassword(){
 
     const password =
@@ -540,6 +539,12 @@ function togglePassword(){
 
     const toggle =
         document.getElementById("togglePassword");
+
+
+    if(!password || !toggle){
+        return;
+    }
+
 
     if(password.type === "password"){
 
@@ -566,8 +571,6 @@ function togglePassword(){
     }
 
 }
-
-
 /* ================================
    LOGIN
 ================================ */
